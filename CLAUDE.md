@@ -1,107 +1,52 @@
+# CLAUDE.md - Hướng Dẫn Vận Hành Cho Media Render
+
+Tài liệu hướng dẫn phát triển và vận hành dành cho các coding agent trên dự án `media-render`.
+
 ---
 
-Default to using Bun instead of Node.js.
+## 🛠️ Lệnh Chạy Dự Án (Commands)
 
-- Use `bun <file>` instead of `node <file>` or `ts-node <file>`
-- Use `bun test` instead of `jest` or `vitest`
-- Use `bun build <file.html|file.ts|file.css>` instead of `webpack` or `esbuild`
-- Use `bun install` instead of `npm install` or `yarn install` or `pnpm install`
-- Use `bun run <script>` instead of `npm run <script>` or `yarn run <script>` or `pnpm run <script>`
-- Bun automatically loads .env, so don't use dotenv.
+### Lập Trình & Khởi Chạy
+* **Cài đặt dependencies:** `bun install`
+* **Khởi chạy HTTP API Server (Elysia):** `bun start` (hoặc `bun run src/index.ts`)
+* **Kiểm tra kiểu dữ liệu (Typecheck):** `bun run tsc --noEmit`
 
-## APIs
+### Chạy Các Bài Test (Test Suites)
+* **Test Manifest tổng hợp:** `bun run test:render`
+* **Test Video dọc 9:16 (Shorts/TikTok):** `bun run test:shorts`
+* **Test Trình chiếu ảnh (Slideshow):** `bun run test:slideshow`
+* **Test Video karaoke/lyrics:** `bun run test:lyrics`
 
-- `Bun.serve()` supports WebSockets, HTTPS, and routes. Don't use `express`.
-- `bun:sqlite` for SQLite. Don't use `better-sqlite3`.
-- `Bun.redis` for Redis. Don't use `ioredis`.
-- `Bun.sql` for Postgres. Don't use `pg` or `postgres.js`.
-- `WebSocket` is built-in. Don't use `ws`.
-- Prefer `Bun.file` over `node:fs`'s readFile/writeFile
-- Bun.$`ls` instead of execa.
+*Tất cả tệp video kiểm thử được kết xuất ra thư mục `./test-outputs/`.*
 
-## Testing
+---
 
-Use `bun test` to run tests.
+## 📐 Quy Tắc Thiết Kế & Quy Chuẩn Lập Trình (Coding Guidelines)
 
-```ts#index.test.ts
-import { test, expect } from "bun:test";
+### 1. Quản Lý Tài Nguyên C++ Native (NodeAV/FFmpeg)
+* **Giải phóng bộ nhớ:** Bắt buộc sử dụng Native Explicit Resource Management `[Symbol.dispose]()` đối với tất cả các thực thể C++ của FFmpeg để tránh rò rỉ bộ nhớ nghiêm trọng trong vòng lặp render:
+  * Đóng gói: `packet[Symbol.dispose]()`, `frame[Symbol.dispose]()`
+  * Đóng decoder: `decoder[Symbol.dispose]()`
+  * Đóng demuxer: `demuxer[Symbol.dispose]()`
+  * Đóng encoder: `encoder[Symbol.dispose]()`
+  * Đóng muxer: `await muxer.close()`, `muxer[Symbol.dispose]()`
+* **Khởi tạo đối tượng:** Luôn gọi các hàm static bất đồng bộ mở tệp như `Demuxer.open(url)` và `Muxer.open(path)` thay vì sử dụng phương thức khởi tạo trực tiếp `.create(...)`.
+* **Tham số thời gian:** Luôn dùng `av.Rational` cho timeBase, ví dụ: `new av.Rational(1, fps)`.
 
-test("hello world", () => {
-  expect(1).toBe(1);
-});
-```
-
-## Frontend
-
-Use HTML imports with `Bun.serve()`. Don't use `vite`. HTML imports fully support React, CSS, Tailwind.
-
-Server:
-
-```ts#index.ts
-import index from "./index.html"
-
-Bun.serve({
-  routes: {
-    "/": index,
-    "/api/users/:id": {
-      GET: (req) => {
-        return new Response(JSON.stringify({ id: req.params.id }));
-      },
-    },
-  },
-  // optional websocket support
-  websocket: {
-    open: (ws) => {
-      ws.send("Hello, world!");
-    },
-    message: (ws, message) => {
-      ws.send(message);
-    },
-    close: (ws) => {
-      // handle close
+### 2. Vòng Lặp Xử Lý Đa Luồng Interleaved
+* Để tránh lỗi *Double Generator Consumption* (sập tiến trình âm thanh khi kéo tuần tự video rồi mới kéo audio), bộ lọc đa luồng của FFmpeg Filter Complex phải được xử lý song song:
+  * Lặp qua generator video chính: `for await (const videoFrame of complexFilter.frames(videoLabel, inputs))`
+  * Bên trong vòng lặp video, liên tục kéo (pull) các audio frames có sẵn trong bộ đệm của filter:
+    ```typescript
+    while (true) {
+      const audioFrame = await complexFilter.receive(audioLabel).catch(() => null);
+      if (!audioFrame) break;
+      // encode & write audio packets
+      audioFrame[Symbol.dispose]();
     }
-  },
-  development: {
-    hmr: true,
-    console: true,
-  }
-})
-```
+    ```
 
-HTML files can import .tsx, .jsx or .js files directly and Bun's bundler will transpile & bundle automatically. `<link>` tags can point to stylesheets and Bun's CSS bundler will bundle.
-
-```html#index.html
-<html>
-  <body>
-    <h1>Hello, world!</h1>
-    <script type="module" src="./frontend.tsx"></script>
-  </body>
-</html>
-```
-
-With the following `frontend.tsx`:
-
-```tsx#frontend.tsx
-import React from "react";
-
-// import .css files directly and it works
-import './index.css';
-
-import { createRoot } from "react-dom/client";
-
-const root = createRoot(document.body);
-
-export default function Frontend() {
-  return <h1>Hello, world!</h1>;
-}
-
-root.render(<Frontend />);
-```
-
-Then, run index.ts
-
-```sh
-bun --hot ./index.ts
-```
-
-For more information, read the Bun API docs in `node_modules/bun-types/docs/**.md`.
+### 3. Thiết Kế Hàng Đợi & Stateless API
+* **Stateless API:** `media-render` không quản lý hàng đợi hay lưu trạng thái. Nó nhận request HTTP POST `/render`, chạy render ngay lập tức và trả về đường dẫn file video.
+* **Concurrency Guard:** Sử dụng biến môi trường `CONCURRENT_RENDER_LIMIT` để giới hạn số luồng xử lý song song. Khi quá tải, trả về `HTTP 429 Too Many Requests`.
+* **Resource Guard:** Dùng `ResourceGuard` để giám sát dung lượng bộ nhớ RSS của tiến trình Bun, RAM hệ thống và CPU Load trước khi chạy tác vụ mới để tránh bị Docker OOMKilled. Khi quá tải tài nguyên, trả về `HTTP 503 Service Unavailable`.

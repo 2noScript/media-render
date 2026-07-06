@@ -1,0 +1,26 @@
+# Local dependencies
+node_modules/
+bun.lockb
+bun.lock
+
+# Test and build outputs
+test-outputs/
+test-assets/
+renders/
+
+# Environmental configs
+.env
+.env.local
+
+# Git and editor files
+.git/
+.gitignore
+.vscode/
+.idea/
+.DS_Store
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

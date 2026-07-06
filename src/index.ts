@@ -1,6 +1,6 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
-import { QueueService } from "./services/queue.service";
 import { OpenCutRenderService } from "./services/render.service";
+import { ResourceGuard } from "./services/resource.guard";
 import { Elysia } from "elysia";
 import { swaggerSpec, renderSwaggerUI } from "./docs";
 import dotenv from "dotenv";
@@ -18,12 +18,16 @@ registerMediabunnyServer();
 
 const renderService = new OpenCutRenderService();
 
+// Giới hạn số lượng render song song từ biến môi trường
+const concurrentLimit = parseInt(process.env.CONCURRENT_RENDER_LIMIT || "2", 10);
+let activeRenders = 0;
+
 // ==========================================================
 // ELYSIA WEB SERVER WITH CDN-BASED SWAGGER UI
 // ==========================================================
 
 export const app = new Elysia()
-  // Swagger UI HTML Endpoint (Tương tự docs của free-tts/workers)
+  // Swagger UI HTML Endpoint
   .get("/swagger", () => {
     return new Response(renderSwaggerUI(), {
       headers: { "Content-Type": "text/html" }
@@ -33,30 +37,79 @@ export const app = new Elysia()
   .get("/swagger/json", () => {
     return swaggerSpec;
   })
-  // Endpoint thực thi render
-  .post("/render", async ({ body }) => {
-    console.log(`[HTTP] Received render request for project: ${(body as any).projectId}`);
-    const filePath = await renderService.renderProject(body as any);
+  // Endpoint Health Check chuyên dụng cho Docker / Kubernetes healthcheck
+  .get("/health", ({ set }) => {
+    const resourceStatus = ResourceGuard.check();
+    if (!resourceStatus.isSafe) {
+      set.status = 503; // Trả về 503 để báo container đang degraded
+    }
     return {
-      success: true,
-      message: "Render completed successfully!",
-      videoPath: filePath,
+      status: resourceStatus.isSafe ? "healthy" : "degraded",
+      reason: resourceStatus.reason,
+      activeRenders,
+      concurrentLimit,
+      resources: resourceStatus.details,
+      timestamp: new Date().toISOString(),
     };
   })
+  // Endpoint thực thi render trực tiếp ngay khi nhận yêu cầu (có giới hạn song song và kiểm tra tài nguyên)
+  .post(
+    "/render",
+    async ({ body, set }) => {
+      const projectId = (body as any).projectId;
+
+      // 1. Kiểm tra tài nguyên hệ thống (RAM, CPU, RSS) qua Resource Guard
+      const resourceStatus = ResourceGuard.check();
+      if (!resourceStatus.isSafe) {
+        console.warn(`[HTTP] Rejected project ${projectId} due to resource limits: ${resourceStatus.reason}`);
+        set.status = 503; // Service Unavailable
+        return {
+          success: false,
+          message: `Server resource limits reached: ${resourceStatus.reason}`,
+          details: resourceStatus.details,
+        };
+      }
+
+      // 2. Kiểm tra giới hạn số lượng render song song
+      if (activeRenders >= concurrentLimit) {
+        console.warn(`[HTTP] Rejected project ${projectId}: Active renders (${activeRenders}) reached the limit of ${concurrentLimit}`);
+        set.status = 429; // Too Many Requests
+        return {
+          success: false,
+          message: `Server is busy. Concurrent render limit of ${concurrentLimit} reached. Please try again later.`,
+        };
+      }
+
+      activeRenders++;
+      console.log(`[HTTP] Active renders: ${activeRenders}/${concurrentLimit}. Starting render for project: ${projectId}`);
+      
+      try {
+        const filePath = await renderService.renderProject(body as any);
+        return {
+          success: true,
+          message: "Render completed successfully!",
+          videoPath: filePath,
+        };
+      } catch (err: any) {
+        console.error(`[HTTP] Render failed for project ${projectId}:`, err);
+        set.status = 500;
+        return {
+          success: false,
+          message: err.message || "Internal rendering error",
+        };
+      } finally {
+        activeRenders--;
+        console.log(`[HTTP] Active renders remaining: ${activeRenders}/${concurrentLimit} (Finished project: ${projectId})`);
+      }
+    }
+  )
   .listen(process.env.PORT || 3005);
 
 async function main() {
   console.log(`HTTP Server is running at http://localhost:${process.env.PORT || 3005}`);
   console.log(`Swagger UI is available at http://localhost:${process.env.PORT || 3005}/swagger`);
-
-  // Khởi chạy RabbitMQ listener song song
-  try {
-    const queueService = new QueueService();
-    await queueService.connect();
-    console.log("RabbitMQ Listener is active and waiting for tasks!");
-  } catch (err) {
-    console.warn("Could not connect to RabbitMQ, queue service disabled. Error:", err);
-  }
+  console.log(`Media-render is running in stateless mode (Concurrent Limit: ${concurrentLimit}).`);
+  console.log(`Active Resource Guard: System RAM, CPU Load, and Bun RSS limits enabled.`);
 }
 
 main().catch(err => {
