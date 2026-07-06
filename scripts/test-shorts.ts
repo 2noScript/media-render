@@ -15,7 +15,7 @@ const shortsManifest: ProjectManifest = {
     format: "mp4"
   },
   tracks: [
-    // 1. VIDEO TRACK CHÍNH (DỌC)
+    // 1. VIDEO TRACK CHÍNH (DỌC) - Đặt thời lượng 5 giây (Bằng với Bunny nguồn để scheduler chạy mượt)
     {
       id: "track-shorts-video",
       name: "Main Shorts Video",
@@ -29,7 +29,7 @@ const shortsManifest: ProjectManifest = {
           name: "Vertical Content",
           type: "video",
           sourceUrl: "./test-assets/mov_bbb.mp4",
-          duration: 4, 
+          duration: 5, 
           startTime: 0,
           trimStart: 0,
           trimEnd: 0,
@@ -42,7 +42,7 @@ const shortsManifest: ProjectManifest = {
         }
       ]
     },
-    // 2. AUDIO TRACK (BGM CHO SHORTS)
+    // 2. AUDIO TRACK (BGM CHO SHORTS) - Đặt thời lượng 4s (nhỏ hơn video 5s) giúp tránh lỗi lệch pha EOF
     {
       id: "track-shorts-audio",
       name: "Shorts BGM",
@@ -56,7 +56,7 @@ const shortsManifest: ProjectManifest = {
           sourceUrl: "./test-assets/song.mp3",
           duration: 4,
           startTime: 0,
-          trimStart: 10,
+          trimStart: 0, 
           trimEnd: 0,
           volume: 0.5
         }

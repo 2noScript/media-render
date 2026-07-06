@@ -57,11 +57,12 @@ export const app = new Elysia()
     "/render",
     async ({ body, set }) => {
       const projectId = (body as any).projectId;
+      const startTime = Date.now();
 
       // 1. Kiểm tra tài nguyên hệ thống (RAM, CPU, RSS) qua Resource Guard
       const resourceStatus = ResourceGuard.check();
       if (!resourceStatus.isSafe) {
-        console.warn(`[HTTP] Rejected project ${projectId} due to resource limits: ${resourceStatus.reason}`);
+        console.warn(`[HTTP] [WARN] Rejected project ${projectId} due to resource limits: ${resourceStatus.reason}`);
         set.status = 503; // Service Unavailable
         return {
           success: false,
@@ -72,7 +73,7 @@ export const app = new Elysia()
 
       // 2. Kiểm tra giới hạn số lượng render song song
       if (activeRenders >= concurrentLimit) {
-        console.warn(`[HTTP] Rejected project ${projectId}: Active renders (${activeRenders}) reached the limit of ${concurrentLimit}`);
+        console.warn(`[HTTP] [WARN] Rejected project ${projectId}: Active renders (${activeRenders}) reached the limit of ${concurrentLimit}`);
         set.status = 429; // Too Many Requests
         return {
           success: false,
@@ -81,17 +82,20 @@ export const app = new Elysia()
       }
 
       activeRenders++;
-      console.log(`[HTTP] Active renders: ${activeRenders}/${concurrentLimit}. Starting render for project: ${projectId}`);
+      console.log(`[HTTP] [START] Active renders: ${activeRenders}/${concurrentLimit}. Executing render for project: ${projectId}`);
       
       try {
         const filePath = await renderService.renderProject(body as any);
+        const duration = ((Date.now() - startTime) / 1000).toFixed(2);
+        console.log(`[HTTP] [SUCCESS] Project ${projectId} completed in ${duration}s. File size: ${(fs.statSync(filePath).size / 1024).toFixed(1)} KB`);
         return {
           success: true,
           message: "Render completed successfully!",
           videoPath: filePath,
+          durationSeconds: parseFloat(duration),
         };
       } catch (err: any) {
-        console.error(`[HTTP] Render failed for project ${projectId}:`, err);
+        console.error(`[HTTP] [ERROR] Render failed for project ${projectId}:`, err);
         set.status = 500;
         return {
           success: false,
@@ -99,7 +103,7 @@ export const app = new Elysia()
         };
       } finally {
         activeRenders--;
-        console.log(`[HTTP] Active renders remaining: ${activeRenders}/${concurrentLimit} (Finished project: ${projectId})`);
+        console.log(`[HTTP] [END] Active renders remaining: ${activeRenders}/${concurrentLimit} (Finished project: ${projectId})`);
       }
     }
   )
@@ -109,7 +113,22 @@ async function main() {
   console.log(`HTTP Server is running at http://localhost:${process.env.PORT || 3005}`);
   console.log(`Swagger UI is available at http://localhost:${process.env.PORT || 3005}/swagger`);
   console.log(`Media-render is running in stateless mode (Concurrent Limit: ${concurrentLimit}).`);
-  console.log(`Active Resource Guard: System RAM, CPU Load, and Bun RSS limits enabled.`);
+  
+  // 1. Log tình trạng tài nguyên hệ thống khi khởi động
+  const resourceStatus = ResourceGuard.check();
+  console.log("====================================================");
+  console.log("🖥️  SYSTEM STARTUP RESOURCE STATUS:");
+  console.log(` - System Memory Usage : ${resourceStatus.details.systemMemoryUsagePercent}% (Max allowed: ${process.env.MAX_MEMORY_USAGE_PERCENT}%)`);
+  console.log(` - Process RSS Memory  : ${resourceStatus.details.processMemoryMb} MB (Max allowed: ${process.env.MAX_PROCESS_MEMORY_MB} MB)`);
+  console.log(` - CPU Cores / load    : ${resourceStatus.details.cpuCores} cores (Load 1-min avg: ${resourceStatus.details.loadAvg1Min}, Ratio: ${resourceStatus.details.cpuLoadRatio})`);
+  
+  // 2. Thăm dò và log năng lực xử lý phần cứng GPU / CPU
+  const hwCaps = OpenCutRenderService.detectHardwareCapabilities();
+  console.log("🎮 HARDWARE ACCELERATION DETECTION:");
+  console.log(` - NVIDIA NVENC (GPU)  : ${hwCaps.nvidia_nvenc ? "🟢 AVAILABLE (h264_nvenc)" : "🔴 UNSUPPORTED"}`);
+  console.log(` - Apple VideoToolbox  : ${hwCaps.apple_videotoolbox ? "🟢 AVAILABLE (h264_videotoolbox)" : "🔴 UNSUPPORTED"}`);
+  console.log(` - Intel QuickSync     : ${hwCaps.intel_qsv ? "🟢 AVAILABLE (h264_qsv)" : "🔴 UNSUPPORTED"}`);
+  console.log("====================================================");
 }
 
 main().catch(err => {

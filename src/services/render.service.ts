@@ -1,5 +1,6 @@
 import { ProjectManifest, BaseTimelineElement, VideoTrack, AudioTrack } from "../types/opencut";
 import * as av from "node-av";
+import { AV_CODEC_FLAG_GLOBAL_HEADER } from "node-av";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -21,6 +22,111 @@ interface PreparedInput {
 }
 
 export class OpenCutRenderService {
+  /**
+   * Kiểm tra khả năng hỗ trợ phần cứng của hệ thống hiện tại
+   */
+  public static detectHardwareCapabilities() {
+    const caps = {
+      nvidia_nvenc: false,
+      apple_videotoolbox: false,
+      intel_qsv: false,
+    };
+
+    try {
+      if (av.Codec.findEncoderByName("h264_nvenc" as any)) caps.nvidia_nvenc = true;
+    } catch {}
+    try {
+      if (av.Codec.findEncoderByName("h264_videotoolbox" as any)) caps.apple_videotoolbox = true;
+    } catch {}
+    try {
+      if (av.Codec.findEncoderByName("h264_qsv" as any)) caps.intel_qsv = true;
+    } catch {}
+
+    return caps;
+  }
+
+  /**
+   * Tự động phát hiện GPU (NVIDIA NVENC, Apple VideoToolbox, Intel QuickSync) để tăng tốc phần cứng
+   */
+  private getOptimalVideoEncoder(format: string): string {
+    const isWebm = format === "webm";
+    if (isWebm) {
+      try {
+        if (av.Codec.findEncoderByName("vp9_nvenc" as any)) {
+          console.log("[RenderService] [GPU ACCELERATED] Selected Encoder: vp9_nvenc (NVIDIA GPU)");
+          return "vp9_nvenc";
+        }
+      } catch {}
+      console.log("[RenderService] [CPU ENCODER] Selected Encoder: vp9 (libvpx-vp9)");
+      return av.FF_ENCODER_LIBVPX_VP9 as any;
+    }
+
+    // 1. Kiểm tra NVIDIA NVENC (Cho server Linux có GPU NVIDIA trong Docker/Production)
+    try {
+      if (av.Codec.findEncoderByName("h264_nvenc" as any)) {
+        console.log("[RenderService] [GPU ACCELERATED] Selected Encoder: h264_nvenc (NVIDIA GPU NVENC)");
+        return "h264_nvenc";
+      }
+    } catch {}
+
+    // 2. Kiểm tra Apple Silicon VideoToolbox (Cho macOS M1/M2/M3 local dev)
+    try {
+      if (av.Codec.findEncoderByName("h264_videotoolbox" as any)) {
+        console.log("[RenderService] [GPU ACCELERATED] Selected Encoder: h264_videotoolbox (Apple Silicon GPU)");
+        return "h264_videotoolbox";
+      }
+    } catch {}
+
+    // 3. Kiểm tra Intel QuickSync (h264_qsv)
+    try {
+      if (av.Codec.findEncoderByName("h264_qsv" as any)) {
+        console.log("[RenderService] [GPU ACCELERATED] Selected Encoder: h264_qsv (Intel QuickSync GPU)");
+        return "h264_qsv";
+      }
+    } catch {}
+
+    // Fallback về CPU encoder tiêu chuẩn
+    console.log("[RenderService] [CPU SOFTWARE] Selected Encoder: libx264 (CPU Only)");
+    return av.FF_ENCODER_LIBX264 as any;
+  }
+
+  /**
+   * Async generator helper giúp hãm/giới hạn số frame hoặc mẫu âm thanh theo thời lượng duration cấu hình của clip.
+   * Điều này thay thế cho việc dùng filter 'trim=duration' trong FFmpeg, tránh việc FFmpeg đóng cổng buffersrc sớm gây crash.
+   */
+  private async *limitGenerator(
+    generator: AsyncIterable<av.Frame | null>,
+    type: "video" | "image" | "audio",
+    duration: number,
+    fps: number
+  ): AsyncGenerator<av.Frame | null, void, unknown> {
+    let frameCount = 0;
+    const maxFrames = type === "video" ? Math.ceil(duration * fps) : Infinity;
+    let audioDurationSec = 0;
+
+    for await (const frame of generator) {
+      if (!frame) break;
+
+      if (type === "video") {
+        frameCount++;
+        if (frameCount > maxFrames) {
+          frame[Symbol.dispose]();
+          break;
+        }
+      } else if (type === "audio") {
+        const sampleRate = frame.sampleRate || 44100;
+        const samples = frame.nbSamples || 1024;
+        audioDurationSec += samples / sampleRate;
+        if (audioDurationSec > duration) {
+          frame[Symbol.dispose]();
+          break;
+        }
+      }
+
+      yield frame;
+    }
+  }
+
   public async renderProject(manifest: ProjectManifest): Promise<string> {
     const outputDir = path.resolve("./test-outputs");
     if (!fs.existsSync(outputDir)) {
@@ -127,19 +233,19 @@ export class OpenCutRenderService {
     // ==========================================================
     const filterParts: string[] = [];
     
-    // 1. Dựng các luồng video riêng lẻ (trim, scale, setpts) cho main track
+    // 1. Dựng các luồng video riêng lẻ cho main track (bỏ duration ở trim để tránh đóng buffersrc sớm)
     const videoMainClips = preparedInputs.filter(p => p.type !== "audio" && mainElementsWithGaps.some(el => el.id === p.elementId));
     const mainVideoLabels: string[] = [];
 
     for (const clip of videoMainClips) {
       const label = `v_${clip.elementId}`;
       if (clip.inputIndex === -1) {
-        // Sinh khung hình đen thô cho khoảng trống
+        // Sinh khung hình đen cho khoảng trống
         filterParts.push(`color=c=black:s=${manifest.settings.width}x${manifest.settings.height}:d=${clip.duration}:r=${manifest.settings.fps}[${label}]`);
       } else if (clip.type === "image") {
-        filterParts.push(`[${clip.inputIndex}:v]scale=${clip.width}:${clip.height},loop=loop=-1:size=1:start=0,trim=duration=${clip.duration},setpts=PTS-STARTPTS[${label}]`);
+        filterParts.push(`[${clip.inputIndex}:v]scale=${clip.width}:${clip.height},loop=loop=-1:size=1:start=0,trim=start=0,setpts=PTS-STARTPTS,fps=fps=${manifest.settings.fps}[${label}]`);
       } else {
-        filterParts.push(`[${clip.inputIndex}:v]trim=start=${clip.trimStart}:duration=${clip.duration},setpts=PTS-STARTPTS,scale=${clip.width}:${clip.height}[${label}]`);
+        filterParts.push(`[${clip.inputIndex}:v]trim=start=${clip.trimStart},setpts=PTS-STARTPTS,scale=${clip.width}:${clip.height},fps=fps=${manifest.settings.fps}[${label}]`);
       }
       // Lưu lại nhãn của main track để nối tiếp
       const isMainTrackClip = mainElementsWithGaps.some(el => el.id === clip.elementId);
@@ -152,7 +258,7 @@ export class OpenCutRenderService {
     if (mainVideoLabels.length > 1) {
       filterParts.push(`${mainVideoLabels.join("")}concat=n=${mainVideoLabels.length}:v=1:a=0[v_main_base]`);
     } else if (mainVideoLabels.length === 1) {
-      filterParts.push(`${mainVideoLabels[0]}split=1[v_main_base]`);
+      filterParts.push(`${mainVideoLabels[0]}null[v_main_base]`);
     }
 
     // 2. Chồng đè các Video Overlay clips lên luồng nền
@@ -164,11 +270,11 @@ export class OpenCutRenderService {
       const clipLabel = `v_${clip.elementId}`;
       const nextBaseLabel = `v_base_overlay_${overlayCount++}`;
       
-      // Xử lý clip overlay thô trước
+      // Xử lý clip overlay thô trước (bổ sung fps để đồng bộ khung hình)
       if (clip.type === "image") {
-        filterParts.push(`[${clip.inputIndex}:v]scale=${clip.width}:${clip.height},loop=loop=-1:size=1:start=0,trim=duration=${clip.duration},setpts=PTS-STARTPTS[${clipLabel}]`);
+        filterParts.push(`[${clip.inputIndex}:v]scale=${clip.width}:${clip.height},loop=loop=-1:size=1:start=0,trim=start=0,setpts=PTS-STARTPTS,fps=fps=${manifest.settings.fps}[${clipLabel}]`);
       } else {
-        filterParts.push(`[${clip.inputIndex}:v]trim=start=${clip.trimStart}:duration=${clip.duration},setpts=PTS-STARTPTS,scale=${clip.width}:${clip.height}[${clipLabel}]`);
+        filterParts.push(`[${clip.inputIndex}:v]trim=start=${clip.trimStart},setpts=PTS-STARTPTS,scale=${clip.width}:${clip.height},fps=fps=${manifest.settings.fps}[${clipLabel}]`);
       }
 
       // Đè overlay lên nền tại thời điểm startTime
@@ -202,14 +308,15 @@ export class OpenCutRenderService {
     for (const clip of audioClips) {
       const label = `a_${clip.elementId}`;
       const delayMs = Math.round(clip.startTime * 1000);
-      filterParts.push(`[${clip.inputIndex}:a]atrim=start=${clip.trimStart}:duration=${clip.duration},asetpts=PTS-STARTPTS,adelay=${delayMs}|${delayMs},volume=${clip.volume || 1.0}[${label}]`);
+      filterParts.push(`[${clip.inputIndex}:a]atrim=start=${clip.trimStart},asetpts=PTS-STARTPTS,adelay=${delayMs}|${delayMs},volume=${clip.volume || 1.0}[${label}]`);
       audioLabels.push(`[${label}]`);
     }
 
     // Trộn toàn bộ âm thanh
     let finalAudioLabel = "";
     if (audioLabels.length > 1) {
-      filterParts.push(`${audioLabels.join("")}amix=inputs=${audioLabels.length}:normalize=0[a_final]`);
+      // Dùng duration=shortest để tự động ngắt mix audio khi luồng video chính kết thúc
+      filterParts.push(`${audioLabels.join("")}amix=inputs=${audioLabels.length}:duration=shortest:normalize=0[a_final]`);
       finalAudioLabel = "a_final";
     } else if (audioLabels.length === 1) {
       filterParts.push(`${audioLabels[0]}anull[a_final]`);
@@ -234,9 +341,9 @@ export class OpenCutRenderService {
       }
     }
 
-    // Cấu hình định dạng output
+    // Lựa chọn encoder tối ưu dựa trên tăng tốc phần cứng GPU (nếu có)
+    const videoEncoderName = this.getOptimalVideoEncoder(manifest.settings.format);
     const isWebm = manifest.settings.format === "webm";
-    const videoEncoderName = isWebm ? av.FF_ENCODER_LIBVPX_VP9 : av.FF_ENCODER_LIBX264;
     const audioEncoderName = isWebm ? av.FF_ENCODER_OPUS : av.FF_ENCODER_AAC;
 
     const muxer = await av.Muxer.open(outputPath);
@@ -253,12 +360,14 @@ export class OpenCutRenderService {
       }
     }
 
-    // Khởi tạo encoder và ghi dữ liệu
+    // Khởi tạo encoder video (Sử dụng đúng named export AV_CODEC_FLAG_GLOBAL_HEADER để ghi SPS/PPS)
     const videoEncoder = await av.Encoder.create(videoEncoderName as any, {
+      autoFormat: true,
       context: { 
         width: manifest.settings.width,
         height: manifest.settings.height,
-        timeBase: new av.Rational(1, manifest.settings.fps)
+        timeBase: new av.Rational(1, manifest.settings.fps),
+        flags: AV_CODEC_FLAG_GLOBAL_HEADER
       }
     });
     const videoStreamIndex = muxer.addStream(videoEncoder);
@@ -268,7 +377,8 @@ export class OpenCutRenderService {
     if (audioLabels.length > 0) {
       audioEncoder = await av.Encoder.create(audioEncoderName as any, {
         context: {
-          timeBase: new av.Rational(1, 44100)
+          timeBase: new av.Rational(1, 44100),
+          flags: AV_CODEC_FLAG_GLOBAL_HEADER
         }
       });
       audioStreamIndex = muxer.addStream(audioEncoder);
@@ -296,7 +406,7 @@ export class OpenCutRenderService {
     console.log("[RenderService] Engine is rendering frame processing loop...");
 
     try {
-      // 1. Chuẩn bị các input streams cho complex filter
+      // 1. Chuẩn bị các input streams cho complex filter (Đã bọc ngoài bằng limitGenerator để chủ động dừng)
       const filterInputsMap: Record<string, AsyncIterable<av.Frame | null>> = {};
       for (const p of preparedInputs) {
         if (p.inputIndex >= 0) {
@@ -305,7 +415,10 @@ export class OpenCutRenderService {
           const demuxer = demuxers[p.inputIndex];
           const stream = p.type === "audio" ? demuxer.audio() : demuxer.video();
           if (stream) {
-            filterInputsMap[key] = decoder.frames(demuxer.packets(stream.index));
+            // Lấy generator raw từ decoder
+            const rawGenerator = decoder.frames(demuxer.packets(stream.index));
+            // Bọc generator để tự động EOF theo đúng duration cấu hình
+            filterInputsMap[key] = this.limitGenerator(rawGenerator, p.type, p.duration, manifest.settings.fps);
           }
         }
       }
