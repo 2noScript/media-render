@@ -1,4 +1,4 @@
-import { TextElement } from "../../../types/opencut";
+import { TextElement } from "../../../types/editor-manifest";
 
 export function renderTextNodeToContext({
   el,

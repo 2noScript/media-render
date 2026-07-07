@@ -45,7 +45,7 @@ class FakeOffscreenCanvas {
 
 import { Output, Mp4OutputFormat, WebMOutputFormat, FilePathTarget, CanvasSource, AudioSampleSource, QUALITY_LOW, QUALITY_MEDIUM, QUALITY_HIGH, QUALITY_VERY_HIGH } from "mediabunny";
 import { CanvasRenderer } from "./canvas-renderer";
-import { EditorManifest } from "../../types/opencut";
+import { EditorManifest } from "../../types/editor-manifest";
 import * as path from "path";
 import * as crypto from "crypto";
 

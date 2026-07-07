@@ -2,7 +2,7 @@
 
 A specialized, stateless **Non-linear Video/Media Renderer** microservice built on the **Bun runtime**, **Elysia web framework**, and **NodeAV** (native FFmpeg C++ API wrapper).
 
-`media-render` acts as a **Stateless API Worker** that accepts the **OpenCut** timeline specification format (`ProjectManifest`) via HTTP API, performs fast parallel media rendering, and returns the path of the generated video immediately.
+`media-render` acts as a **Stateless API Worker** that accepts the **OpenCut** timeline specification format (`EditorManifest`) via HTTP API, performs fast parallel media rendering, and returns the path of the generated video immediately.
 
 ---
 
@@ -101,3 +101,72 @@ docker compose down
 ### Integrated Docker Features:
 - **Volume Mounts:** Mounts `./test-outputs` to easily access rendered files from the host, and `./test-assets` to provide source assets.
 - **Docker Healthcheck:** Automatically probes container health via the `/health` endpoint every 15 seconds.
+
+---
+
+## 📡 6. API Usage Guide (cURL Examples)
+
+You can interact with the stateless rendering service directly via HTTP requests using `curl`.
+
+### A. Health Check & Resource Diagnostics
+Query the resource usage guard and render queue status:
+```bash
+curl -i http://localhost:3005/health
+```
+
+### B. Trigger a Video Render (POST `/render`)
+Send an `EditorManifest` JSON payload to composite a video. The server will download remote assets, perform parallel rendering, and return the path to the output video:
+
+```bash
+curl -X POST http://localhost:3005/render \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": "curl-test-render",
+    "settings": {
+      "width": 640,
+      "height": 360,
+      "fps": 30,
+      "format": "mp4",
+      "quality": "high",
+      "shouldIncludeAudio": true
+    },
+    "tracks": [
+      {
+        "id": "track-main-video",
+        "name": "Main Video Track",
+        "type": "video",
+        "isMain": true,
+        "muted": false,
+        "hidden": false,
+        "elements": [
+          {
+            "id": "element-video-1",
+            "name": "Big Buck Bunny Sample",
+            "type": "video",
+            "sourceUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
+            "duration": 5,
+            "startTime": 0,
+            "trimStart": 0,
+            "trimEnd": 0,
+            "width": 640,
+            "height": 360,
+            "x": 0,
+            "y": 0,
+            "opacity": 1.0,
+            "volume": 1.0
+          }
+        ]
+      }
+    ]
+  }'
+```
+
+#### Successful Response:
+```json
+{
+  "success": true,
+  "message": "Render completed successfully!",
+  "videoPath": "/app/test-outputs/output-ef9bfca6-f29c-4acd-b2d5-2a050cc831e7.mp4",
+  "durationSeconds": 5.0
+}
+```

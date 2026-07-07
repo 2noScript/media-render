@@ -1,4 +1,4 @@
-import { EditorManifest } from "../src/types/opencut";
+import { EditorManifest } from "../src/types/editor-manifest";
 
 const mockManifest: EditorManifest = {
   id: "test-docker-project",

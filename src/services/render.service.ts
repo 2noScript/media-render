@@ -1,4 +1,4 @@
-import { EditorManifest } from "../types/opencut";
+import { EditorManifest } from "../types/editor-manifest";
 import { SceneExporter } from "./renderer/scene-exporter";
 
 export class OpenCutRenderService {

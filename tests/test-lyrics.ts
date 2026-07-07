@@ -1,6 +1,6 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
 import { OpenCutRenderService } from "../src/services/render.service";
-import { EditorManifest } from "../src/types/opencut";
+import { EditorManifest } from "../src/types/editor-manifest";
 
 // Khởi chạy server-side polyfill của Mediabunny (NodeAV)
 registerMediabunnyServer();

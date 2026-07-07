@@ -3,7 +3,7 @@ import { Input, FilePathSource, ALL_FORMATS } from "mediabunny";
 import { renderVideoNodeToContext } from "./nodes/video-node";
 import { renderImageNodeToContext } from "./nodes/image-node";
 import { renderTextNodeToContext } from "./nodes/text-node";
-import { EditorManifest } from "../../types/opencut";
+import { EditorManifest } from "../../types/editor-manifest";
 import { RemoteFontLoader } from "./font-loader";
 import * as av from "node-av";
 import * as path from "path";

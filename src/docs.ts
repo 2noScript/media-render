@@ -9,7 +9,7 @@ export const swaggerSpec = {
     "/health": {
       get: {
         summary: "Check server health and resource status",
-        description: "Trả về trạng thái tài nguyên hệ thống thực tế (RAM, CPU, RSS) và số lượng render đang xử lý. Trả về HTTP 503 nếu tài nguyên quá tải.",
+        description: "Returns system resource details (RAM, CPU, Bun process RSS) and the count of currently processing render tasks. Returns HTTP 503 if system resources are degraded.",
         responses: {
           "200": {
             description: "Server is healthy",
@@ -62,7 +62,7 @@ export const swaggerSpec = {
     "/render": {
       post: {
         summary: "Render video from Editor Manifest",
-        description: "Tiền xử lý lấp khoảng trống (Gap Fill), cắt tỉa clip (trim), dán đè overlays video/ảnh/chữ theo đúng tọa độ, delay và trộn âm thanh thô xuất ra video MP4/WebM.",
+        description: "Performs isomorphic timeline compositions (video gap-filling, trimming, overlay blending, text rasterization, and multi-track audio mixing) into a single MP4/WebM video.",
         requestBody: {
           required: true,
           content: {
@@ -128,10 +128,10 @@ export const swaggerSpec = {
         properties: {
           id: { type: "string", example: "clip-1" },
           name: { type: "string", example: "My Clip Name" },
-          duration: { type: "number", description: "Thời lượng hiển thị trên Timeline (giây)", example: 10 },
-          startTime: { type: "number", description: "Thời điểm bắt đầu xuất hiện trên Timeline (giây)", example: 0 },
-          trimStart: { type: "number", description: "Cắt bỏ phần đầu của file nguồn (giây)", example: 0 },
-          trimEnd: { type: "number", description: "Cắt bỏ phần đuôi của file nguồn (giây)", example: 0 }
+          duration: { type: "number", description: "Visible duration on timeline (seconds)", example: 10 },
+          startTime: { type: "number", description: "Position on timeline (seconds)", example: 0 },
+          trimStart: { type: "number", description: "Trim from source start (seconds)", example: 0 },
+          trimEnd: { type: "number", description: "Trim from source end (seconds)", example: 0 }
         }
       },
       VideoElement: {
@@ -142,7 +142,7 @@ export const swaggerSpec = {
             required: ["type", "sourceUrl", "width", "height"],
             properties: {
               type: { type: "string", enum: ["video"], example: "video" },
-              sourceUrl: { type: "string", description: "Đường dẫn URL hoặc file local", example: "https://www.w3schools.com/html/mov_bbb.mp4" },
+              sourceUrl: { type: "string", description: "HTTP/HTTPS URL or absolute local file path", example: "https://www.w3schools.com/html/mov_bbb.mp4" },
               volume: { type: "number", default: 1.0, example: 1.0 },
               width: { type: "number", example: 1920 },
               height: { type: "number", example: 1080 },
@@ -161,7 +161,7 @@ export const swaggerSpec = {
             required: ["type", "sourceUrl", "width", "height"],
             properties: {
               type: { type: "string", enum: ["image"], example: "image" },
-              sourceUrl: { type: "string", description: "Đường dẫn URL hoặc file ảnh local", example: "https://picsum.photos/1920/1080" },
+              sourceUrl: { type: "string", description: "HTTP/HTTPS URL or absolute local file path", example: "https://picsum.photos/1920/1080" },
               width: { type: "number", example: 1920 },
               height: { type: "number", example: 1080 },
               x: { type: "number", default: 0, example: 0 },
@@ -179,7 +179,7 @@ export const swaggerSpec = {
             required: ["type", "sourceUrl"],
             properties: {
               type: { type: "string", enum: ["audio"], example: "audio" },
-              sourceUrl: { type: "string", description: "Đường dẫn URL hoặc file audio local", example: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+              sourceUrl: { type: "string", description: "HTTP/HTTPS URL or absolute local file path", example: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
               volume: { type: "number", default: 1.0, example: 1.0 }
             }
           }
@@ -193,18 +193,23 @@ export const swaggerSpec = {
             required: ["type", "text", "style"],
             properties: {
               type: { type: "string", enum: ["text"], example: "text" },
-              text: { type: "string", example: "Xin chào thế giới!" },
+              text: { type: "string", example: "Hello World!" },
               style: {
                 type: "object",
-                required: ["fontSize", "color", "fontFamily", "x", "y"],
+                required: ["fontSize", "color", "fontFamily"],
                 properties: {
                   fontSize: { type: "number", default: 24, example: 32 },
                   color: { type: "string", default: "white", example: "#ff0000" },
                   fontFamily: { type: "string", default: "sans-serif", example: "Arial" },
-                  x: { type: "number", default: 100, example: 200 },
-                  y: { type: "number", default: 100, example: 200 }
+                  x: { type: "number", description: "X coordinate (optional, defaults to horizontal center)", example: 320 },
+                  y: { type: "number", description: "Y coordinate (optional, defaults to bottom aligned)", example: 260 },
+                  textAlign: { type: "string", enum: ["left", "right", "center", "start", "end"], default: "center", example: "center" },
+                  strokeColor: { type: "string", description: "Subtitle border color (optional)", example: "black" },
+                  strokeWidth: { type: "number", default: 4, example: 4 },
+                  fontUrl: { type: "string", description: "Remote font URL (.ttf or .otf)", example: "https://fonts.gstatic.com/s/roboto/v32/KFOmCnqEu92Fr1Mu4mxK.ttf" }
                 }
-              }
+              },
+              opacity: { type: "number", default: 1.0, example: 1.0 }
             }
           }
         ]
@@ -225,7 +230,7 @@ export const swaggerSpec = {
               ]
             }
           },
-          isMain: { type: "boolean", description: "Đặt là true cho Video Track chính (lớp nền dưới cùng)", example: true },
+          isMain: { type: "boolean", description: "Set to true for the primary base Video Track", example: true },
           muted: { type: "boolean", default: false, example: false },
           hidden: { type: "boolean", default: false, example: false }
         }
