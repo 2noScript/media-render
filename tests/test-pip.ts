@@ -4,7 +4,7 @@ import { EditorManifest } from "../src/types/editor-manifest";
 
 registerMediabunnyServer();
 
-const manifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/features/pip/test-pip.json").json();
+const manifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/features/pip/pip-facecam-case.json").json();
 
 async function test() {
   console.log("====================================================");

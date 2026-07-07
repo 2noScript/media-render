@@ -11,6 +11,8 @@ export class AssetRegistry {
   public videoSinksMap: Record<string, any> = {};
   /** Caches loaded image and sticker assets */
   public imagesMap: Record<string, Image> = {};
+  /** Tracks loaded or attempted font URLs in this session */
+  private loadedFonts = new Set<string>();
 
   /**
    * Assures all required image, video decoder sinks, and remote fonts are loaded
@@ -49,7 +51,11 @@ export class AssetRegistry {
 
         // Load and register remote custom fonts
         if (el.type === "text" && el.style?.fontUrl) {
-          await RemoteFontLoader.useRemote(el.style.fontFamily, el.style.fontUrl);
+          const fontKey = `${el.style.fontFamily}:${el.style.fontUrl}`;
+          if (!this.loadedFonts.has(fontKey)) {
+            this.loadedFonts.add(fontKey);
+            await RemoteFontLoader.useRemote(el.style.fontFamily, el.style.fontUrl);
+          }
         }
       }
     }

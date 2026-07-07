@@ -1,6 +1,6 @@
 import { EditorManifest } from "../src/types/editor-manifest";
 
-const mockManifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/core/test-docker.json").json();
+const mockManifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/core/test-docker-project.json").json();
 
 async function testDocker() {
   console.log("====================================================");

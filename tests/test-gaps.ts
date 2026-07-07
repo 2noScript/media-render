@@ -4,7 +4,7 @@ import { EditorManifest } from "../src/types/editor-manifest";
 
 registerMediabunnyServer();
 
-const manifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/features/gaps/test-gaps.json").json();
+const manifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/features/gaps/gaps-handling-case.json").json();
 
 async function test() {
   console.log("====================================================");

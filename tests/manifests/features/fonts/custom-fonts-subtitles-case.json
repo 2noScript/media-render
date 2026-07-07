@@ -1,0 +1,101 @@
+{
+  "id": "custom-fonts-subtitles-case",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-main-bg",
+      "name": "Background Video Track",
+      "type": "video",
+      "isMain": true,
+      "elements": [
+        {
+          "id": "bg-clip",
+          "name": "Background Bunny Video",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "duration": 8,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 0.0,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 0.8
+        }
+      ]
+    },
+    {
+      "id": "track-fonts-demo",
+      "name": "Custom Fonts Demonstration",
+      "type": "text",
+      "elements": [
+        {
+          "id": "font-text-1",
+          "name": "Lobster Font Segment",
+          "type": "text",
+          "text": "Lobster Bold Font (Gold)",
+          "duration": 2.5,
+          "startTime": 0.5,
+          "style": {
+            "fontSize": 36,
+            "color": "#FFD700",
+            "fontFamily": "Lobster",
+            "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/lobster/Lobster-Regular.ttf",
+            "strokeColor": "#000000",
+            "strokeWidth": 4,
+            "textAlign": "center",
+            "x": 320,
+            "y": 100
+          }
+        },
+        {
+          "id": "font-text-2",
+          "name": "Pacifico Font Segment",
+          "type": "text",
+          "text": "Pacifico Hand-drawn Cursive (Pink)",
+          "duration": 2.5,
+          "startTime": 3.2,
+          "style": {
+            "fontSize": 32,
+            "color": "#FF69B4",
+            "fontFamily": "Pacifico",
+            "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/pacifico/Pacifico-Regular.ttf",
+            "strokeColor": "#FFFFFF",
+            "strokeWidth": 3,
+            "textAlign": "center",
+            "x": 320,
+            "y": 180
+          }
+        },
+        {
+          "id": "font-text-3",
+          "name": "Bangers Font Segment",
+          "type": "text",
+          "text": "Bangers Comic Regular Outline (Cyan)",
+          "duration": 2.0,
+          "startTime": 5.9,
+          "style": {
+            "fontSize": 44,
+            "color": "#00FFFF",
+            "fontFamily": "Bangers",
+            "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/bangers/Bangers-Regular.ttf",
+            "strokeColor": "#333333",
+            "strokeWidth": 2,
+            "textAlign": "center",
+            "x": 320,
+            "y": 260
+          }
+        }
+      ]
+    }
+  ]
+}

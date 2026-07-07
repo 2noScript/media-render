@@ -4,7 +4,7 @@ import { EditorManifest } from "../src/types/editor-manifest";
 
 registerMediabunnyServer();
 
-const manifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/features/effects/test-effects.json").json();
+const manifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/features/effects/vignette-effect-case.json").json();
 
 async function test() {
   console.log("====================================================");

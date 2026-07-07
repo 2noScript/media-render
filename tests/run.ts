@@ -116,6 +116,11 @@ async function main() {
 
   const manifest: EditorManifest = await Bun.file(targetManifestPath).json();
 
+  const relManifestDir = path.dirname(manifestRelPath);
+  const filenameWithoutExt = path.basename(manifestRelPath, ".json");
+  const format = manifest.settings.format || "mp4";
+  const customOutputPath = path.resolve("./test-outputs", relManifestDir, `${filenameWithoutExt}.${format}`);
+
   if (isDocker) {
     console.log(`🚀 [Docker Mode] Sending request to http://localhost:3005/render...`);
     try {
@@ -144,7 +149,7 @@ async function main() {
 
     try {
       const startTime = Date.now();
-      const resultPath = await renderService.renderProject(manifest);
+      const resultPath = await renderService.renderProject(manifest, undefined, customOutputPath);
       const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
       console.log("====================================================");

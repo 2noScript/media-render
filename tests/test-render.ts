@@ -5,7 +5,7 @@ import { EditorManifest } from "../src/types/editor-manifest";
 // Khởi chạy server-side polyfill của Mediabunny (NodeAV)
 registerMediabunnyServer();
 
-const mockManifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/core/test-render.json").json();
+const mockManifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/core/test-project-123.json").json();
 
 async function test() {
   console.log("====================================================");

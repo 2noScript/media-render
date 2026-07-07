@@ -4,7 +4,7 @@ import { EditorManifest } from "../src/types/editor-manifest";
 
 registerMediabunnyServer();
 
-const manifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/features/animations/test-animations.json").json();
+const manifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/features/animations/animated-keyframes-case.json").json();
 
 async function test() {
   console.log("====================================================");

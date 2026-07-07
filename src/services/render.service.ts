@@ -6,7 +6,7 @@ export class OpenCutRenderService {
    * Wrapper method maintaining the legacy API interface for web controller compatibility.
    * Delegates export operations to SceneExporter to align with client-side composition.
    */
-  public async renderProject(manifest: EditorManifest, onProgress?: (progress: number) => void): Promise<string> {
+  public async renderProject(manifest: EditorManifest, onProgress?: (progress: number) => void, customOutputPath?: string): Promise<string> {
     const renderManifest: EditorManifest = {
       ...manifest,
       settings: {
@@ -16,6 +16,6 @@ export class OpenCutRenderService {
       }
     };
     
-    return await exporter(renderManifest, onProgress);
+    return await exporter(renderManifest, onProgress, customOutputPath);
   }
 }

@@ -5,7 +5,7 @@ import { EditorManifest } from "../src/types/editor-manifest";
 // Khởi chạy server-side polyfill của Mediabunny (NodeAV)
 registerMediabunnyServer();
 
-const lyricsManifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/templates/test-lyrics.json").json();
+const lyricsManifest: EditorManifest = await Bun.file(import.meta.dir + "/manifests/templates/lyrics-karaoke-111.json").json();
 
 async function test() {
   console.log("====================================================");

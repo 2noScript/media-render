@@ -10,18 +10,18 @@ import * as crypto from "crypto";
 
 
 
-export async function exporter(manifest: EditorManifest, onProgress?: (progress: number) => void): Promise<string> {
+export async function exporter(manifest: EditorManifest, onProgress?: (progress: number) => void, customOutputPath?: string): Promise<string> {
     const { width, height, fps, format } = manifest.settings;
     const quality = manifest.settings.quality || "high";
     const shouldIncludeAudio = manifest.settings.shouldIncludeAudio ?? false;
 
     const renderer = new CanvasRenderer({ width, height, fps });
 
-    const outputDir = path.resolve("./test-outputs");
+    const outputDir = customOutputPath ? path.dirname(customOutputPath) : path.resolve("./test-outputs");
     if (!fsExists(outputDir)) {
       await fsMkdir(outputDir);
     }
-    const outputPath = path.join(outputDir, `${manifest.id || `output-${crypto.randomUUID()}`}.${format}`);
+    const outputPath = customOutputPath || path.join(outputDir, `${manifest.id || `output-${crypto.randomUUID()}`}.${format}`);
     const fpsFloat = fps;
     const timeStep = 1 / fpsFloat;
 
