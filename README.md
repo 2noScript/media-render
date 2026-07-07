@@ -128,3 +128,28 @@ curl -X POST http://localhost:3005/render \
   "durationSeconds": 5.0
 }
 ```
+
+### C. Check Render Progress (GET `/render/:id/progress`)
+Query the real-time percentage progress of an active or recently finished rendering task:
+```bash
+curl -i http://localhost:3005/render/curl-test-render/progress
+```
+
+#### Progress Response (Rendering):
+```json
+{
+  "success": true,
+  "progress": 45,
+  "status": "rendering"
+}
+```
+
+#### Progress Response (Completed):
+```json
+{
+  "success": true,
+  "progress": 100,
+  "status": "completed",
+  "videoPath": "/app/test-outputs/output-xxx.mp4"
+}
+```

@@ -6,7 +6,7 @@ export class OpenCutRenderService {
    * Wrapper method maintaining the legacy API interface for web controller compatibility.
    * Delegates export operations to SceneExporter to align with client-side composition.
    */
-  public async renderProject(manifest: EditorManifest): Promise<string> {
+  public async renderProject(manifest: EditorManifest, onProgress?: (progress: number) => void): Promise<string> {
     const exporter = new SceneExporter({
       width: manifest.settings.width,
       height: manifest.settings.height,
@@ -16,6 +16,6 @@ export class OpenCutRenderService {
       shouldIncludeAudio: true
     });
     
-    return await exporter.export(manifest);
+    return await exporter.export(manifest, onProgress);
   }
 }

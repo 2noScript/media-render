@@ -1,0 +1,57 @@
+{
+  "id": "test-docker-project",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high"
+  },
+  "tracks": [
+    {
+      "id": "track-main-video",
+      "name": "Main Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "main-clip-1",
+          "name": "Bunny Part 1",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "duration": 5,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 1.0,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 1.0
+        }
+      ]
+    },
+    {
+      "id": "track-bgm",
+      "name": "Background Music",
+      "type": "audio",
+      "muted": false,
+      "elements": [
+        {
+          "id": "bgm-1",
+          "name": "Theme Music",
+          "type": "audio",
+          "sourceUrl": "./test-assets/song.mp3",
+          "duration": 4,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 0.4
+        }
+      ]
+    }
+  ]
+}

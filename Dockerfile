@@ -2,6 +2,7 @@ FROM oven/bun:1.1-slim
 
 # Cài đặt các thư viện FFmpeg C API phục vụ cho NodeAV
 RUN apt-get update && apt-get install -y \
+    curl \
     ffmpeg \
     libavcodec-dev \
     libavformat-dev \

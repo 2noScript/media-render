@@ -91,6 +91,54 @@ export const swaggerSpec = {
           }
         }
       }
+    },
+    "/render/{id}/progress": {
+      get: {
+        summary: "Get rendering task progress status",
+        description: "Returns the real-time percentage progress (0 to 100) and current composition status for the specified task ID.",
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            description: "The unique ID (manifest ID) of the rendering task",
+            schema: { type: "string", example: "manifest-123" }
+          }
+        ],
+        responses: {
+          "200": {
+            description: "Progress status returned successfully",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", example: true },
+                    progress: { type: "number", example: 45 },
+                    status: { type: "string", enum: ["rendering", "completed", "failed"], example: "rendering" },
+                    videoPath: { type: "string", nullable: true, example: "./renders/output-xxx.mp4" },
+                    error: { type: "string", nullable: true, example: null }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            description: "Task not found or expired",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    success: { type: "boolean", example: false },
+                    message: { type: "string", example: "Render task not found or already expired" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   components: {

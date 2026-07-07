@@ -1,0 +1,86 @@
+{
+  "id": "slideshow-picsum-xyz",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high"
+  },
+  "tracks": [
+    {
+      "id": "track-main-slideshow",
+      "name": "Image Slideshow Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "slide-img-1",
+          "name": "Forest Scene",
+          "type": "image",
+          "sourceUrl": "https://picsum.photos/640/360?random=1",
+          "duration": 3,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 1.0
+        },
+        {
+          "id": "slide-img-2",
+          "name": "Ocean Scene",
+          "type": "image",
+          "sourceUrl": "https://picsum.photos/640/360?random=2",
+          "duration": 3,
+          "startTime": 3,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 1.0
+        },
+        {
+          "id": "slide-img-3",
+          "name": "Mountain Scene",
+          "type": "image",
+          "sourceUrl": "https://picsum.photos/640/360?random=3",
+          "duration": 3,
+          "startTime": 6,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 1.0
+        }
+      ]
+    },
+    {
+      "id": "track-slideshow-audio",
+      "name": "Background Music",
+      "type": "audio",
+      "muted": false,
+      "elements": [
+        {
+          "id": "bgm-slideshow",
+          "name": "Slide Background Sound",
+          "type": "audio",
+          "sourceUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+          "duration": 9,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 0.5
+        }
+      ]
+    }
+  ]
+}

@@ -40,6 +40,21 @@ function detectHardwareCapabilities() {
 
 const renderService = new OpenCutRenderService();
 
+// In-memory registry to track active and recently finished rendering tasks progress
+export const renderProgressMap = new Map<string, { 
+  progress: number; 
+  status: "rendering" | "completed" | "failed"; 
+  videoPath?: string;
+  error?: string; 
+}>();
+
+// Helper to schedule automatic progress task record cleanup after 5 minutes
+function scheduleTaskCleanup(id: string) {
+  setTimeout(() => {
+    renderProgressMap.delete(id);
+  }, 5 * 60 * 1000);
+}
+
 // Configure concurrent rendering limit from environment variables
 const concurrentLimit = parseInt(process.env.CONCURRENT_RENDER_LIMIT || "2", 10);
 let activeRenders = 0;
@@ -58,6 +73,21 @@ export const app = new Elysia()
   // Swagger spec JSON Endpoint
   .get("/docs/json", () => {
     return swaggerSpec;
+  })
+  // Get rendering task progress endpoint
+  .get("/render/:id/progress", ({ params, set }) => {
+    const task = renderProgressMap.get(params.id);
+    if (!task) {
+      set.status = 404;
+      return {
+        success: false,
+        message: "Render task not found or already expired",
+      };
+    }
+    return {
+      success: true,
+      ...task,
+    };
   })
   // Health Check endpoint for Docker / Kubernetes liveness & readiness probes
   .get("/health", ({ set }) => {
@@ -114,10 +144,20 @@ export const app = new Elysia()
       activeRenders++;
       console.log(`[HTTP] [START] Active renders: ${activeRenders}/${concurrentLimit}. Executing render for manifest: ${manifestId}`);
       
+      // Initialize progress entry
+      renderProgressMap.set(manifestId, { progress: 0, status: "rendering" });
+
       try {
-        const filePath = await renderService.renderProject(body as any);
+        const filePath = await renderService.renderProject(body as any, (percent) => {
+          renderProgressMap.set(manifestId, { progress: percent, status: "rendering" });
+        });
         const duration = ((Date.now() - startTime) / 1000).toFixed(2);
         console.log(`[HTTP] [SUCCESS] Manifest ${manifestId} completed in ${duration}s. File size: ${(fs.statSync(filePath).size / 1024).toFixed(1)} KB`);
+        
+        // Update progress state to completed
+        renderProgressMap.set(manifestId, { progress: 100, status: "completed", videoPath: filePath });
+        scheduleTaskCleanup(manifestId);
+
         return {
           success: true,
           message: "Render completed successfully!",
@@ -126,6 +166,11 @@ export const app = new Elysia()
         };
       } catch (err: any) {
         console.error(`[HTTP] [ERROR] Render failed for manifest ${manifestId}:`, err);
+        
+        // Update progress state to failed
+        renderProgressMap.set(manifestId, { progress: 0, status: "failed", error: err.message || "Internal rendering error" });
+        scheduleTaskCleanup(manifestId);
+
         set.status = 500;
         return {
           success: false,

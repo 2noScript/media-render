@@ -1,0 +1,115 @@
+{
+  "id": "lyrics-karaoke-111",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high"
+  },
+  "tracks": [
+    {
+      "id": "track-main-bg",
+      "name": "Static Wallpaper Background",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "bg-image-1",
+          "name": "Karaoke Background Image",
+          "type": "image",
+          "sourceUrl": "https://picsum.photos/640/360?blur=2",
+          "duration": 10,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 1.0
+        }
+      ]
+    },
+    {
+      "id": "track-main-audio",
+      "name": "Karaoke Audio Sound",
+      "type": "audio",
+      "muted": false,
+      "elements": [
+        {
+          "id": "karaoke-song",
+          "name": "Vocal Audio Stream",
+          "type": "audio",
+          "sourceUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+          "duration": 10,
+          "startTime": 0,
+          "trimStart": 5,
+          "trimEnd": 0,
+          "volume": 0.8
+        }
+      ]
+    },
+    {
+      "id": "track-lyrics-text",
+      "name": "Karaoke Subtitles",
+      "type": "text",
+      "hidden": false,
+      "elements": [
+        {
+          "id": "lyric-line-1",
+          "name": "Lyric 1",
+          "type": "text",
+          "text": "Here is the first line of the song...",
+          "duration": 3,
+          "startTime": 0.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "style": {
+            "fontSize": 24,
+            "color": "yellow",
+            "fontFamily": "Helvetica",
+            "x": 120,
+            "y": 300
+          }
+        },
+        {
+          "id": "lyric-line-2",
+          "name": "Lyric 2",
+          "type": "text",
+          "text": "And now the second line appears!",
+          "duration": 3,
+          "startTime": 3.8,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "style": {
+            "fontSize": 24,
+            "color": "cyan",
+            "fontFamily": "Helvetica",
+            "x": 130,
+            "y": 300
+          }
+        },
+        {
+          "id": "lyric-line-3",
+          "name": "Lyric 3",
+          "type": "text",
+          "text": "Ending with a beautiful melody.",
+          "duration": 3,
+          "startTime": 7.0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "style": {
+            "fontSize": 24,
+            "color": "lightgreen",
+            "fontFamily": "Helvetica",
+            "x": 130,
+            "y": 300
+          }
+        }
+      ]
+    }
+  ]
+}
