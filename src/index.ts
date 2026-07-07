@@ -1,3 +1,4 @@
+import "./core/renderer/bootstrap";
 import { registerMediabunnyServer } from "@mediabunny/server";
 import { OpenCutRenderService } from "./services/render.service";
 import { ResourceGuard } from "./services/resource.guard";

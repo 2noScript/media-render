@@ -1,127 +1,76 @@
-import { Canvas, createCanvas } from "@napi-rs/canvas";
-import * as NodeAv from "node-av";
-
-// Monkey patch node-av findDecoder to prevent MPP hardware decoder crashes on headless Linux environments (Docker)
-const originalFindDecoder = NodeAv.Codec.findDecoder;
-NodeAv.Codec.findDecoder = function(codecId: any) {
-  const codec = originalFindDecoder.call(this, codecId);
-  if (codec && codec.name && (codec.name.includes("rkmpp") || codec.name.includes("nvdec"))) {
-    const swName = codec.name.includes("hevc") ? "hevc" : "h264";
-    const swDecoder = NodeAv.Codec.findDecoderByName(swName as any);
-    if (swDecoder) return swDecoder;
-  }
-  return codec;
-};
-
-// Monkey patch node-av findEncoder to prevent MPP/NVENC hardware encoder crashes on headless Linux environments (Docker)
-const originalFindEncoder = NodeAv.Codec.findEncoder;
-NodeAv.Codec.findEncoder = function(codecId: any) {
-  const codec = originalFindEncoder.call(this, codecId);
-  if (codec && codec.name && (codec.name.includes("rkmpp") || codec.name.includes("nvenc") || codec.name.includes("qsv"))) {
-    const swName = codec.name.includes("hevc") ? "libx265" : "libx264";
-    const swEncoder = NodeAv.Codec.findEncoderByName(swName as any);
-    if (swEncoder) return swEncoder;
-  }
-  return codec;
-};
-
-// Polyfill global HTMLCanvasElement and OffscreenCanvas to bypass instance checks in mediabunny on server side (Bun)
-(globalThis as any).HTMLCanvasElement = class HTMLCanvasElement {
-  static [Symbol.hasInstance](instance: any) {
-    return instance && (instance instanceof Canvas || instance.constructor?.name === "Canvas");
-  }
-};
-
-// Convert OffscreenCanvas to a FakeOffscreenCanvas (returning an instance of createCanvas)
-class FakeOffscreenCanvas {
-  constructor(width: number, height: number) {
-    return createCanvas(width, height) as any;
-  }
-  static [Symbol.hasInstance](instance: any) {
-    return instance && (instance instanceof Canvas || instance.constructor?.name === "Canvas");
-  }
-}
-(globalThis as any).OffscreenCanvas = FakeOffscreenCanvas;
+import "./bootstrap";
 
 import { Output, Mp4OutputFormat, WebMOutputFormat, FilePathTarget, CanvasSource, AudioSampleSource } from "mediabunny";
 import { CanvasRenderer } from "./canvas-renderer";
 import { EditorManifest } from "../../types/editor-manifest";
-import { ExportFormat, ExportQuality, ExportParams } from "../../types/exporter";
 import { QUALITY_MAP } from "../../lib/constants";
+import { fsExists, fsMkdir } from "../../lib/helpers";
 import * as path from "path";
 import * as crypto from "crypto";
 
 
 
-export class Exporter {
-  private renderer: CanvasRenderer;
-  private format: ExportFormat;
-  private quality: ExportQuality;
-  private shouldIncludeAudio: boolean;
+export async function exporter(manifest: EditorManifest, onProgress?: (progress: number) => void): Promise<string> {
+    const { width, height, fps, format } = manifest.settings;
+    const quality = manifest.settings.quality || "high";
+    const shouldIncludeAudio = manifest.settings.shouldIncludeAudio ?? false;
 
-  constructor({ width, height, fps, format, quality, shouldIncludeAudio }: ExportParams) {
-    this.renderer = new CanvasRenderer({ width, height, fps });
-    this.format = format;
-    this.quality = quality || "high";
-    this.shouldIncludeAudio = shouldIncludeAudio ?? false;
-  }
+    const renderer = new CanvasRenderer({ width, height, fps });
 
-  public async export(manifest: EditorManifest, onProgress?: (progress: number) => void): Promise<string> {
     const outputDir = path.resolve("./test-outputs");
     if (!fsExists(outputDir)) {
       await fsMkdir(outputDir);
     }
-    const outputPath = path.join(outputDir, `output-${crypto.randomUUID()}.${this.format}`);
-    const fpsFloat = manifest.settings.fps;
+    const outputPath = path.join(outputDir, `output-${crypto.randomUUID()}.${format}`);
+    const fpsFloat = fps;
     const timeStep = 1 / fpsFloat;
 
-    console.log(`[Exporter] Initiating video export (${this.quality}): ${manifest.id} -> ${outputPath}`);
+    console.log(`[Exporter] Initiating video export (${quality}): ${manifest.id} -> ${outputPath}`);
 
     const output = new Output({
-      format: this.format === "webm" ? new WebMOutputFormat() : new Mp4OutputFormat(),
+      format: format === "webm" ? new WebMOutputFormat() : new Mp4OutputFormat(),
       target: new FilePathTarget(outputPath),
     });
 
     // 1. Direct bind of renderer virtual Canvas object to CanvasSource
-    const canvasObj = this.renderer.canvas;
+    const canvasObj = renderer.canvas;
 
     const videoSource = new CanvasSource(canvasObj as any, {
-      codec: this.format === "webm" ? "vp9" : "avc",
-      bitrate: QUALITY_MAP[this.quality],
-      hardwareAcceleration: (process.env.HARDWARE_ACCELERATION as any) || "no-preference",
+      codec: format === "webm" ? "vp9" : "avc",
+      bitrate: QUALITY_MAP[quality],
     });
     output.addVideoTrack(videoSource, { frameRate: fpsFloat });
 
     // 2. Setup Audio Source & native FilterGraph amix in the background if audio is requested
     let audioSource: AudioSampleSource | null = null;
-    const audioClips = this.renderer.collectAudioClips(manifest);
+    const audioClips = renderer.collectAudioClips(manifest);
 
     try {
-      if (this.shouldIncludeAudio && audioClips.length > 0) {
+      if (shouldIncludeAudio && audioClips.length > 0) {
         audioSource = new AudioSampleSource({
-          codec: this.format === "webm" ? "opus" : "aac",
+          codec: format === "webm" ? "opus" : "aac",
           bitrate: 192e3,
         });
         output.addAudioTrack(audioSource);
-        await this.renderer.setupAudioMix(audioClips);
+        await renderer.setupAudioMix(audioClips);
       }
 
       await output.start();
 
       // 3. Sequential non-realtime fast-forward rendering loop
-      const totalDuration = this.renderer.calculateDuration(manifest);
+      const totalDuration = renderer.calculateDuration(manifest);
       console.log(`[Exporter] Total timeline duration: ${totalDuration}s`);
 
       for (let t = 0; t < totalDuration; t += timeStep) {
         // Render the current timeline state onto the virtual canvas
-        await this.renderer.render({ manifest, time: t });
+        await renderer.render({ manifest, time: t });
 
         // CanvasSource captures the active canvas frame automatically
         await videoSource.add(t, timeStep);
 
         // Mix and push audio frames
         if (audioSource) {
-          await this.renderer.pushAudioFrames(audioSource);
+          await renderer.pushAudioFrames(audioSource);
         }
 
         // Calculate and trigger progress callback
@@ -147,22 +96,8 @@ export class Exporter {
       } catch {}
       throw err;
     } finally {
-      await this.renderer.dispose();
+      await renderer.dispose();
     }
   }
-}
 
-// Helpers to avoid blocking sync fs imports
-async function fsMkdir(p: string) {
-  const fs = await import("fs");
-  fs.mkdirSync(p, { recursive: true });
-}
 
-function fsExists(p: string): boolean {
-  try {
-    const fs = require("fs");
-    return fs.existsSync(p);
-  } catch {
-    return false;
-  }
-}
