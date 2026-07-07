@@ -1,85 +1,73 @@
 # Media Render Microservice
 
-A specialized, stateless **Non-linear Video/Media Renderer** microservice built on the **Bun runtime**, **Elysia web framework**, and **NodeAV** (native FFmpeg C++ API wrapper).
-
-`media-render` acts as a **Stateless API Worker** that accepts the timeline specification format (`EditorManifest`) via HTTP API, performs fast parallel media rendering, and returns the path of the generated video immediately.
+A high-performance, stateless **non-linear video and media renderer** built on the **Bun runtime**, **Elysia web framework**, and **NodeAV** (native FFmpeg bindings). It processes timeline specifications (`Manifest`) in parallel and outputs high-quality, fully-rendered video compositions.
 
 ---
 
-## ⚙️ 1. Environment Variables (.env)
+## ⚡ Quick Start
 
-Create a `.env` file in the root directory based on the `.env.example` template:
+### Prerequisite
+- **FFmpeg**
 
-| Key | Default | Description |
-| :--- | :--- | :--- |
-| `PORT` | `3005` | HTTP Server port for Elysia. |
-| `CONCURRENT_RENDER_LIMIT` | `2` | Maximum number of rendering tasks processed concurrently. |
-| `MAX_MEMORY_USAGE_PERCENT` | `85` | Maximum system RAM percentage allowed to start a new task (Set to `99` for local development). |
-| `MAX_PROCESS_MEMORY_MB` | `1536` | Maximum RSS memory (MB) the Bun process is allowed to consume before rejecting tasks. |
-| `MAX_CPU_LOAD_RATIO` | `0.9` | 1-minute CPU Load average ratio per core (e.g. 0.9 = 90% load across all cores). |
-
----
-
-## 🛠️ 2. Quick Start
-
-Requires **Bun (1.1+)** & **FFmpeg** (with development libraries).
-
+### Run Server
 ```bash
 bun install
 bun start
 ```
-* **API Server:** `http://localhost:3005` (Swagger Docs: `/docs` | Health Check: `/health`)
+- **API Server:** `http://localhost:3005`
+- **Swagger Documentation:** `http://localhost:3005/docs`
+- **Health Check:** `http://localhost:3005/health`
 
 ---
 
-## 🧪 3. Testing
+## ⚙️ Configuration
 
-Run local offline tests using mock assets:
-```bash
-# Standard composition (video, overlays, subs, audio)
-bun run test:render
-
-# Specific format tests (Shorts, Slideshow, Karaoke)
-bun run test:shorts
-bun run test:slideshow
-bun run test:lyrics
-```
-*Outputs are saved in `./test-outputs/`.*
+Environment variables and system limits are documented in [env.md](docs/env.md).
 
 ---
 
-## 🐳 4. Docker Compose
+## 🐳 Docker Deployment
 
-Run the service in a pre-configured Docker container (includes FFmpeg):
+A pre-packaged environment containing Bun, FFmpeg, and canvas assets is available:
+
 ```bash
-# Start container (detached mode)
+# Start rendering service
 docker compose up --build -d
 
-# Stop container
+# Shutdown service
 docker compose down
 ```
-*Auto-mounts `./test-outputs/` for host access and features health checking on `/health`.*
 
 ---
 
-## 📡 5. API Usage Guide (cURL Examples)
+## 🧪 Testing
 
-You can interact with the stateless rendering service directly via HTTP requests using `curl`.
+Run automated E2E tests using mock assets:
 
-### A. Health Check & Resource Diagnostics
-Query the resource usage guard and render queue status:
 ```bash
-curl -i http://localhost:3005/health
+# Run specific manifest test
+bun run test:render
+bun run test:shorts
+bun run test:lyrics
+
+# Run all test suites sequentially
+bun run test:render && bun run test:shorts && bun run test:slideshow && bun run test:lyrics && bun run test:gaps && bun run test:animations && bun run test:pip && bun run test:effects && bun run test:fonts && bun run test:audio && bun run test:backdrop && bun run test:compat
 ```
 
-### B. Trigger a Video Render (POST `/render`)
-Send an `EditorManifest` JSON payload to composite a video. The server will download remote assets, perform parallel rendering, and return the path to the output video:
+All rendered video outputs are saved under `./test-outputs/`.
+
+---
+
+## 📡 API Usage (cURL Examples)
+
+### 1. Trigger Video Render (`POST /render`)
+Submit a render job payload to begin video generation:
 
 ```bash
 curl -X POST http://localhost:3005/render \
   -H "Content-Type: application/json" \
   -d '{
-    "id": "curl-test-render",
+    "id": "curl-example",
     "settings": {
       "width": 640,
       "height": 360,
@@ -90,16 +78,12 @@ curl -X POST http://localhost:3005/render \
     },
     "tracks": [
       {
-        "id": "track-main-video",
-        "name": "Main Video Track",
+        "id": "track-main",
         "type": "video",
         "isMain": true,
-        "muted": false,
-        "hidden": false,
         "elements": [
           {
-            "id": "element-video-1",
-            "name": "Big Buck Bunny Sample",
+            "id": "el-video",
             "type": "video",
             "sourceUrl": "https://www.w3schools.com/html/mov_bbb.mp4",
             "duration": 5,
@@ -110,8 +94,7 @@ curl -X POST http://localhost:3005/render \
             "height": 360,
             "x": 0,
             "y": 0,
-            "opacity": 1.0,
-            "volume": 1.0
+            "opacity": 1.0
           }
         ]
       }
@@ -119,37 +102,10 @@ curl -X POST http://localhost:3005/render \
   }'
 ```
 
-#### Successful Response:
-```json
-{
-  "success": true,
-  "message": "Render completed successfully!",
-  "videoPath": "/app/test-outputs/output-ef9bfca6-f29c-4acd-b2d5-2a050cc831e7.mp4",
-  "durationSeconds": 5.0
-}
-```
+### 2. Query Render Progress (`GET /render/:id/progress`)
+Check the completion percentage and status of a specific render job:
 
-### C. Check Render Progress (GET `/render/:id/progress`)
-Query the real-time percentage progress of an active or recently finished rendering task:
 ```bash
-curl -i http://localhost:3005/render/curl-test-render/progress
+curl http://localhost:3005/render/curl-example/progress
 ```
 
-#### Progress Response (Rendering):
-```json
-{
-  "success": true,
-  "progress": 45,
-  "status": "rendering"
-}
-```
-
-#### Progress Response (Completed):
-```json
-{
-  "success": true,
-  "progress": 100,
-  "status": "completed",
-  "videoPath": "/app/test-outputs/output-xxx.mp4"
-}
-```
