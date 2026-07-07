@@ -32,7 +32,7 @@ graph TB
     subgraph Server ["Server Export"]
         B1[Prefetch Assets] --> B2(Fast-Forward Loop)
         B2 -->|Runs at maximum CPU/GPU capacity| B3(No Time Delay)
-        B3 -->|Renders virtual frame| B4[@napi-rs/canvas 2D]
+        B3 -->|Renders virtual frame| B4["@napi-rs/canvas 2D"]
         B4 -->|CanvasSource captures frame| B5[CanvasSource]
         B6[NodeAV Audio Filter] -->|Mix PCM| B7[AudioSampleSource]
         B5 & B7 -->|Muxing| B8[Final Video Output]
@@ -72,7 +72,7 @@ graph TB
     end
 
     subgraph ServerRenderer ["Server - Headless Renderer"]
-        R1[@napi-rs/canvas virtual Canvas]
+        R1["@napi-rs/canvas virtual Canvas"]
         R2[Rust CPU 2D Software Draw]
         R3[VideoSampleSink Mediabunny]
         R4[RemoteFontLoader / Cache Disk]
