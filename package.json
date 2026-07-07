@@ -8,7 +8,8 @@
     "test:render": "bun run scripts/test-render.ts",
     "test:shorts": "bun run scripts/test-shorts.ts",
     "test:slideshow": "bun run scripts/test-slideshow.ts",
-    "test:lyrics": "bun run scripts/test-lyrics.ts"
+    "test:lyrics": "bun run scripts/test-lyrics.ts",
+    "test:docker": "bun run scripts/test-docker.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",

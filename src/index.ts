@@ -28,13 +28,13 @@ let activeRenders = 0;
 
 export const app = new Elysia()
   // Swagger UI HTML Endpoint
-  .get("/swagger", () => {
+  .get("/docs", () => {
     return new Response(renderSwaggerUI(), {
       headers: { "Content-Type": "text/html" }
     });
   })
   // Swagger spec JSON Endpoint
-  .get("/swagger/json", () => {
+  .get("/docs/json", () => {
     return swaggerSpec;
   })
   // Endpoint Health Check chuyên dụng cho Docker / Kubernetes healthcheck
@@ -111,7 +111,7 @@ export const app = new Elysia()
 
 async function main() {
   console.log(`HTTP Server is running at http://localhost:${process.env.PORT || 3005}`);
-  console.log(`Swagger UI is available at http://localhost:${process.env.PORT || 3005}/swagger`);
+  console.log(`Swagger UI is available at http://localhost:${process.env.PORT || 3005}/docs`);
   console.log(`Media-render is running in stateless mode (Concurrent Limit: ${concurrentLimit}).`);
   
   // 1. Log tình trạng tài nguyên hệ thống khi khởi động

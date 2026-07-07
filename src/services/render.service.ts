@@ -91,6 +91,49 @@ export class OpenCutRenderService {
   }
 
   /**
+   * Kiểm tra khả năng mở thực tế của GPU encoder.
+   * Do một số môi trường ảo hóa Docker Desktop không hỗ trợ driver đầy đủ mặc dù FFmpeg detect thấy,
+   * việc chạy test encode thử dummy frame sẽ giúp phát hiện lỗi EPERM (Operation not permitted) trước khi muxer khởi tạo.
+   */
+  private async testVideoEncoder(encoderName: string, width: number, height: number, fps: number): Promise<boolean> {
+    if (encoderName === (av.FF_ENCODER_LIBX264 as string)) {
+      return true; // CPU software encoder luôn an toàn
+    }
+
+    try {
+      const testEncoder = await av.Encoder.create(encoderName as any, {
+        autoFormat: true,
+        context: {
+          width,
+          height,
+          timeBase: new av.Rational(1, fps),
+          flags: AV_CODEC_FLAG_GLOBAL_HEADER
+        }
+      });
+
+      // Tạo một dummy frame YUV420P
+      const dummyFrame = new av.Frame();
+      dummyFrame.width = width;
+      dummyFrame.height = height;
+      dummyFrame.format = av.AV_PIX_FMT_YUV420P;
+      dummyFrame.alloc();
+
+      // Thử encode dummy frame. Quá trình này sẽ gọi avcodec_open2 và thực sự load driver phần cứng.
+      const packets = await testEncoder.encodeAll(dummyFrame);
+      for (const packet of packets) {
+        packet[Symbol.dispose]();
+      }
+
+      dummyFrame[Symbol.dispose]();
+      testEncoder[Symbol.dispose]();
+      return true;
+    } catch (err) {
+      console.warn(`[RenderService] [GPU CAPABILITY TEST FAILED] Encoder '${encoderName}' failed test:`, err);
+      return false;
+    }
+  }
+
+  /**
    * Async generator helper giúp hãm/giới hạn số frame hoặc mẫu âm thanh theo thời lượng duration cấu hình của clip.
    * Điều này thay thế cho việc dùng filter 'trim=duration' trong FFmpeg, tránh việc FFmpeg đóng cổng buffersrc sớm gây crash.
    */
@@ -341,10 +384,23 @@ export class OpenCutRenderService {
       }
     }
 
-    // Lựa chọn encoder tối ưu dựa trên tăng tốc phần cứng GPU (nếu có)
-    const videoEncoderName = this.getOptimalVideoEncoder(manifest.settings.format);
+    // Lựa chọn encoder tối ưu ban đầu dựa trên tăng tốc phần cứng GPU (nếu có)
+    let videoEncoderName = this.getOptimalVideoEncoder(manifest.settings.format);
     const isWebm = manifest.settings.format === "webm";
     const audioEncoderName = isWebm ? av.FF_ENCODER_OPUS : av.FF_ENCODER_AAC;
+
+    // Chạy capability test trên GPU encoder trước khi tạo Muxer
+    const isGpuSupported = await this.testVideoEncoder(
+      videoEncoderName,
+      manifest.settings.width,
+      manifest.settings.height,
+      manifest.settings.fps
+    );
+
+    if (!isGpuSupported) {
+      console.log(`[RenderService] [GPU UNSUPPORTED] Falling back to CPU encoder: libx264`);
+      videoEncoderName = av.FF_ENCODER_LIBX264 as any;
+    }
 
     const muxer = await av.Muxer.open(outputPath);
 
@@ -360,7 +416,7 @@ export class OpenCutRenderService {
       }
     }
 
-    // Khởi tạo encoder video (Sử dụng đúng named export AV_CODEC_FLAG_GLOBAL_HEADER để ghi SPS/PPS)
+    // Khởi tạo video encoder chính thức (Bật flags: AV_CODEC_FLAG_GLOBAL_HEADER để ghi tiêu đề SPS/PPS cho MP4 mở được trên mọi thiết bị)
     const videoEncoder = await av.Encoder.create(videoEncoderName as any, {
       autoFormat: true,
       context: { 
