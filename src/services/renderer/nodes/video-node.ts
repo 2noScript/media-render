@@ -21,21 +21,21 @@ export async function renderVideoNodeToContext({
   const width = sample.displayWidth;
   const height = sample.displayHeight;
 
-  // 1. Tạo Canvas phụ nhỏ có kích thước bằng frame nguồn
+  // 1. Create a temporary canvas sized matching the source frame
   const tempCanvas = createCanvas(width, height);
   const tempCtx = tempCanvas.getContext("2d");
 
-  // 2. Copy dữ liệu pixel RGBA thô từ VideoSample sang Canvas phụ
+  // 2. Copy raw RGBA pixel buffer from VideoSample to local memory
   const rawBuffer = Buffer.alloc(width * height * 4);
   await sample.copyTo(rawBuffer, { format: "RGBA" } as any);
 
-  // 3. Khởi tạo ImageData chuẩn W3C (đầu ra của napi-rs/canvas tương thích tốt với Bun)
+  // 3. Initialize standard W3C ImageData object backed by the raw buffer
   const clamped = new Uint8ClampedArray(rawBuffer.buffer, rawBuffer.byteOffset, rawBuffer.byteLength);
   const imageData = new ImageData(clamped, width, height);
 
   tempCtx.putImageData(imageData, 0, 0);
 
-  // 4. Vẽ Canvas phụ lên Canvas chính (tự động co giãn scale, xoay transform, áp dụng opacity)
+  // 4. Draw temporary canvas onto the main canvas (applying scaling, translation, and opacity)
   ctx.save();
   ctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
   ctx.drawImage(tempCanvas, el.x || 0, el.y || 0, el.width || width, el.height || height);

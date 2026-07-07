@@ -7,43 +7,43 @@ export class RemoteFontLoader {
   private static cacheDir = path.resolve("./cache/fonts");
 
   /**
-   * Tải font chữ từ link remote HTTP/HTTPS và đăng ký vào @napi-rs/canvas runtime
-   * @param alias Tên font chữ (fontFamily)
-   * @param url Link remote tải font (.ttf, .otf, .woff, .woff2)
+   * Downloads a font from a remote HTTP/HTTPS link and registers it with the @napi-rs/canvas runtime.
+   * @param alias The font family name.
+   * @param url The remote URL of the font file (.ttf, .otf).
    */
   public static async useRemote(alias: string, url: string): Promise<void> {
-    // Tạo hash MD5 từ URL để đặt tên file duy nhất tránh tải trùng lặp
+    // Generate MD5 hash from URL for unique file naming to avoid duplicate downloads
     const urlHash = crypto.createHash("md5").update(url).digest("hex");
     const extension = path.extname(new URL(url).pathname) || ".ttf";
     const localPath = path.join(this.cacheDir, `${urlHash}${extension}`);
 
-    // Nếu đã tải và lưu trong cache đĩa cứng, đăng ký ngay lập tức và bỏ qua tải lại
+    // Register immediately if already cached on disk
     if (fs.existsSync(localPath)) {
       try {
         GlobalFonts.registerFromPath(localPath, alias);
       } catch (err) {
-        console.warn(`[FontLoader] Lỗi đăng ký font cache [${alias}] từ ${localPath}:`, err);
+        console.warn(`[FontLoader] Failed to register cached font [${alias}] from ${localPath}:`, err);
       }
       return;
     }
 
-    // Nếu chưa có trong cache, tải từ remote
+    // Download from remote if not cached
     try {
-      console.log(`[FontLoader] Đang tải remote font [${alias}] từ: ${url}`);
+      console.log(`[FontLoader] Downloading remote font [${alias}] from: ${url}`);
       const response = await fetch(url);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       
       const buffer = await response.arrayBuffer();
       
-      // Tạo thư mục cache và lưu file font
+      // Ensure cache directory exists and write font file
       fs.mkdirSync(this.cacheDir, { recursive: true });
       fs.writeFileSync(localPath, Buffer.from(buffer));
 
-      // Đăng ký với @napi-rs/canvas
+      // Register with @napi-rs/canvas
       GlobalFonts.registerFromPath(localPath, alias);
-      console.log(`[FontLoader] Tải và nạp thành công remote font [${alias}] -> ${localPath}`);
+      console.log(`[FontLoader] Successfully downloaded and loaded remote font [${alias}] -> ${localPath}`);
     } catch (err) {
-      console.error(`[FontLoader] Không thể nạp remote font [${alias}] từ ${url}:`, err);
+      console.error(`[FontLoader] Failed to load remote font [${alias}] from ${url}:`, err);
     }
   }
 }

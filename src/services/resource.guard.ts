@@ -18,7 +18,7 @@ export class ResourceGuard {
   private static maxCpuLoadRatio = parseFloat(process.env.MAX_CPU_LOAD_RATIO || "0.9");
 
   /**
-   * Kiểm tra dung lượng RAM, CPU hiện tại xem có đủ an toàn để thực hiện render mới
+   * Diagnoses current RAM and CPU load averages to check if it's safe to start a new rendering task
    */
   public static check(): ResourceStatus {
     const totalMem = os.totalmem();
@@ -30,7 +30,7 @@ export class ResourceGuard {
 
     const cpuCores = os.cpus().length || 1;
     const loadAvg = os.loadavg();
-    // loadavg[0] là tải trung bình trong 1 phút qua
+    // loadavg[0] corresponds to the 1-minute load average
     const loadAvg1Min = loadAvg && loadAvg.length > 0 ? loadAvg[0] : 0;
     const cpuLoadRatio = loadAvg1Min / cpuCores;
 
@@ -42,7 +42,7 @@ export class ResourceGuard {
       loadAvg1Min: Math.round(loadAvg1Min * 100) / 100,
     };
 
-    // 1. Kiểm tra RAM hệ thống (hoặc RAM container)
+    // 1. Guard against system/container memory exhaustion
     if (systemMemoryUsagePercent > this.maxSystemMemPercent) {
       return {
         isSafe: false,
@@ -51,7 +51,7 @@ export class ResourceGuard {
       };
     }
 
-    // 2. Kiểm tra RAM của chính tiến trình (phòng tránh OOMKilled trong Docker)
+    // 2. Enforce limits on the active Bun process memory to prevent Docker OOMKilled events
     if (processMemoryMb > this.maxProcessMemMb) {
       return {
         isSafe: false,
@@ -60,7 +60,7 @@ export class ResourceGuard {
       };
     }
 
-    // 3. Kiểm tra CPU Load (Chỉ áp dụng khi loadAvg1Min > 0, vì Windows trả về 0 hoặc Unix mới khởi chạy chưa cập nhật loadavg)
+    // 3. Prevent rendering overloading when CPU load ratio thresholds are breached
     if (loadAvg1Min > 0 && cpuLoadRatio > this.maxCpuLoadRatio) {
       return {
         isSafe: false,

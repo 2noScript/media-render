@@ -32,7 +32,7 @@ export class CanvasRenderer {
   }
 
   /**
-   * Tính toán tổng thời lượng video dựa trên track video chính
+   * Calculates total video duration based on the primary video track
    */
   public calculateDuration(manifest: EditorManifest): number {
     const mainVideoTrack = manifest.tracks.find(t => t.type === "video" && (t as any).isMain);
@@ -41,20 +41,20 @@ export class CanvasRenderer {
   }
 
   /**
-   * Dựng hình ảnh timeline lên skia-canvas tại thời điểm time
+   * Renders the timeline state onto the virtual canvas at the specified timestamp
    */
   public async render({ manifest, time }: { manifest: EditorManifest; time: number }): Promise<void> {
     const ctx = this.context;
     
-    // Clear frame về màu đen
+    // Clear canvas frame to solid black background
     ctx.clearRect(0, 0, this.width, this.height);
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, this.width, this.height);
 
-    // Tải assets và font ở background nếu chưa có
+    // Pre-fetch assets and fonts dynamically in the background
     await this.ensureAssetsLoaded(manifest);
 
-    // Duyệt qua các track vẽ đè lên nhau
+    // Iterate through track layers to draw elements sequentially (Z-indexing)
     for (const track of manifest.tracks) {
       if (track.type === "video") {
         for (const el of track.elements) {
@@ -77,7 +77,7 @@ export class CanvasRenderer {
   }
 
   /**
-   * Gom tất cả các phần tử có luồng âm thanh
+   * Helper to collect all timeline elements containing active audio streams
    */
   public collectAudioClips(manifest: EditorManifest): any[] {
     const clips: any[] = [];
@@ -92,7 +92,7 @@ export class CanvasRenderer {
   }
 
   /**
-   * Khởi tạo FilterGraph amix native của NodeAV để mix các luồng âm thanh
+   * Sets up NodeAV native FilterGraph (amix) for multi-track audio mixing
    */
   public async setupAudioMix(clips: any[]): Promise<void> {
     const filterParts: string[] = [];
@@ -114,11 +114,11 @@ export class CanvasRenderer {
           const label = `a_${clip.id}`;
           const vol = clip.volume !== undefined ? clip.volume : 1.0;
 
-          // Cắt audio theo trimStart và delay phát theo startTime trên timeline
+          // Apply trimming offsets and target timeline start delays
           filterParts.push(`[${audioInputIdx}:a]atrim=start=${clip.trimStart},asetpts=PTS-STARTPTS,adelay=${delayMs}|${delayMs},volume=${vol}[${label}]`);
           audioLabels.push(`[${label}]`);
 
-          // Nạp generator giới hạn thời lượng của Decoder vào filter input map
+          // Register a duration-limited frame generator to the input map
           filterInputsMap[key] = this.limitGenerator(
             decoder.frames(demuxer.packets(stream.index)),
             clip.duration
@@ -129,7 +129,7 @@ export class CanvasRenderer {
           demuxer[Symbol.dispose]();
         }
       } catch (err) {
-        console.warn(`[CanvasRenderer] Không thể nạp âm thanh của clip ${clip.sourceUrl}:`, err);
+        console.warn(`[CanvasRenderer] Failed to load audio stream from clip ${clip.sourceUrl}:`, err);
       }
     }
 
@@ -141,7 +141,7 @@ export class CanvasRenderer {
       filterParts.push(`${audioLabels[0]}anull[a_final]`);
       finalAudioLabel = "a_final";
     } else {
-      // Trường hợp không có luồng audio nào, tạo luồng audio trống
+      // In case of no audio tracks, generate a silent audio stream
       filterParts.push(`anullsrc=sample_rate=48000:channel_layout=stereo[a_final]`);
       finalAudioLabel = "a_final";
     }
@@ -159,7 +159,7 @@ export class CanvasRenderer {
   }
 
   /**
-   * Đọc các frame audio đã được mix và đẩy vào track của Mediabunny Output
+   * Pulls mixed audio frames from the generator and feeds them to the MediaBunny output stream
    */
   public async pushAudioFrames(audioSource: any): Promise<void> {
     if (!this.audioFramesGenerator) return;
@@ -204,7 +204,7 @@ export class CanvasRenderer {
   }
 
   /**
-   * Đảm bảo tất cả nguyên liệu (video sinks, static images, remote fonts) được nạp đầy đủ
+   * Assures all required rendering assets (video sinks, images, fonts) are loaded
    */
   private async ensureAssetsLoaded(manifest: EditorManifest): Promise<void> {
     for (const track of manifest.tracks) {
@@ -229,7 +229,7 @@ export class CanvasRenderer {
           }
         }
 
-        // Tự động tải remote font nếu được khai báo
+        // Dynamically pre-fetch and register remote fonts
         if (el.type === "text" && el.style.fontUrl) {
           await RemoteFontLoader.useRemote(el.style.fontFamily, el.style.fontUrl);
         }
@@ -238,7 +238,7 @@ export class CanvasRenderer {
   }
 
   /**
-   * Giải phóng tài nguyên demuxer và decoder
+   * Releases native demuxer and decoder resources
    */
   public async dispose(): Promise<void> {
     for (const d of this.audioDemuxers) {

@@ -8,12 +8,12 @@ import fs from "fs";
 
 dotenv.config();
 
-// Đảm bảo thư mục test-outputs tồn tại
+// Ensure the local test-outputs directory exists
 if (!fs.existsSync("./test-outputs")) {
   fs.mkdirSync("./test-outputs");
 }
 
-// Kích hoạt Mediabunny server-side polyfill (NodeAV)
+// Activate Mediabunny server-side polyfill (NodeAV wrapper)
 registerMediabunnyServer();
 
 import * as NodeAv from "node-av";
@@ -40,7 +40,7 @@ function detectHardwareCapabilities() {
 
 const renderService = new OpenCutRenderService();
 
-// Giới hạn số lượng render song song từ biến môi trường
+// Configure concurrent rendering limit from environment variables
 const concurrentLimit = parseInt(process.env.CONCURRENT_RENDER_LIMIT || "2", 10);
 let activeRenders = 0;
 
@@ -59,11 +59,11 @@ export const app = new Elysia()
   .get("/docs/json", () => {
     return swaggerSpec;
   })
-  // Endpoint Health Check chuyên dụng cho Docker / Kubernetes healthcheck
+  // Health Check endpoint for Docker / Kubernetes liveness & readiness probes
   .get("/health", ({ set }) => {
     const resourceStatus = ResourceGuard.check();
     if (!resourceStatus.isSafe) {
-      set.status = 503; // Trả về 503 để báo container đang degraded
+      set.status = 503; // Return 503 Service Unavailable if container resources are degraded
     }
 
     const hwCaps = detectHardwareCapabilities();
@@ -82,17 +82,17 @@ export const app = new Elysia()
       timestamp: new Date().toISOString(),
     };
   })
-  // Endpoint thực thi render trực tiếp ngay khi nhận yêu cầu (có giới hạn song song và kiểm tra tài nguyên)
+  // Render endpoint (applies concurrency limiting and system resource checks)
   .post(
     "/render",
     async ({ body, set }) => {
-      const projectId = (body as any).projectId;
+      const manifestId = (body as any).id || "unknown";
       const startTime = Date.now();
 
-      // 1. Kiểm tra tài nguyên hệ thống (RAM, CPU, RSS) qua Resource Guard
+      // 1. Guard against resource overloading (RAM, CPU, Process RSS)
       const resourceStatus = ResourceGuard.check();
       if (!resourceStatus.isSafe) {
-        console.warn(`[HTTP] [WARN] Rejected project ${projectId} due to resource limits: ${resourceStatus.reason}`);
+        console.warn(`[HTTP] [WARN] Rejected manifest ${manifestId} due to resource limits: ${resourceStatus.reason}`);
         set.status = 503; // Service Unavailable
         return {
           success: false,
@@ -101,9 +101,9 @@ export const app = new Elysia()
         };
       }
 
-      // 2. Kiểm tra giới hạn số lượng render song song
+      // 2. Enforce concurrency limits
       if (activeRenders >= concurrentLimit) {
-        console.warn(`[HTTP] [WARN] Rejected project ${projectId}: Active renders (${activeRenders}) reached the limit of ${concurrentLimit}`);
+        console.warn(`[HTTP] [WARN] Rejected manifest ${manifestId}: Active renders (${activeRenders}) reached the limit of ${concurrentLimit}`);
         set.status = 429; // Too Many Requests
         return {
           success: false,
@@ -112,12 +112,12 @@ export const app = new Elysia()
       }
 
       activeRenders++;
-      console.log(`[HTTP] [START] Active renders: ${activeRenders}/${concurrentLimit}. Executing render for project: ${projectId}`);
+      console.log(`[HTTP] [START] Active renders: ${activeRenders}/${concurrentLimit}. Executing render for manifest: ${manifestId}`);
       
       try {
         const filePath = await renderService.renderProject(body as any);
         const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-        console.log(`[HTTP] [SUCCESS] Project ${projectId} completed in ${duration}s. File size: ${(fs.statSync(filePath).size / 1024).toFixed(1)} KB`);
+        console.log(`[HTTP] [SUCCESS] Manifest ${manifestId} completed in ${duration}s. File size: ${(fs.statSync(filePath).size / 1024).toFixed(1)} KB`);
         return {
           success: true,
           message: "Render completed successfully!",
@@ -125,7 +125,7 @@ export const app = new Elysia()
           durationSeconds: parseFloat(duration),
         };
       } catch (err: any) {
-        console.error(`[HTTP] [ERROR] Render failed for project ${projectId}:`, err);
+        console.error(`[HTTP] [ERROR] Render failed for manifest ${manifestId}:`, err);
         set.status = 500;
         return {
           success: false,
@@ -133,7 +133,7 @@ export const app = new Elysia()
         };
       } finally {
         activeRenders--;
-        console.log(`[HTTP] [END] Active renders remaining: ${activeRenders}/${concurrentLimit} (Finished project: ${projectId})`);
+        console.log(`[HTTP] [END] Active renders remaining: ${activeRenders}/${concurrentLimit} (Finished manifest: ${manifestId})`);
       }
     }
   )
@@ -144,7 +144,7 @@ async function main() {
   console.log(`Swagger UI is available at http://localhost:${process.env.PORT || 3005}/docs`);
   console.log(`Media-render is running in stateless mode (Concurrent Limit: ${concurrentLimit}).`);
   
-  // 1. Log tình trạng tài nguyên hệ thống khi khởi động
+  // 1. Log system resource health on startup
   const resourceStatus = ResourceGuard.check();
   console.log("====================================================");
   console.log("🖥️  SYSTEM STARTUP RESOURCE STATUS:");
@@ -152,7 +152,7 @@ async function main() {
   console.log(` - Process RSS Memory  : ${resourceStatus.details.processMemoryMb} MB (Max allowed: ${process.env.MAX_PROCESS_MEMORY_MB} MB)`);
   console.log(` - CPU Cores / load    : ${resourceStatus.details.cpuCores} cores (Load 1-min avg: ${resourceStatus.details.loadAvg1Min}, Ratio: ${resourceStatus.details.cpuLoadRatio})`);
   
-  // 2. Thăm dò và log năng lực xử lý phần cứng GPU / CPU
+  // 2. Query and log hardware acceleration (GPU / CPU encoders) capability
   const hwCaps = detectHardwareCapabilities();
   console.log("🎮 HARDWARE ACCELERATION DETECTION:");
   console.log(` - NVIDIA NVENC (GPU)  : ${hwCaps.nvidia_nvenc ? "🟢 AVAILABLE (h264_nvenc)" : "🔴 UNSUPPORTED"}`);

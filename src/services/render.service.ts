@@ -3,8 +3,8 @@ import { SceneExporter } from "./renderer/scene-exporter";
 
 export class OpenCutRenderService {
   /**
-   * Phương thức wrapper giữ nguyên API cũ để tương thích với web controller
-   * Ủy quyền xử lý export cho class SceneExporter đồng nhất với client
+   * Wrapper method maintaining the legacy API interface for web controller compatibility.
+   * Delegates export operations to SceneExporter to align with client-side composition.
    */
   public async renderProject(manifest: EditorManifest): Promise<string> {
     const exporter = new SceneExporter({

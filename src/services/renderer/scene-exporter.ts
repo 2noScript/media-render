@@ -1,7 +1,7 @@
 import { Canvas, createCanvas } from "@napi-rs/canvas";
 import * as NodeAv from "node-av";
 
-// Monkey patch node-av findDecoder để tránh lỗi MPP hardware decoder crash trên môi trường Linux headless (Docker)
+// Monkey patch node-av findDecoder to prevent MPP hardware decoder crashes on headless Linux environments (Docker)
 const originalFindDecoder = NodeAv.Codec.findDecoder;
 NodeAv.Codec.findDecoder = function(codecId: any) {
   const codec = originalFindDecoder.call(this, codecId);
@@ -13,7 +13,7 @@ NodeAv.Codec.findDecoder = function(codecId: any) {
   return codec;
 };
 
-// Monkey patch node-av findEncoder để tránh lỗi MPP/NVENC hardware encoder crash trên môi trường Linux headless (Docker)
+// Monkey patch node-av findEncoder to prevent MPP/NVENC hardware encoder crashes on headless Linux environments (Docker)
 const originalFindEncoder = NodeAv.Codec.findEncoder;
 NodeAv.Codec.findEncoder = function(codecId: any) {
   const codec = originalFindEncoder.call(this, codecId);
@@ -25,14 +25,14 @@ NodeAv.Codec.findEncoder = function(codecId: any) {
   return codec;
 };
 
-// Polyfill global HTMLCanvasElement và OffscreenCanvas để lách instanceof check của mediabunny trên Server (Bun)
+// Polyfill global HTMLCanvasElement and OffscreenCanvas to bypass instance checks in mediabunny on server side (Bun)
 (globalThis as any).HTMLCanvasElement = class HTMLCanvasElement {
   static [Symbol.hasInstance](instance: any) {
     return instance && (instance instanceof Canvas || instance.constructor?.name === "Canvas");
   }
 };
 
-// Biến OffscreenCanvas thành FakeOffscreenCanvas (trả về instance của createCanvas)
+// Convert OffscreenCanvas to a FakeOffscreenCanvas (returning an instance of createCanvas)
 class FakeOffscreenCanvas {
   constructor(width: number, height: number) {
     return createCanvas(width, height) as any;
@@ -56,7 +56,7 @@ const qualityMap = {
   very_high: QUALITY_VERY_HIGH,
 };
 
-// ExportParams chính là settings trong EditorManifest
+// ExportParams represents the settings property of EditorManifest
 export type ExportParams = EditorManifest["settings"];
 
 export class SceneExporter {
@@ -73,7 +73,7 @@ export class SceneExporter {
   }
 
   /**
-   * Thực hiện export timeline video ra file lưu trên đĩa cứng cục bộ
+   * Exports the video timeline composition to a local file
    */
   public async export(manifest: EditorManifest): Promise<string> {
     const outputDir = path.resolve("./test-outputs");
@@ -84,14 +84,14 @@ export class SceneExporter {
     const fpsFloat = manifest.settings.fps;
     const timeStep = 1 / fpsFloat;
 
-    console.log(`[SceneExporter] Bắt đầu xuất video chất lượng ${this.quality}: ${manifest.id} -> ${outputPath}`);
+    console.log(`[SceneExporter] Initiating video export (${this.quality}): ${manifest.id} -> ${outputPath}`);
 
     const output = new Output({
       format: this.format === "webm" ? new WebMOutputFormat() : new Mp4OutputFormat(),
       target: new FilePathTarget(outputPath),
     });
 
-    // 1. Gắn trực tiếp Canvas của Renderer vào CanvasSource
+    // 1. Direct bind of renderer virtual Canvas object to CanvasSource
     const canvasObj = this.renderer.canvas;
 
     const videoSource = new CanvasSource(canvasObj as any, {
@@ -101,7 +101,7 @@ export class SceneExporter {
     });
     output.addVideoTrack(videoSource, { frameRate: fpsFloat });
 
-    // 2. Cài đặt Audio Source & Filter graph (amix) ở background nếu được yêu cầu
+    // 2. Setup Audio Source & native FilterGraph amix in the background if audio is requested
     let audioSource: AudioSampleSource | null = null;
     const audioClips = this.renderer.collectAudioClips(manifest);
 
@@ -116,34 +116,34 @@ export class SceneExporter {
 
     await output.start();
 
-    // 3. Vòng lặp render tuần tự phi thời gian thực (Fast-forward loop)
+    // 3. Sequential non-realtime fast-forward rendering loop
     const totalDuration = this.renderer.calculateDuration(manifest);
-    console.log(`[SceneExporter] Tổng thời lượng timeline: ${totalDuration}s`);
+    console.log(`[SceneExporter] Total timeline duration: ${totalDuration}s`);
 
     for (let t = 0; t < totalDuration; t += timeStep) {
-      // Dựng hình timeline lên canvas ảo tại thời điểm t
+      // Render the current timeline state onto the virtual canvas
       await this.renderer.render({ manifest, time: t });
 
-      // CanvasSource tự động chụp frame hiện tại của canvas
+      // CanvasSource captures the active canvas frame automatically
       await videoSource.add(t, timeStep);
 
-      // Trộn âm thanh và đẩy vào output
+      // Mix and push audio frames
       if (audioSource) {
         await this.renderer.pushAudioFrames(audioSource);
       }
     }
 
-    // 4. Giải phóng tài nguyên và đóng gói video
+    // 4. Release active decoder resources and finalize container output file
     videoSource.close();
     await output.finalize();
     await this.renderer.dispose();
 
-    console.log(`[SceneExporter] Xuất video hoàn tất thành công: ${outputPath}`);
+    console.log(`[SceneExporter] Video export completed successfully: ${outputPath}`);
     return outputPath;
   }
 }
 
-// Helpers tránh import fs đồng bộ
+// Helpers to avoid blocking sync fs imports
 async function fsMkdir(p: string) {
   const fs = await import("fs");
   fs.mkdirSync(p, { recursive: true });

@@ -19,11 +19,11 @@ export function renderTextNodeToContext({
   const fontFamily = el.style.fontFamily || "Arial";
   ctx.font = `${fontSize}px "${fontFamily}"`;
 
-  // Tọa độ vẽ mặc định ở giữa chiều ngang, và cách đáy 100px nếu không truyền
+  // Default draw coordinates: horizontally centered and 100px from the bottom if not specified
   const posX = el.style.x !== undefined ? el.style.x : canvasWidth / 2;
   const posY = el.style.y !== undefined ? el.style.y : canvasHeight - 100;
 
-  // 1. Vẽ viền Stroke đen (áp dụng cho karaoke/subtitles hiển thị rõ ràng trên nền tối/sáng)
+  // 1. Draw outline stroke (essential for high contrast readability of subtitles over various backgrounds)
   if (el.style.strokeColor) {
     ctx.strokeStyle = el.style.strokeColor;
     ctx.lineWidth = el.style.strokeWidth || 4;
@@ -31,7 +31,7 @@ export function renderTextNodeToContext({
     ctx.strokeText(el.text, posX, posY);
   }
 
-  // 2. Vẽ màu chữ chính đè lên trên viền
+  // 2. Fill the main text body over the outline stroke
   ctx.fillStyle = el.style.color || "white";
   ctx.fillText(el.text, posX, posY);
   
