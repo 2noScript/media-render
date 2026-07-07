@@ -22,67 +22,43 @@ Create a `.env` file in the root directory based on the `.env.example` template:
 
 ## 🛠️ 2. Quick Start
 
-### Prerequisites
-- **Bun** (1.1+) & **FFmpeg** (with development libraries) installed.
+Requires **Bun (1.1+)** & **FFmpeg** (with development libraries).
 
-### Setup & Run
 ```bash
 bun install
 bun start
 ```
-* **Server URL:** `http://localhost:3005`
-* **Swagger API UI:** `http://localhost:3005/docs`
-* **Health Check:** `http://localhost:3005/health`
+* **API Server:** `http://localhost:3005` (Swagger Docs: `/docs` | Health Check: `/health`)
 
 ---
 
-## 🧪 3. Test Scenarios
+## 🧪 3. Testing
 
-We provide mock manifest test scripts representing real-world video formats. These scripts use local test assets located in `./test-assets/` for fast offline execution:
-
-1. **Integrated Manifest Test (Gaps, Overlays, Subtitles, Audio Mix):**
-   ```bash
-   bun run test:render
-   ```
-2. **Vertical 9:16 Video (Shorts/TikTok style with centered text overlays):**
-   ```bash
-   bun run test:shorts
-   ```
-3. **Image Slideshow (Rendered entirely from sequential images and background music):**
-   ```bash
-   bun run test:slideshow
-   ```
-4. **Lyrics / Karaoke Video (Continuous wallpaper, background track, and timed subtitles):**
-   ```bash
-   bun run test:lyrics
-   ```
-
-*All output videos are saved in the `./test-outputs/` directory (ignored by git).*
-
----
-
-## 🐳 4. Containerization with Docker Compose
-
-Docker Compose builds and bundles the FFmpeg dependencies automatically to run reliably in any environment:
-
-### Spin up the container in detached mode:
+Run local offline tests using mock assets:
 ```bash
+# Standard composition (video, overlays, subs, audio)
+bun run test:render
+
+# Specific format tests (Shorts, Slideshow, Karaoke)
+bun run test:shorts
+bun run test:slideshow
+bun run test:lyrics
+```
+*Outputs are saved in `./test-outputs/`.*
+
+---
+
+## 🐳 4. Docker Compose
+
+Run the service in a pre-configured Docker container (includes FFmpeg):
+```bash
+# Start container (detached mode)
 docker compose up --build -d
-```
 
-### View logs:
-```bash
-docker compose logs -f
-```
-
-### Stop the service:
-```bash
+# Stop container
 docker compose down
 ```
-
-### Integrated Docker Features:
-- **Volume Mounts:** Mounts `./test-outputs` to easily access rendered files from the host, and `./test-assets` to provide source assets.
-- **Docker Healthcheck:** Automatically probes container health via the `/health` endpoint every 15 seconds.
+*Auto-mounts `./test-outputs/` for host access and features health checking on `/health`.*
 
 ---
 
