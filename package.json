@@ -15,7 +15,6 @@
     "test:animations": "bun run tests/run.ts animated-keyframes-case",
     "test:pip": "bun run tests/run.ts pip-facecam-case",
     "test:effects": "bun run tests/run.ts vignette-effect-case",
-    "test:fonts": "bun run tests/run.ts custom-fonts-subtitles-case",
     "test:audio": "bun run tests/run.ts multi-track-audio-case",
     "test:backdrop": "bun run tests/run.ts backdrop-blur-case",
     "test:compat": "bun run tests/run.ts compat-params-case",

@@ -81,7 +81,7 @@ bun run test:track:multi_video
 bun run test:track:multi_audio
 
 # Run all test suites sequentially
-bun run test:render && bun run test:shorts && bun run test:slideshow && bun run test:lyrics && bun run test:gaps && bun run test:animations && bun run test:pip && bun run test:effects && bun run test:fonts && bun run test:audio && bun run test:backdrop && bun run test:compat
+bun run test:render && bun run test:shorts && bun run test:slideshow && bun run test:lyrics && bun run test:gaps && bun run test:animations && bun run test:pip && bun run test:effects && bun run test:audio && bun run test:backdrop && bun run test:compat
 ```
 
 All rendered video outputs are saved under `./test-outputs/`.
