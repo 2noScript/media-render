@@ -16,6 +16,28 @@ if (!fs.existsSync("./test-outputs")) {
 // Kích hoạt Mediabunny server-side polyfill (NodeAV)
 registerMediabunnyServer();
 
+import * as NodeAv from "node-av";
+
+function detectHardwareCapabilities() {
+  const caps = {
+    nvidia_nvenc: false,
+    apple_videotoolbox: false,
+    intel_qsv: false,
+  };
+
+  try {
+    if (NodeAv.Codec.findEncoderByName("h264_nvenc" as any)) caps.nvidia_nvenc = true;
+  } catch {}
+  try {
+    if (NodeAv.Codec.findEncoderByName("h264_videotoolbox" as any)) caps.apple_videotoolbox = true;
+  } catch {}
+  try {
+    if (NodeAv.Codec.findEncoderByName("h264_qsv" as any)) caps.intel_qsv = true;
+  } catch {}
+
+  return caps;
+}
+
 const renderService = new OpenCutRenderService();
 
 // Giới hạn số lượng render song song từ biến môi trường
@@ -44,8 +66,7 @@ export const app = new Elysia()
       set.status = 503; // Trả về 503 để báo container đang degraded
     }
 
-    const hwCaps = OpenCutRenderService.detectHardwareCapabilities();
-    const verifyStatus = renderService.getEncoderVerificationStatus("mp4");
+    const hwCaps = detectHardwareCapabilities();
 
     return {
       status: resourceStatus.isSafe ? "healthy" : "degraded",
@@ -54,9 +75,8 @@ export const app = new Elysia()
       concurrentLimit,
       gpu: {
         detectedHardwareAcceleration: hwCaps,
-        optimalVideoEncoder: verifyStatus.optimalEncoder,
-        actualVideoEncoder: verifyStatus.actualEncoder,
-        isGpuAccelerationActive: verifyStatus.isGpuActive
+        optimalVideoEncoder: hwCaps.nvidia_nvenc ? "h264_nvenc" : (hwCaps.apple_videotoolbox ? "h264_videotoolbox" : "libx264"),
+        isGpuAccelerationActive: hwCaps.nvidia_nvenc || hwCaps.apple_videotoolbox
       },
       resources: resourceStatus.details,
       timestamp: new Date().toISOString(),
@@ -133,15 +153,13 @@ async function main() {
   console.log(` - CPU Cores / load    : ${resourceStatus.details.cpuCores} cores (Load 1-min avg: ${resourceStatus.details.loadAvg1Min}, Ratio: ${resourceStatus.details.cpuLoadRatio})`);
   
   // 2. Thăm dò và log năng lực xử lý phần cứng GPU / CPU
-  const hwCaps = OpenCutRenderService.detectHardwareCapabilities();
+  const hwCaps = detectHardwareCapabilities();
   console.log("🎮 HARDWARE ACCELERATION DETECTION:");
   console.log(` - NVIDIA NVENC (GPU)  : ${hwCaps.nvidia_nvenc ? "🟢 AVAILABLE (h264_nvenc)" : "🔴 UNSUPPORTED"}`);
   console.log(` - Apple VideoToolbox  : ${hwCaps.apple_videotoolbox ? "🟢 AVAILABLE (h264_videotoolbox)" : "🔴 UNSUPPORTED"}`);
   console.log(` - Intel QuickSync     : ${hwCaps.intel_qsv ? "🟢 AVAILABLE (h264_qsv)" : "🔴 UNSUPPORTED"}`);
-  
-  // 3. Thực hiện xác minh khả năng khởi chạy thực tế của bộ mã hóa tối ưu (GPU)
-  const encoderStatus = await renderService.verifyAndSelectEncoder("mp4");
-  console.log(` - CPU Fallback Active : ${!encoderStatus.isGpuActive ? "⚠️ YES (GPU failed capability test, using CPU)" : "✅ NO (GPU is active)"}`);
+  console.log(` - HARDWARE_ACCELERATION: ${process.env.HARDWARE_ACCELERATION}`);
+  console.log(` - SKIA_GPU: ${process.env.SKIA_GPU}`);
   console.log("====================================================");
 }
 

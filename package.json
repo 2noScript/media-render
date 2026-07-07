@@ -23,6 +23,10 @@
     "dotenv": "^17.4.2",
     "elysia": "^1.4.29",
     "mediabunny": "^1.50.6",
+    "@napi-rs/canvas": "^0.1.65",
     "node-av": "^6.1.1"
-  }
+  },
+  "trustedDependencies": [
+    "node-av"
+  ]
 }

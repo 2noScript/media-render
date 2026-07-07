@@ -11,12 +11,15 @@ services:
     restart: unless-stopped
     environment:
       - PORT=3005
+      - HARDWARE_ACCELERATION=prefer-software
       - CONCURRENT_RENDER_LIMIT=2
       # Đặt 85% cho môi trường production trong Docker để phòng tránh cạn kiệt RAM của máy chủ/container
       - MAX_MEMORY_USAGE_PERCENT=85
       - MAX_PROCESS_MEMORY_MB=1536
       - MAX_CPU_LOAD_RATIO=0.9
     volumes:
+      # Mount file cấu hình môi trường
+      - ./.env:/app/.env
       # Mount thư mục đầu ra để lấy video đã render về máy host hoặc chia sẻ với NestJS backend
       - ./test-outputs:/app/test-outputs
       # Mount thư mục asset cục bộ để chạy các bài test offline
