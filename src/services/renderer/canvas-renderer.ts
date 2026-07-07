@@ -230,8 +230,8 @@ export class CanvasRenderer {
         }
 
         // Tự động tải remote font nếu được khai báo
-        if (el.type === "text" && (el.style as any).fontUrl) {
-          await RemoteFontLoader.useRemote(el.style.fontFamily, (el.style as any).fontUrl);
+        if (el.type === "text" && el.style.fontUrl) {
+          await RemoteFontLoader.useRemote(el.style.fontFamily, el.style.fontUrl);
         }
       }
     }

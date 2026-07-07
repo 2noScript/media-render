@@ -71,9 +71,14 @@ export interface TextElement extends BaseTimelineElement {
     fontSize: number;
     color: string;
     fontFamily: string;
-    x: number;
-    y: number;
+    x?: number;
+    y?: number;
+    textAlign?: "left" | "right" | "center" | "start" | "end";
+    strokeColor?: string;
+    strokeWidth?: number;
+    fontUrl?: string;
   };
+  opacity?: number;
 }
 
 export interface EditorManifest {
