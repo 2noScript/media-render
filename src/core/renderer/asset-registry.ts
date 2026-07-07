@@ -1,6 +1,6 @@
 import { loadImage, Image } from "@napi-rs/canvas";
 import { Input, FilePathSource, ALL_FORMATS, VideoSampleSink } from "mediabunny";
-import { EditorManifest } from "../../types/editor-manifest";
+import { Manifest } from "../../types/manifest";
 import { RemoteFontLoader } from "./font-loader";
 import * as path from "path";
 
@@ -18,7 +18,7 @@ export class AssetRegistry {
    * Assures all required image, video decoder sinks, and remote fonts are loaded
    * @param manifest The EditorManifest containing timeline tracks
    */
-  public async ensureAssetsLoaded(manifest: EditorManifest): Promise<void> {
+  public async ensureAssetsLoaded(manifest: Manifest): Promise<void> {
     for (const track of manifest.tracks) {
       for (const el of track.elements as any[]) {
         // Load video sink decoders if they do not exist

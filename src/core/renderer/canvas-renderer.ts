@@ -1,7 +1,7 @@
 import { Canvas } from "@napi-rs/canvas";
 import { nodeRegistry, RootNode, BlurBackgroundNode } from "./nodes";
 import { createCanvasSurface } from "./canvas-utils";
-import { EditorManifest } from "../../types/editor-manifest";
+import { Manifest } from "../../types/manifest";
 import { skiaCompositor } from "./compositor/skia-compositor";
 import { AssetRegistry } from "./asset-registry";
 import { AudioPipeline } from "./audio-pipeline";
@@ -50,7 +50,7 @@ export class CanvasRenderer {
    * @param manifest The EditorManifest containing timeline tracks
    * @returns Total duration in seconds
    */
-  public calculateDuration(manifest: EditorManifest): number {
+  public calculateDuration(manifest: Manifest): number {
     let maxEnd = 0;
     for (const track of manifest.tracks) {
       for (const el of track.elements) {
@@ -68,7 +68,7 @@ export class CanvasRenderer {
    * @param manifest The EditorManifest containing timeline tracks
    * @param time The local timeline timestamp in seconds
    */
-  public async render({ manifest, time }: { manifest: EditorManifest; time: number }): Promise<void> {
+  public async render({ manifest, time }: { manifest: Manifest; time: number }): Promise<void> {
     const ctx = this.context;
 
     // Asynchronously pre-fetch all required images, fonts, and video sinks
@@ -100,7 +100,7 @@ export class CanvasRenderer {
    * Compiles the manifest timeline tracks into the scene graph of Node instances
    * @param manifest The EditorManifest containing timeline tracks
    */
-  private buildSceneGraph(manifest: EditorManifest): void {
+  private buildSceneGraph(manifest: Manifest): void {
     const duration = this.calculateDuration(manifest);
     this.rootNode = new RootNode({ duration });
 
@@ -161,7 +161,7 @@ export class CanvasRenderer {
   /**
    * Helper to collect all timeline elements containing active audio streams
    */
-  public collectAudioClips(manifest: EditorManifest): any[] {
+  public collectAudioClips(manifest: Manifest): any[] {
     return this.audioPipeline.collectAudioClips(manifest);
   }
 

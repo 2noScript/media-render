@@ -2,7 +2,7 @@ import "./bootstrap";
 
 import { Output, Mp4OutputFormat, WebMOutputFormat, FilePathTarget, CanvasSource, AudioSampleSource } from "mediabunny";
 import { CanvasRenderer } from "./canvas-renderer";
-import { EditorManifest } from "../../types/editor-manifest";
+import { Manifest } from "../../types/manifest";
 import { QUALITY_MAP } from "../../lib/constants";
 import { fsExists, fsMkdir } from "../../lib/helpers";
 import * as path from "path";
@@ -10,7 +10,7 @@ import * as crypto from "crypto";
 
 
 
-export async function exporter(manifest: EditorManifest, onProgress?: (progress: number) => void, customOutputPath?: string): Promise<string> {
+export async function exporter(manifest: Manifest, onProgress?: (progress: number) => void, customOutputPath?: string): Promise<string> {
     const { width, height, fps, format } = manifest.settings;
     const quality = manifest.settings.quality || "high";
     const shouldIncludeAudio = manifest.settings.shouldIncludeAudio ?? false;

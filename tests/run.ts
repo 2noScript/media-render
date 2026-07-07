@@ -1,6 +1,6 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
 import { OpenCutRenderService } from "../src/services/render.service";
-import { EditorManifest } from "../src/types/editor-manifest";
+import { Manifest } from "../src/types/manifest";
 import fs from "fs";
 import path from "path";
 
@@ -114,7 +114,7 @@ async function main() {
   console.log(`📂 Path: ${targetManifestPath}`);
   console.log("====================================================");
 
-  const manifest: EditorManifest = await Bun.file(targetManifestPath).json();
+  const manifest: Manifest = await Bun.file(targetManifestPath).json();
 
   const relManifestDir = path.dirname(manifestRelPath);
   const filenameWithoutExt = path.basename(manifestRelPath, ".json");

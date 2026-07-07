@@ -8,6 +8,12 @@ export interface Effect {
   enabled: boolean;
 }
 
+export interface Mask {
+  id: string;
+  type: string;
+  params: ParamValues;
+}
+
 export type ScalarSegmentType = "step" | "linear" | "bezier";
 export type TangentMode = "auto" | "aligned" | "broken" | "flat";
 export type ChannelExtrapolationMode = "hold" | "linear";
@@ -147,7 +153,7 @@ export interface VideoElement extends BaseTimelineElement {
   hidden?: boolean;
   retime?: RetimeConfig;
   effects?: Effect[];
-  masks?: any[];
+  masks?: Mask[];
 }
 
 export interface ImageElement extends BaseTimelineElement {
@@ -156,7 +162,7 @@ export interface ImageElement extends BaseTimelineElement {
   sourceUrl?: string; // Engine extension: remote/local source URL
   hidden?: boolean;
   effects?: Effect[];
-  masks?: any[];
+  masks?: Mask[];
 }
 
 export interface AudioElement extends BaseTimelineElement {
@@ -191,7 +197,7 @@ export interface GraphicElement extends BaseTimelineElement {
   definitionId: string;
   hidden?: boolean;
   effects?: Effect[];
-  masks?: any[];
+  masks?: Mask[];
 }
 
 export interface EffectElement extends BaseTimelineElement {
@@ -199,14 +205,17 @@ export interface EffectElement extends BaseTimelineElement {
   effectType: string;
 }
 
-export interface EditorManifest {
+export type ExportFormat = "mp4" | "webm";
+export type ExportQuality = "low" | "medium" | "high" | "very_high";
+
+export interface Manifest {
   id: string;
   settings: {
     width: number;
     height: number;
     fps: number;
-    format: "mp4" | "webm";
-    quality?: "low" | "medium" | "high" | "very_high";
+    format: ExportFormat;
+    quality?: ExportQuality;
     shouldIncludeAudio?: boolean;
   };
   tracks: Array<VideoTrack | AudioTrack | TextTrack | GraphicTrack | EffectTrack>;
@@ -245,3 +254,5 @@ export interface ClipboardItem {
   trackType: TrackType;
   element: CreateTimelineElement;
 }
+
+export type ExportParams = Manifest["settings"];

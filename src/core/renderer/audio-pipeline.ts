@@ -1,5 +1,5 @@
 import * as av from "node-av";
-import { EditorManifest } from "../../types/editor-manifest";
+import { Manifest } from "../../types/manifest";
 import { AudioSample } from "mediabunny";
 import { AvFrameAudioSampleResource } from "@mediabunny/server";
 
@@ -18,7 +18,7 @@ export class AudioPipeline {
    * @param manifest The EditorManifest containing timeline tracks
    * @returns Array of clips containing audio streams
    */
-  public collectAudioClips(manifest: EditorManifest): any[] {
+  public collectAudioClips(manifest: Manifest): any[] {
     const clips: any[] = [];
     for (const track of manifest.tracks) {
       if (track.type === "audio") {
