@@ -16,9 +16,11 @@ export class ColorNode extends BaseNode {
     textures: TextureUploadDescriptor[];
   }> {
     const textureId = `${path}:color`;
-    const width = this.params.width || renderer.width;
-    const height = this.params.height || renderer.height;
-    const color = this.params.color || "#000000";
+    const width = this.params.width ?? this.params.params?.["width"] ?? renderer.width;
+    const height = this.params.height ?? this.params.params?.["height"] ?? renderer.height;
+    const color = this.params.color ?? this.params.params?.["color"] ?? "#000000";
+    const xVal = this.params.x ?? this.params.params?.["transform.positionX"] ?? 0;
+    const yVal = this.params.y ?? this.params.params?.["transform.positionY"] ?? 0;
 
     const texture: TextureUploadDescriptor = {
       kind: "rendered",
@@ -36,8 +38,8 @@ export class ColorNode extends BaseNode {
       type: "layer",
       textureId,
       transform: {
-        centerX: (this.params.x || 0) + width / 2,
-        centerY: (this.params.y || 0) + height / 2,
+        centerX: xVal + width / 2,
+        centerY: yVal + height / 2,
         width,
         height,
         rotationDegrees: 0,

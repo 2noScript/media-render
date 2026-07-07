@@ -1,0 +1,83 @@
+{
+  "id": "compat-params-case",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": true
+  },
+  "tracks": [
+    {
+      "id": "track-main",
+      "name": "Main video track",
+      "type": "video",
+      "isMain": true,
+      "elements": [
+        {
+          "id": "vid-1",
+          "name": "Landscape Clip",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "duration": 5,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0.0,
+            "transform.positionX": 100,
+            "transform.positionY": 50,
+            "transform.scaleX": 0.5,
+            "transform.scaleY": 0.5,
+            "transform.rotate": 15,
+            "opacity": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "id": "track-text",
+      "name": "Title track",
+      "type": "text",
+      "elements": [
+        {
+          "id": "title-1",
+          "name": "Compatibility title text",
+          "type": "text",
+          "duration": 5,
+          "startTime": 0,
+          "params": {
+            "content": "Compatibility Params OK",
+            "fontFamily": "Bangers",
+            "fontSize": 48,
+            "color": "#00FFCC",
+            "strokeColor": "#333333",
+            "strokeWidth": 2,
+            "transform.positionX": 320,
+            "transform.positionY": 250
+          }
+        }
+      ]
+    },
+    {
+      "id": "track-audio-overlay",
+      "name": "Audio overlay track",
+      "type": "audio",
+      "elements": [
+        {
+          "id": "aud-1",
+          "name": "Music track",
+          "type": "audio",
+          "sourceUrl": "./test-assets/song.mp3",
+          "duration": 5,
+          "startTime": 0,
+          "trimStart": 0,
+          "params": {
+            "volume": 0.5
+          }
+        }
+      ]
+    }
+  ]
+}

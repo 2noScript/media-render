@@ -48,8 +48,8 @@ export class VideoNode extends VisualNode {
       height,
     };
 
-    const targetWidth = resolved.width || width;
-    const targetHeight = resolved.height || height;
+    const targetWidth = (resolved.width || width) * (resolved.scaleX ?? 1.0);
+    const targetHeight = (resolved.height || height) * (resolved.scaleY ?? 1.0);
 
     const item: FrameItemDescriptor = {
       type: "layer",

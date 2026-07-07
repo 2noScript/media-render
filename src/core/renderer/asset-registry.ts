@@ -50,11 +50,15 @@ export class AssetRegistry {
         }
 
         // Load and register remote custom fonts
-        if (el.type === "text" && el.style?.fontUrl) {
-          const fontKey = `${el.style.fontFamily}:${el.style.fontUrl}`;
-          if (!this.loadedFonts.has(fontKey)) {
-            this.loadedFonts.add(fontKey);
-            await RemoteFontLoader.useRemote(el.style.fontFamily, el.style.fontUrl);
+        if (el.type === "text") {
+          const fontFamily = el.style?.fontFamily ?? el.params?.["fontFamily"];
+          const fontUrl = el.style?.fontUrl ?? el.params?.["fontUrl"];
+          if (fontFamily && fontUrl) {
+            const fontKey = `${fontFamily}:${fontUrl}`;
+            if (!this.loadedFonts.has(fontKey)) {
+              this.loadedFonts.add(fontKey);
+              await RemoteFontLoader.useRemote(fontFamily, fontUrl);
+            }
           }
         }
       }

@@ -25,12 +25,14 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "volume": 1.0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 1.0
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
         }
       ]
     },
@@ -49,7 +51,9 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "volume": 0.4
+          "params": {
+            "volume": 0.4
+          }
         }
       ]
     }

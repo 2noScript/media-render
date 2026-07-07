@@ -25,12 +25,14 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "volume": 1.0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 1.0
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
         },
         {
           "id": "main-clip-2",
@@ -41,12 +43,14 @@
           "startTime": 8,
           "trimStart": 2,
           "trimEnd": 0,
-          "volume": 1.0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 1.0
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
         }
       ]
     },
@@ -67,11 +71,13 @@
           "startTime": 2,
           "trimStart": 0,
           "trimEnd": 0,
-          "width": 100,
-          "height": 100,
-          "x": 40,
-          "y": 40,
-          "opacity": 0.8
+          "params": {
+            "width": 100,
+            "height": 100,
+            "transform.positionX": 40,
+            "transform.positionY": 40,
+            "opacity": 0.8
+          }
         }
       ]
     },
@@ -85,17 +91,17 @@
           "id": "sub-1",
           "name": "Sub 1",
           "type": "text",
-          "text": "Hello OpenCut!",
           "duration": 3,
           "startTime": 1,
           "trimStart": 0,
           "trimEnd": 0,
-          "style": {
+          "params": {
+            "content": "Hello OpenCut!",
             "fontSize": 24,
             "color": "yellow",
             "fontFamily": "Arial",
-            "x": 220,
-            "y": 280
+            "transform.positionX": 220,
+            "transform.positionY": 280
           }
         }
       ]
@@ -115,7 +121,9 @@
           "startTime": 2,
           "trimStart": 0,
           "trimEnd": 0,
-          "volume": 0.4
+          "params": {
+            "volume": 0.4
+          }
         }
       ]
     }

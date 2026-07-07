@@ -52,7 +52,7 @@ export class AudioPipeline {
           
           const delayMs = Math.round(clip.startTime * 1000);
           const label = `a_${clip.id}`;
-          const vol = clip.volume !== undefined ? clip.volume : 1.0;
+          const vol = clip.volume !== undefined ? clip.volume : (clip.params?.["volume"] !== undefined ? clip.params["volume"] : 1.0);
 
           // Set trimming offsets and target timeline start delays
           filterParts.push(`[${audioInputIdx}:a]atrim=start=${clip.trimStart},asetpts=PTS-STARTPTS,adelay=${delayMs}|${delayMs},volume=${vol}[${label}]`);
