@@ -1,39 +1,80 @@
-import { TextElement } from "../../../types/editor-manifest";
+import { VisualNode } from "./visual-node";
+import { FrameItemDescriptor, TextureUploadDescriptor } from "../compositor/types";
+import { CanvasRenderer } from "../canvas-renderer";
 
-export function renderTextNodeToContext({
-  el,
-  ctx,
-  canvasWidth,
-  canvasHeight
-}: {
-  el: TextElement;
-  ctx: any;
-  canvasWidth: number;
-  canvasHeight: number;
-}): void {
-  ctx.save();
-  ctx.textBaseline = "middle";
-  ctx.textAlign = el.style.textAlign || "center";
-  
-  const fontSize = el.style.fontSize || 24;
-  const fontFamily = el.style.fontFamily || "Arial";
-  ctx.font = `${fontSize}px "${fontFamily}"`;
-
-  // Default draw coordinates: horizontally centered and 100px from the bottom if not specified
-  const posX = el.style.x !== undefined ? el.style.x : canvasWidth / 2;
-  const posY = el.style.y !== undefined ? el.style.y : canvasHeight - 100;
-
-  // 1. Draw outline stroke (essential for high contrast readability of subtitles over various backgrounds)
-  if (el.style.strokeColor) {
-    ctx.strokeStyle = el.style.strokeColor;
-    ctx.lineWidth = el.style.strokeWidth || 4;
-    ctx.lineJoin = "round";
-    ctx.strokeText(el.text, posX, posY);
+export class TextNode extends VisualNode {
+  constructor(params: any) {
+    super(params);
   }
 
-  // 2. Fill the main text body over the outline stroke
-  ctx.fillStyle = el.style.color || "white";
-  ctx.fillText(el.text, posX, posY);
-  
-  ctx.restore();
+  async buildFrame(
+    time: number,
+    renderer: CanvasRenderer,
+    path: string
+  ): Promise<{
+    items: FrameItemDescriptor[];
+    textures: TextureUploadDescriptor[];
+  }> {
+    const textureId = `${path}:text`;
+    const resolved = this.resolveState(time);
+    const { width, height } = renderer;
+
+    const contentHash = `text:${this.params.text}:${JSON.stringify(this.params.style)}:${JSON.stringify(resolved)}`;
+
+    const texture: TextureUploadDescriptor = {
+      kind: "rendered",
+      id: textureId,
+      contentHash,
+      width,
+      height,
+      draw: (ctx) => {
+        ctx.save();
+        ctx.font = `${this.params.style?.fontWeight || "normal"} ${this.params.style?.fontSize || 40}px "${this.params.style?.fontFamily || "sans-serif"}"`;
+        ctx.textBaseline = "middle";
+        ctx.textAlign = this.params.style?.textAlign || "center";
+
+        const posX = resolved.x;
+        const posY = resolved.y;
+
+        if (this.params.style?.strokeColor && this.params.style?.strokeWidth) {
+          ctx.strokeStyle = this.params.style.strokeColor;
+          ctx.lineWidth = this.params.style.strokeWidth;
+          ctx.lineJoin = "round";
+          ctx.strokeText(this.params.text, posX, posY);
+        }
+
+        ctx.fillStyle = this.params.style?.color || "white";
+        ctx.fillText(this.params.text, posX, posY);
+        ctx.restore();
+      },
+    };
+
+    const item: FrameItemDescriptor = {
+      type: "layer",
+      textureId,
+      transform: {
+        centerX: width / 2,
+        centerY: height / 2,
+        width,
+        height,
+        rotationDegrees: 0,
+        flipX: false,
+        flipY: false,
+      },
+      opacity: resolved.opacity,
+      blendMode: "normal",
+      mask: null,
+    };
+
+    return {
+      items: [item],
+      textures: [texture],
+    };
+  }
 }
+
+import { nodeRegistry } from "./registry";
+nodeRegistry.register("text", (el) => {
+  return new TextNode(el);
+});
+

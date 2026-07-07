@@ -2,7 +2,7 @@ import { VisualNode } from "./visual-node";
 import { FrameItemDescriptor, TextureUploadDescriptor } from "../compositor/types";
 import { CanvasRenderer } from "../canvas-renderer";
 
-export class ImageNode extends VisualNode {
+export class StickerNode extends VisualNode {
   private image: any;
 
   constructor(params: any, image: any) {
@@ -21,7 +21,7 @@ export class ImageNode extends VisualNode {
     if (!this.image) return { items: [], textures: [] };
 
     const resolved = this.resolveState(time);
-    const textureId = `${path}:image`;
+    const textureId = `${path}:sticker`;
     const width = this.image.width;
     const height = this.image.height;
 
@@ -61,7 +61,8 @@ export class ImageNode extends VisualNode {
 }
 
 import { nodeRegistry } from "./registry";
-nodeRegistry.register("image", (el, renderer) => {
-  return new ImageNode(el, renderer.imagesMap[el.id]);
+nodeRegistry.register("sticker", (el, renderer) => {
+  const img = renderer.imagesMap[el.id] || renderer.imagesMap[el.stickerId];
+  return new StickerNode(el, img);
 });
 

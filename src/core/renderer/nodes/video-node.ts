@@ -1,45 +1,82 @@
-import { createCanvas, ImageData } from "@napi-rs/canvas";
+import { VisualNode } from "./visual-node";
+import { ImageData } from "@napi-rs/canvas";
+import { FrameItemDescriptor, TextureUploadDescriptor } from "../compositor/types";
+import { CanvasRenderer } from "../canvas-renderer";
+import { createCanvasSurface } from "../canvas-utils";
 
-export async function renderVideoNodeToContext({
-  el,
-  time,
-  ctx,
-  videoSinksMap
-}: {
-  el: any;
-  time: number;
-  ctx: any;
-  videoSinksMap: Record<string, any>;
-}): Promise<void> {
-  const localTime = (time - el.startTime) + el.trimStart;
-  const sink = videoSinksMap[el.id];
-  if (!sink) return;
+export class VideoNode extends VisualNode {
+  private sink: any;
 
-  const sample = await sink.getSample(localTime);
-  if (!sample) return;
+  constructor(params: any, sink: any) {
+    super(params);
+    this.sink = sink;
+  }
 
-  const width = sample.displayWidth;
-  const height = sample.displayHeight;
+  async buildFrame(
+    time: number,
+    _renderer: CanvasRenderer,
+    path: string
+  ): Promise<{
+    items: FrameItemDescriptor[];
+    textures: TextureUploadDescriptor[];
+  }> {
+    const localTime = (time - this.params.startTime) + this.params.trimStart;
+    if (!this.sink) return { items: [], textures: [] };
 
-  // 1. Create a temporary canvas sized matching the source frame
-  const tempCanvas = createCanvas(width, height);
-  const tempCtx = tempCanvas.getContext("2d");
+    const sample = await this.sink.getSample(localTime);
+    if (!sample) return { items: [], textures: [] };
 
-  // 2. Copy raw RGBA pixel buffer from VideoSample to local memory
-  const rawBuffer = Buffer.alloc(width * height * 4);
-  await sample.copyTo(rawBuffer, { format: "RGBA" } as any);
+    const width = sample.displayWidth;
+    const height = sample.displayHeight;
 
-  // 3. Initialize standard W3C ImageData object backed by the raw buffer
-  const clamped = new Uint8ClampedArray(rawBuffer.buffer, rawBuffer.byteOffset, rawBuffer.byteLength);
-  const imageData = new ImageData(clamped, width, height);
+    const { canvas, context } = createCanvasSurface({ width, height });
+    const rawBuffer = Buffer.alloc(width * height * 4);
+    await sample.copyTo(rawBuffer, { format: "RGBA" } as any);
+    const clamped = new Uint8ClampedArray(rawBuffer.buffer, rawBuffer.byteOffset, rawBuffer.byteLength);
+    const imageData = new ImageData(clamped, width, height);
+    context.putImageData(imageData, 0, 0);
+    sample.close();
 
-  tempCtx.putImageData(imageData, 0, 0);
+    const resolved = this.resolveState(time);
+    const textureId = `${path}:video`;
 
-  // 4. Draw temporary canvas onto the main canvas (applying scaling, translation, and opacity)
-  ctx.save();
-  ctx.globalAlpha = el.opacity !== undefined ? el.opacity : 1.0;
-  ctx.drawImage(tempCanvas, el.x || 0, el.y || 0, el.width || width, el.height || height);
-  ctx.restore();
+    const texture: TextureUploadDescriptor = {
+      kind: "external",
+      id: textureId,
+      source: canvas,
+      width,
+      height,
+    };
 
-  sample.close();
+    const targetWidth = resolved.width || width;
+    const targetHeight = resolved.height || height;
+
+    const item: FrameItemDescriptor = {
+      type: "layer",
+      textureId,
+      transform: {
+        centerX: (resolved.x ?? 0) + targetWidth / 2,
+        centerY: (resolved.y ?? 0) + targetHeight / 2,
+        width: targetWidth,
+        height: targetHeight,
+        rotationDegrees: 0,
+        flipX: false,
+        flipY: false,
+      },
+      opacity: resolved.opacity,
+      blendMode: "normal",
+      mask: null,
+    };
+
+    return {
+      items: [item],
+      textures: [texture],
+    };
+  }
 }
+
+import { nodeRegistry } from "./registry";
+nodeRegistry.register("video", (el, renderer) => {
+  return new VideoNode(el, renderer.videoSinksMap[el.id]);
+});
+
