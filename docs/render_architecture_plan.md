@@ -183,6 +183,80 @@ sequenceDiagram
 
 ---
 
+### E. End-to-End Rendering & Export Flowchart
+Detailed system dataflow mapping the transformation of the input `EditorManifest` into the compiled output video file:
+
+```mermaid
+graph TD
+    classDef inputClass fill:#34495e,stroke:#2c3e50,stroke-width:2px,color:#fff;
+    classDef stepClass fill:#2980b9,stroke:#20638f,stroke-width:1.5px,color:#fff;
+    classDef loopClass fill:#d35400,stroke:#a04000,stroke-width:1.5px,color:#fff;
+    classDef renderClass fill:#27ae60,stroke:#1e8449,stroke-width:1.5px,color:#fff;
+    classDef outputClass fill:#8e44ad,stroke:#6c3483,stroke-width:2px,color:#fff;
+
+    M["EditorManifest (JSON)"] --> B["bootstrap.ts: Polyfills & Auto-Detection Patches"]
+    B --> DL["Prefetch & cache remote/local assets (Videos, Images, Stickers)"]
+    DL --> FL["RemoteFontLoader: Register typography web fonts dynamically"]
+    
+    subgraph Setup ["Exporter Orchestration Setup"]
+        INIT["Initialize MediaBunny Output Muxer (.mp4 / .webm)"]
+        VS["Instantiate CanvasSource (captures video canvas frames)"]
+        AS["Instantiate AudioSampleSource"]
+        AG["Setup NodeAV FilterComplex: Trim, delay, volume & mix audio tracks"]
+    end
+    
+    FL --> INIT
+    INIT --> VS
+    VS --> AS
+    AS --> AG
+    
+    subgraph Loop ["Fast-Forward Export Loop (t = 0 to duration, step = 1/fps)"]
+        SG["CanvasRenderer: Rebuild RootNode Scene Graph via NodeRegistry"]
+        BF["RootNode.buildFrame(t): Collect active layers' descriptors"]
+        
+        subgraph Descriptors ["Declarative Descriptors"]
+            FD["FrameDescriptor: Flat layer descriptors (transforms, opacities, blend modes)"]
+            TD["TextureUploadDescriptor: Rendered (text, colors) & External textures"]
+        end
+        
+        subgraph Compositor ["SkiaCompositor Pipeline"]
+            SYNC["syncTextures: Rasterize static shapes / cache external textures"]
+            DEC["Decode Video Frames: Copy raw pixels to W3C ImageData canvas surfaces"]
+            COMP["render: Translate, rotate, scale, apply opacities/blend modes & composite"]
+        end
+        
+        CAPT["CanvasSource.add(canvas): Capture completed composite frame"]
+        AUD["Pull mixed audio frame from FilterComplex & write to AudioSampleSource"]
+    end
+    
+    AG --> SG
+    SG --> BF
+    BF --> FD & TD
+    FD & TD --> SYNC
+    SYNC --> DEC --> COMP
+    COMP --> CAPT & AUD
+    
+    subgraph Finalize ["Finalize & Flush"]
+        FIN["Exporter: Finalize & close output muxer stream (Write headers)"]
+        OUT["Rendered Video File (.mp4 / .webm)"]
+    end
+    
+    CAPT & AUD -->|Loop finishes| FIN
+    FIN --> OUT
+
+    class M inputClass;
+    class B,DL,FL stepClass;
+    class INIT,VS,AS,AG stepClass;
+    class SG,BF loopClass;
+    class FD,TD stepClass;
+    class SYNC,DEC,COMP renderClass;
+    class CAPT,AUD loopClass;
+    class FIN stepClass;
+    class OUT outputClass;
+```
+
+---
+
 ## 🔍 2. Detailed Technical Comparison
 
 To ensure isomorphic behavior, we map core browser APIs directly to server-safe implementations:
