@@ -17,19 +17,19 @@ graph TB
     classDef serverClass fill:#2c3e50,stroke:#e74c3c,stroke-width:2px,color:#fff;
     classDef sharedClass fill:#1e272e,stroke:#2ecc71,stroke-width:2px,color:#fff;
 
-    subgraph Client ["【 CLIENT PREVIEW 】"]
-        A1[Timeline Editor UI] --> A2(Preview Loop)
-        A2 -->|Waits for system clock| A3(1/FPS Realtime Delay)
-        A3 -->|Renders frame| A4[HTML5 Canvas DOM]
-        A4 -->|Plays sound| A5[Browser AudioContext]
+    subgraph Client ["Client Preview"]
+        A1["Timeline Editor UI"] --> A2("Preview Loop")
+        A2 -->|Waits for system clock| A3("1/FPS Realtime Delay")
+        A3 -->|Renders frame| A4["HTML5 Canvas DOM"]
+        A4 -->|Plays sound| A5["Browser AudioContext"]
     end
 
-    subgraph Shared ["【 SYSTEM INDEPENDENT MANIFEST 】"]
-        M1[Timeline JSON Manifest]
-        M2[Mediabunny API]
+    subgraph Shared ["System Independent Manifest"]
+        M1["Timeline JSON Manifest"]
+        M2["Mediabunny API"]
     end
 
-    subgraph Server ["【 SERVER EXPORT 】"]
+    subgraph Server ["Server Export"]
         B1[Prefetch Assets] --> B2(Fast-Forward Loop)
         B2 -->|Runs at maximum CPU/GPU capacity| B3(No Time Delay)
         B3 -->|Renders virtual frame| B4[@napi-rs/canvas 2D]
@@ -59,19 +59,19 @@ graph TB
     classDef serverClass fill:#2c3e50,stroke:#e74c3c,stroke-width:2px,color:#fff;
     classDef sharedClass fill:#1e272e,stroke:#2ecc71,stroke-width:2px,color:#fff;
 
-    subgraph ClientRenderer ["【 CLIENT - BROWSER RENDERER 】"]
-        C1[OffscreenCanvas]
-        C2[WebGL / WASM Compositing]
-        C3[WebCodecs / HTMLVideoElement]
-        C4[Browser Font Loading]
+    subgraph ClientRenderer ["Client - Browser Renderer"]
+        C1["OffscreenCanvas"]
+        C2["WebGL / WASM Compositing"]
+        C3["WebCodecs / HTMLVideoElement"]
+        C4["Browser Font Loading"]
     end
 
-    subgraph SharedRenderer ["【 ISOMORPHIC SHARDS 】"]
-        S1[W3C Canvas 2D standard Context]
-        S2[CanvasSource API]
+    subgraph SharedRenderer ["Isomorphic Shards"]
+        S1["W3C Canvas 2D standard Context"]
+        S2["CanvasSource API"]
     end
 
-    subgraph ServerRenderer ["【 SERVER - HEADLESS RENDERER 】"]
+    subgraph ServerRenderer ["Server - Headless Renderer"]
         R1[@napi-rs/canvas virtual Canvas]
         R2[Rust CPU 2D Software Draw]
         R3[VideoSampleSink Mediabunny]
@@ -106,21 +106,21 @@ graph LR
     classDef serverGroup fill:#1e272e,stroke:#e74c3c,stroke-width:2px,color:#fff;
     classDef stepClass fill:#2c3e50,stroke:#7f8c8d,stroke-width:1px,color:#fff;
 
-    subgraph ClientFlow ["【 CLIENT DRAW PIPELINE 】"]
-        C_In[RootNode Ticks] --> C_Resolve[resolveRenderTree: calculates transforms]
-        C_Resolve --> C_Buffer[buildFrameDescriptor: packs textures]
-        C_Buffer -->|WebGL Textures| C_Wasm[wasmCompositor.render]
-        C_Wasm -->|Draw| C_HTMLCanvas[Offscreen Canvas]
-        C_HTMLCanvas -->|Capture| C_MVideo[CanvasSource.add]
+    subgraph ClientFlow ["Client Draw Pipeline"]
+        C_In["RootNode Ticks"] --> C_Resolve["resolveRenderTree: calculates transforms"]
+        C_Resolve --> C_Buffer["buildFrameDescriptor: packs textures"]
+        C_Buffer -->|WebGL Textures| C_Wasm["wasmCompositor.render"]
+        C_Wasm -->|Draw| C_HTMLCanvas["Offscreen Canvas"]
+        C_HTMLCanvas -->|Capture| C_MVideo["CanvasSource.add"]
     end
 
-    subgraph ServerFlow ["【 SERVER DRAW PIPELINE 】"]
-        S_In[ProjectManifest Ticks] --> S_Loop[Iterate tracks / active elements]
-        S_Loop --> S_Video[renderVideoNodeToContext]
-        S_Loop --> S_Image[renderImageNodeToContext]
-        S_Loop --> S_Text[renderTextNodeToContext]
-        S_Video & S_Image & S_Text -->|Draw| S_Canvas[CanvasContext 2D]
-        S_Canvas -->|Capture| S_MVideo[CanvasSource.add]
+    subgraph ServerFlow ["Server Draw Pipeline"]
+        S_In["EditorManifest Ticks"] --> S_Loop["Iterate tracks / active elements"]
+        S_Loop --> S_Video["renderVideoNodeToContext"]
+        S_Loop --> S_Image["renderImageNodeToContext"]
+        S_Loop --> S_Text["renderTextNodeToContext"]
+        S_Video & S_Image & S_Text -->|Draw| S_Canvas["CanvasContext 2D"]
+        S_Canvas -->|Capture| S_MVideo["CanvasSource.add"]
     end
 
     C_In <-->|Timeline ticks parity| S_In
@@ -149,7 +149,7 @@ sequenceDiagram
     participant MB as Mediabunny Output
     participant NodeAV as NodeAV Audio Mix
 
-    Client->>Server: Send ProjectManifest (JSON)
+    Client->>Server: Send EditorManifest (JSON)
     activate Server
     
     Note over Server,Disk: [Stage 1: Prefetch Assets]
@@ -191,7 +191,7 @@ To ensure isomorphic behavior, we map core browser APIs directly to server-safe 
 | :--- | :--- | :--- |
 | **Virtual Canvas** | Uses browser-native `OffscreenCanvas` for off-screen rendering. | Uses `@napi-rs/canvas` `createCanvas` helper. |
 | **Resizing** | Manipulates `.width` and `.height` property of the DOM element. | Instantiated once at constructor via `createCanvas(width, height)`. |
-| **Render Loop** | 1. Computes transforms via `resolveRenderTree`. <br>2. Binds WebGL textures via `buildFrameDescriptor`. <br>3. Dispatches WebGL drawing. | 1. Iterates over `ProjectManifest.tracks` sequential layers. <br>2. Filters elements active at timestamp `t`. <br>3. Sequentially draws elements using standard 2D Context APIs. |
+| **Render Loop** | 1. Computes transforms via `resolveRenderTree`. <br>2. Binds WebGL textures via `buildFrameDescriptor`. <br>3. Dispatches WebGL drawing. | 1. Iterates over `EditorManifest.tracks` sequential layers. <br>2. Filters elements active at timestamp `t`. <br>3. Sequentially draws elements using standard 2D Context APIs. |
 | **Video Decoding** | Uses HTML5 `<video>` tag or WebCodecs API. | Uses `VideoSampleSink` from `mediabunny` wrapping native FFmpeg decoders. |
 | **Video Drawing** | `ctx.drawImage(videoElement)` or WebGL textures. | Copies raw pixel buffers into W3C standard `ImageData` objects and draws using `ctx.putImageData`. |
 | **Font Registration** | Fetches fonts via CSS `@font-face` or the Web Fonts API. | Downloads font files locally and registers them dynamically using `@napi-rs/canvas` `GlobalFonts.registerFromPath`. |
@@ -207,7 +207,7 @@ The server-side rendering logic matches the folder structure of the client packa
 media-render/src/
 ├── index.ts                      # Server instantiation & API endpoints
 ├── types/
-│   └── opencut.ts                # TypeScript declarations for OpenCut manifests
+│   └── editor-manifest.ts        # TypeScript declarations for Editor manifests
 └── services/
     └── renderer/                 # Core isomorphic rendering services
         ├── scene-exporter.ts     # Exporter orchestration & muxer logic

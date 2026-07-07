@@ -10,27 +10,27 @@ The manifest follows a strict hierarchical tree structure where a timeline is co
 
 ```mermaid
 graph TD
-    EditorManifest --> id[Manifest ID]
-    EditorManifest --> Settings[Global Settings]
-    EditorManifest --> Tracks[Track Layers List]
+    EditorManifest --> id["Manifest ID"]
+    EditorManifest --> Settings["Global Settings"]
+    EditorManifest --> Tracks["Track Layers List"]
     
-    Settings --> width[width: px]
-    Settings --> height[height: px]
-    Settings --> fps[fps: number]
-    Settings --> format[format: mp4 | webm]
-    Settings --> quality[quality: low | medium | high | very_high]
-    Settings --> audio[shouldIncludeAudio: boolean]
+    Settings --> width["width: px"]
+    Settings --> height["height: px"]
+    Settings --> fps["fps: number"]
+    Settings --> format["format: mp4 | webm"]
+    Settings --> quality["quality: low | medium | high | very_high"]
+    Settings --> audio["shouldIncludeAudio: boolean"]
 
-    Tracks --> VideoTrack[Video Tracks]
-    Tracks --> AudioTrack[Audio Tracks]
-    Tracks --> TextTrack[Text Tracks]
+    Tracks --> VideoTrack["Video Tracks"]
+    Tracks --> AudioTrack["Audio Tracks"]
+    Tracks --> TextTrack["Text Tracks"]
 
-    VideoTrack --> VideoElement[Video Clip]
-    VideoTrack --> ImageElement[Static Image]
+    VideoTrack --> VideoElement["Video Clip"]
+    VideoTrack --> ImageElement["Static Image"]
 
-    AudioTrack --> AudioElement[Background Audio]
+    AudioTrack --> AudioElement["Background Audio"]
 
-    TextTrack --> TextElement[Subtitle / Label]
+    TextTrack --> TextElement["Subtitle / Label"]
 ```
 
 ---
