@@ -1,15 +1,123 @@
 # Media Render Microservice
 
-A high-performance, stateless **non-linear video and media renderer** built on the **Bun runtime**, **Elysia web framework**, and **NodeAV** (native FFmpeg bindings). It processes timeline specifications (`Manifest`) in parallel and outputs high-quality, fully-rendered video compositions.
+A high-performance, stateless **non-linear video and media renderer** built on the **Bun runtime** and **NodeAV** (native FFmpeg bindings). It processes timeline specifications (`Manifest`) in parallel and outputs high-quality, fully-rendered video compositions.
 
 ---
 
-## ⚡ Quick Start
+## ⚡ Prerequisites
+- **FFmpeg** installed on your host system.
 
-### Prerequisite
-- **FFmpeg**
+---
 
-### Run Server
+## 📦 Usage Method 1: Using as a Library
+
+You can import and use the rendering core directly in your TypeScript/JavaScript codebase without running a web server. All public core APIs are exported from the main library entrypoint `src/index.ts`.
+
+### 1. In-Process Manifest Rendering
+
+To render a video directly from your code, use the **`RenderService`** class (or the standalone `exporter` function).
+
+#### Import & Instantiation:
+```typescript
+import { RenderService } from "./src/index"; // Or from the package name if linked/published
+
+const renderService = new RenderService();
+```
+
+#### `renderManifest` Method Signature:
+```typescript
+const videoPath = await renderService.renderManifest(
+  manifest,           // 1. Manifest object (required)
+  onProgress,         // 2. Callback for rendering progress: (progress: number) => void (optional)
+  customOutputPath    // 3. Output file save path (optional)
+);
+```
+
+* **`manifest`**: The timeline configuration object (`Manifest`) containing settings, tracks, and elements.
+* **`onProgress`**: An optional callback receiving the render progress percentage (`0` to `100`) as each frame compiles (ideal for logging/progress bars).
+* **`customOutputPath`**: A relative or absolute path to save the output video file (e.g., `/var/outputs/my-video.mp4`). If omitted, the file defaults to the `./test-outputs/` folder with the name format `<manifest_id>.<format>`.
+
+#### Complete Example:
+```typescript
+import { RenderService, Manifest } from "./src/index";
+
+const renderService = new RenderService();
+
+async function run() {
+  const manifest: Manifest = {
+    id: "render-direct-example",
+    settings: {
+      width: 640,
+      height: 360,
+      fps: 30,
+      format: "mp4",
+      quality: "high",
+      shouldIncludeAudio: true
+    },
+    tracks: [
+      {
+        id: "track-main-video",
+        type: "video",
+        isMain: true,
+        elements: [
+          {
+            id: "bg-clip",
+            type: "video",
+            sourceUrl: "./test-assets/mov_bbb.mp4",
+            startTime: 0,
+            duration: 5.0,
+            params: {
+              volume: 0.0,
+              width: 640,
+              height: 360
+            }
+          }
+        ]
+      }
+    ]
+  };
+
+  try {
+    const videoPath = await renderService.renderManifest(
+      manifest,
+      (progress) => {
+        console.log(`Video rendering progress: ${progress}%`);
+      },
+      "./test-outputs/direct-output.mp4" // Save directly to custom file path
+    );
+    console.log(`🎉 Video rendered successfully at: ${videoPath}`);
+  } catch (error) {
+    console.error("❌ Video rendering failed:", error);
+  }
+}
+
+run();
+```
+
+### 2. Programmatic HTTP Server
+
+If you want to run the HTTP API Server directly within your application code (e.g., embedded inside a NestJS or Express/Bun app):
+
+#### Usage:
+```typescript
+import { startServer } from "./src/index";
+
+// Start the server and retrieve the Bun Server instance
+const server = startServer({ 
+  port: 3005 // API server port, defaults to env PORT or 3005
+});
+
+// To stop the server when no longer needed:
+// server.stop();
+```
+
+---
+
+## 📡 Usage Method 2: Running as a Standalone HTTP Server
+
+You can run the microservice as a standalone HTTP API Server to serve other applications via one of the two methods below.
+
+### 1. Running via CLI (Local Mode)
 ```bash
 bun install
 bun start
@@ -18,17 +126,27 @@ bun start
 - **Swagger Documentation:** `http://localhost:3005/docs`
 - **Health Check:** `http://localhost:3005/health`
 
+### 2. Running via Docker (Docker Mode)
+A pre-packaged environment containing Bun, FFmpeg, and canvas rendering libraries:
+```bash
+# Start rendering service in background
+docker compose up --build -d
+
+# Shutdown rendering service
+docker compose down
+```
+
 ---
 
 ## ⚙️ Configuration
 
-Environment variables and system limits are documented in [env.md](docs/env.md).
+All environment variables and resource limits are documented in detail in [env.md](docs/env.md).
 
 ---
 
 ## 📖 Manifest & Element Guides
 
-Detailed parameter specifications, timing models, and JSON schemas for tracks and elements:
+Detailed technical specifications, timing diagrams, and JSON schemas for tracks and elements:
 - [Track Specification & Layering](docs/tracks/track_schema.md)
 - [Video Element Spec (`video`)](docs/elements/video_element.md)
 - [Image Element Spec (`image`)](docs/elements/image_element.md)
@@ -40,45 +158,16 @@ Detailed parameter specifications, timing models, and JSON schemas for tracks an
 
 ---
 
-## 🐳 Docker Deployment
-
-A pre-packaged environment containing Bun, FFmpeg, and canvas assets is available:
-
-```bash
-# Start rendering service
-docker compose up --build -d
-
-# Shutdown service
-docker compose down
-```
-
----
-
 ## 🧪 Testing
 
-Run automated E2E tests using mock assets:
+Automated E2E testing scenarios using mock assets:
 
 ```bash
-# Run specific manifest test
+# Test command syntax: bun run test:[name]
+# Examples:
 bun run test:render
-bun run test:shorts
-bun run test:lyrics
-
-# Run isolated element tests
 bun run test:element:video
-bun run test:element:image
-bun run test:element:audio
-bun run test:element:text
-bun run test:element:sticker
-bun run test:element:graphic
-bun run test:element:effect
-
-# Run isolated track configuration tests
 bun run test:track:muted
-bun run test:track:hidden
-bun run test:track:main
-bun run test:track:multi_video
-bun run test:track:multi_audio
 
 # Run all test suites sequentially
 bun run test:render && bun run test:shorts && bun run test:slideshow && bun run test:lyrics && bun run test:gaps && bun run test:animations && bun run test:pip && bun run test:effects && bun run test:audio && bun run test:backdrop && bun run test:compat
@@ -141,27 +230,3 @@ Check the completion percentage and status of a specific render job:
 ```bash
 curl http://localhost:3005/render/curl-example/progress
 ```
-
----
-
-## 📐 Coordinate System & Layout Guidelines
-
-To align correctly with OpenCut's editor schema, all visual layers (video, image, text, sticker, graphic) use a **center-relative coordinate system**.
-
-### 1. Positioning (`transform.positionX`, `transform.positionY`)
-- **Origin `(0, 0)`:** Center of the canvas viewport.
-- **X-axis:** Positive offsets move right, negative offsets move left.
-- **Y-axis:** Positive offsets move down, negative offsets move up.
-- **Example:** For a standard `640x360` canvas:
-  - `(0, 0)` is the exact center.
-  - `(0, -80)` offsets the element up by 80px (e.g. top subtitles).
-  - `(0, 80)` offsets the element down by 80px (e.g. bottom subtitles).
-
-### 2. Text Background Configuration
-Text background properties are defined using dot-notation within the element's `params` object:
-- `"background.enabled"` (boolean): Enables or disables the text background bar.
-- `"background.color"` (string): Color of the background (e.g., `"rgba(0, 0, 0, 0.6)"`).
-- `"background.cornerRadius"` (number, `0` to `100`): The percentage of corner rounding.
-- `"background.paddingX"` / `"background.paddingY"` (number): Horizontal and vertical padding in pixels.
-- `"background.offsetX"` / `"background.offsetY"` (number): Position offset of the background bar relative to the text.
-
