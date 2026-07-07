@@ -123,13 +123,11 @@ interface TextElement {
                                │
                 [ Phase 3: Composition Loop ]
                 For frame t = 0 to duration:
-                - Clear Canvas (Black Background)
-                - Filter tracks active at t
-                - Draw active Video frames (W3C standard ImageData)
-                - Draw static Images and Stickers
-                - Render Text overlays (aligned, styled, stroked)
+                - Build Frame and Texture Descriptors recursively via RootNode
+                - Synchronize Compositor Cache (rasterize text, sync video/images)
+                - SkiaCompositor renders all active layers (opacity, blend modes, transforms)
                 - Feed resulting Canvas frame to Output Muxer
-                               │
+                                │
                  [ Phase 4: Audio Mix & Mux ]
                  - Trim and delay audio sources asynchronously
                  - Mix into a single audio track (amix)

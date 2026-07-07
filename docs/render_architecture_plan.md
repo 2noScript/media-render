@@ -115,21 +115,20 @@ graph LR
     end
 
     subgraph ServerFlow ["Server Draw Pipeline"]
-        S_In["EditorManifest Ticks"] --> S_Loop["Iterate tracks / active elements"]
-        S_Loop --> S_Video["renderVideoNodeToContext"]
-        S_Loop --> S_Image["renderImageNodeToContext"]
-        S_Loop --> S_Text["renderTextNodeToContext"]
-        S_Video & S_Image & S_Text -->|Draw| S_Canvas["CanvasContext 2D"]
+        S_In["EditorManifest Ticks"] --> S_Build["buildFrame: packs textures & items"]
+        S_Build --> S_Sync["syncTextures: updates cache"]
+        S_Sync --> S_Comp["skiaCompositor.render"]
+        S_Comp -->|Draw| S_Canvas["CanvasContext 2D"]
         S_Canvas -->|Capture| S_MVideo["CanvasSource.add"]
     end
 
     C_In <-->|Timeline ticks parity| S_In
-    C_Resolve <-->|Element timeline checking| S_Loop
-    C_Wasm <-->|Context 2D Draw Parity| S_Canvas
+    C_Resolve <-->|Element timeline checking| S_Build
+    C_Wasm <-->|Compositor render parity| S_Comp
     C_MVideo <-->|Mediabunny CanvasSource parity| S_MVideo
 
     class C_In,C_Resolve,C_Buffer,C_Wasm,C_HTMLCanvas,C_MVideo stepClass;
-    class S_In,S_Loop,S_Video,S_Image,S_Text,S_Canvas,S_MVideo stepClass;
+    class S_In,S_Build,S_Sync,S_Comp,S_Canvas,S_MVideo stepClass;
     class ClientFlow clientGroup;
     class ServerFlow serverGroup;
 ```
@@ -162,10 +161,11 @@ sequenceDiagram
     
     Note over Server,Canvas: [Stage 3: Fast-Forward Rendering Loop]
     loop For t = 0 to totalDuration (step = 1/fps)
-        Server->>Disk: Fetch video frame raw RGBA buffer at time t
+        Server->>Server: Build scene graph & frame/texture descriptors
+        Server->>Disk: Fetch video frame raw RGBA buffer at time t (if active)
         Disk-->>Server: Raw RGBA Buffer
-        Server->>Canvas: Draw raw Video frame buffer to sub-canvas
-        Server->>Canvas: Render static Images & Text nodes (fillText/strokeText)
+        Server->>Server: Sync textures in compositor cache (clear & redraw static textures)
+        Server->>Canvas: Compositor renders items (blend modes, transforms, opacity)
         Server->>MB: CanvasSource captures active canvas
         
         Server->>NodeAV: Fetch mixed audio frame
@@ -191,9 +191,9 @@ To ensure isomorphic behavior, we map core browser APIs directly to server-safe 
 | :--- | :--- | :--- |
 | **Virtual Canvas** | Uses browser-native `OffscreenCanvas` for off-screen rendering. | Uses `@napi-rs/canvas` `createCanvas` helper. |
 | **Resizing** | Manipulates `.width` and `.height` property of the DOM element. | Instantiated once at constructor via `createCanvas(width, height)`. |
-| **Render Loop** | 1. Computes transforms via `resolveRenderTree`. <br>2. Binds WebGL textures via `buildFrameDescriptor`. <br>3. Dispatches WebGL drawing. | 1. Iterates over `EditorManifest.tracks` sequential layers. <br>2. Filters elements active at timestamp `t`. <br>3. Sequentially draws elements using standard 2D Context APIs. |
+| **Render Loop** | 1. Computes transforms via `resolveRenderTree`. <br>2. Binds WebGL textures via `buildFrameDescriptor`. <br>3. Dispatches WebGL drawing. | 1. Recursively builds `FrameDescriptor` and textures via `buildFrame`. <br>2. Synchronizes compositor cache. <br>3. Renders items sequentially via `SkiaCompositor` 2D APIs. |
 | **Video Decoding** | Uses HTML5 `<video>` tag or WebCodecs API. | Uses `VideoSampleSink` from `mediabunny` wrapping native FFmpeg decoders. |
-| **Video Drawing** | `ctx.drawImage(videoElement)` or WebGL textures. | Copies raw pixel buffers into W3C standard `ImageData` objects and draws using `ctx.putImageData`. |
+| **Video Drawing** | `ctx.drawImage(videoElement)` or WebGL textures. | Copies raw pixel buffers into standard `ImageData` objects and wraps them into external textures. |
 | **Font Registration** | Fetches fonts via CSS `@font-face` or the Web Fonts API. | Downloads font files locally and registers them dynamically using `@napi-rs/canvas` `GlobalFonts.registerFromPath`. |
 | **Visual Quality** | Configured via browser compositor parameters. | Configured via `qualityMap` linking manifest settings to `mediabunny` quality constants (`QUALITY_LOW`, `QUALITY_MEDIUM`, `QUALITY_HIGH`, `QUALITY_VERY_HIGH`). |
 
@@ -207,14 +207,31 @@ The server-side rendering logic matches the folder structure of the client packa
 media-render/src/
 ├── index.ts                      # Server instantiation & API endpoints
 ├── types/
-│   └── editor-manifest.ts        # TypeScript declarations for Editor manifests
-└── services/
-    └── renderer/                 # Core isomorphic rendering services
+│   ├── editor-manifest.ts        # TypeScript declarations for Editor manifests
+│   └── exporter.ts               # Type declarations for exporter options
+├── lib/
+│   ├── helpers.ts                # Filesystem utilities
+│   └── constants.ts              # Bitrate and quality map constants
+└── core/
+    └── renderer/                 # Core rendering components
         ├── exporter.ts           # Exporter orchestration & muxer logic
         ├── canvas-renderer.ts    # Frame compositor & asset pre-fetching
         ├── font-loader.ts        # Helper to load and register remote fonts
+        ├── bootstrap.ts          # Polyfills & NodeAV auto-detection patches
+        ├── canvas-utils.ts       # Canvas creation helper
+        ├── mask-feather.ts       # Mask feathering helper
+        ├── compositor/           # Decoupled compositor design system
+        │   ├── types.ts          # Compositor descriptor schemas
+        │   └── skia-compositor.ts# Skia-based 2D frame compositor
         └── nodes/                # Layout nodes rendering routines
-            ├── video-node.ts     # Video frame compositing
-            ├── image-node.ts     # Static image rendering
-            └── text-node.ts      # Multi-line karaoke subtitle renderer
+            ├── registry.ts       # Dynamic Node Registry
+            ├── base-node.ts      # Abstract Base Node
+            ├── visual-node.ts    # Visual Node with keyframe interpolation
+            ├── root-node.ts      # Root Node in scene graph
+            ├── video-node.ts     # Video Frame descriptor builder
+            ├── image-node.ts     # Image layer descriptor builder
+            ├── sticker-node.ts   # Sticker layer descriptor builder
+            ├── color-node.ts     # Solid color layer descriptor builder
+            ├── blur-background-node.ts # Blurred backdrop layer descriptor builder
+            └── text-node.ts      # Text layer descriptor builder
 ```
