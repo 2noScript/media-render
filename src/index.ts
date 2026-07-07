@@ -43,11 +43,21 @@ export const app = new Elysia()
     if (!resourceStatus.isSafe) {
       set.status = 503; // Trả về 503 để báo container đang degraded
     }
+
+    const hwCaps = OpenCutRenderService.detectHardwareCapabilities();
+    const verifyStatus = renderService.getEncoderVerificationStatus("mp4");
+
     return {
       status: resourceStatus.isSafe ? "healthy" : "degraded",
       reason: resourceStatus.reason,
       activeRenders,
       concurrentLimit,
+      gpu: {
+        detectedHardwareAcceleration: hwCaps,
+        optimalVideoEncoder: verifyStatus.optimalEncoder,
+        actualVideoEncoder: verifyStatus.actualEncoder,
+        isGpuAccelerationActive: verifyStatus.isGpuActive
+      },
       resources: resourceStatus.details,
       timestamp: new Date().toISOString(),
     };
@@ -128,6 +138,10 @@ async function main() {
   console.log(` - NVIDIA NVENC (GPU)  : ${hwCaps.nvidia_nvenc ? "🟢 AVAILABLE (h264_nvenc)" : "🔴 UNSUPPORTED"}`);
   console.log(` - Apple VideoToolbox  : ${hwCaps.apple_videotoolbox ? "🟢 AVAILABLE (h264_videotoolbox)" : "🔴 UNSUPPORTED"}`);
   console.log(` - Intel QuickSync     : ${hwCaps.intel_qsv ? "🟢 AVAILABLE (h264_qsv)" : "🔴 UNSUPPORTED"}`);
+  
+  // 3. Thực hiện xác minh khả năng khởi chạy thực tế của bộ mã hóa tối ưu (GPU)
+  const encoderStatus = await renderService.verifyAndSelectEncoder("mp4");
+  console.log(` - CPU Fallback Active : ${!encoderStatus.isGpuActive ? "⚠️ YES (GPU failed capability test, using CPU)" : "✅ NO (GPU is active)"}`);
   console.log("====================================================");
 }
 

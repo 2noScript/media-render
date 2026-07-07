@@ -22,6 +22,10 @@ interface PreparedInput {
 }
 
 export class OpenCutRenderService {
+  // Bộ nhớ đệm lưu encoder thực tế đã được verify qua dummy test
+  private static verifiedVideoEncoder: string | null = null;
+  private static isGpuActive: boolean = false;
+
   /**
    * Kiểm tra khả năng hỗ trợ phần cứng của hệ thống hiện tại
    */
@@ -48,52 +52,43 @@ export class OpenCutRenderService {
   /**
    * Tự động phát hiện GPU (NVIDIA NVENC, Apple VideoToolbox, Intel QuickSync) để tăng tốc phần cứng
    */
-  private getOptimalVideoEncoder(format: string): string {
+  public getOptimalVideoEncoder(format: string): string {
     const isWebm = format === "webm";
     if (isWebm) {
       try {
         if (av.Codec.findEncoderByName("vp9_nvenc" as any)) {
-          console.log("[RenderService] [GPU ACCELERATED] Selected Encoder: vp9_nvenc (NVIDIA GPU)");
           return "vp9_nvenc";
         }
       } catch {}
-      console.log("[RenderService] [CPU ENCODER] Selected Encoder: vp9 (libvpx-vp9)");
       return av.FF_ENCODER_LIBVPX_VP9 as any;
     }
 
-    // 1. Kiểm tra NVIDIA NVENC (Cho server Linux có GPU NVIDIA trong Docker/Production)
+    // 1. Kiểm tra NVIDIA NVENC
     try {
       if (av.Codec.findEncoderByName("h264_nvenc" as any)) {
-        console.log("[RenderService] [GPU ACCELERATED] Selected Encoder: h264_nvenc (NVIDIA GPU NVENC)");
         return "h264_nvenc";
       }
     } catch {}
 
-    // 2. Kiểm tra Apple Silicon VideoToolbox (Cho macOS M1/M2/M3 local dev)
+    // 2. Kiểm tra Apple Silicon VideoToolbox
     try {
       if (av.Codec.findEncoderByName("h264_videotoolbox" as any)) {
-        console.log("[RenderService] [GPU ACCELERATED] Selected Encoder: h264_videotoolbox (Apple Silicon GPU)");
         return "h264_videotoolbox";
       }
     } catch {}
 
-    // 3. Kiểm tra Intel QuickSync (h264_qsv)
+    // 3. Kiểm tra Intel QuickSync
     try {
       if (av.Codec.findEncoderByName("h264_qsv" as any)) {
-        console.log("[RenderService] [GPU ACCELERATED] Selected Encoder: h264_qsv (Intel QuickSync GPU)");
         return "h264_qsv";
       }
     } catch {}
 
-    // Fallback về CPU encoder tiêu chuẩn
-    console.log("[RenderService] [CPU SOFTWARE] Selected Encoder: libx264 (CPU Only)");
     return av.FF_ENCODER_LIBX264 as any;
   }
 
   /**
-   * Kiểm tra khả năng mở thực tế của GPU encoder.
-   * Do một số môi trường ảo hóa Docker Desktop không hỗ trợ driver đầy đủ mặc dù FFmpeg detect thấy,
-   * việc chạy test encode thử dummy frame sẽ giúp phát hiện lỗi EPERM (Operation not permitted) trước khi muxer khởi tạo.
+   * Chạy thử nghiệm capability test của GPU encoder thực tế
    */
   private async testVideoEncoder(encoderName: string, width: number, height: number, fps: number): Promise<boolean> {
     if (encoderName === (av.FF_ENCODER_LIBX264 as string)) {
@@ -134,8 +129,44 @@ export class OpenCutRenderService {
   }
 
   /**
+   * Khởi tạo kiểm thử encoder lúc startup. Lấy encoder tối ưu và chạy capability check thực tế,
+   * lưu lại kết quả vào cache để sử dụng cho toàn bộ các request render tiếp theo mà không cần test lại.
+   */
+  public async verifyAndSelectEncoder(format: string = "mp4"): Promise<{ actualEncoder: string; isGpuActive: boolean }> {
+    const optimalEncoderName = this.getOptimalVideoEncoder(format);
+    console.log(`[RenderService] Verification startup: Testing optimal encoder '${optimalEncoderName}'`);
+
+    const isGpuSupported = await this.testVideoEncoder(optimalEncoderName, 640, 360, 30);
+    
+    if (isGpuSupported) {
+      OpenCutRenderService.verifiedVideoEncoder = optimalEncoderName;
+      OpenCutRenderService.isGpuActive = optimalEncoderName !== (av.FF_ENCODER_LIBX264 as string) && optimalEncoderName !== (av.FF_ENCODER_LIBVPX_VP9 as string);
+      console.log(`[RenderService] Verification startup: Encoder verification SUCCESS. Verified Encoder: ${optimalEncoderName}`);
+    } else {
+      OpenCutRenderService.verifiedVideoEncoder = av.FF_ENCODER_LIBX264 as any;
+      OpenCutRenderService.isGpuActive = false;
+      console.log(`[RenderService] Verification startup: Encoder verification FAILED. Falling back to CPU encoder: libx264`);
+    }
+
+    return {
+      actualEncoder: OpenCutRenderService.verifiedVideoEncoder as string,
+      isGpuActive: OpenCutRenderService.isGpuActive
+    };
+  }
+
+  /**
+   * Trả về trạng thái xác minh bộ mã hóa hiện tại của server
+   */
+  public getEncoderVerificationStatus(format: string = "mp4") {
+    return {
+      optimalEncoder: this.getOptimalVideoEncoder(format),
+      actualEncoder: OpenCutRenderService.verifiedVideoEncoder || "pending_verification",
+      isGpuActive: OpenCutRenderService.isGpuActive
+    };
+  }
+
+  /**
    * Async generator helper giúp hãm/giới hạn số frame hoặc mẫu âm thanh theo thời lượng duration cấu hình của clip.
-   * Điều này thay thế cho việc dùng filter 'trim=duration' trong FFmpeg, tránh việc FFmpeg đóng cổng buffersrc sớm gây crash.
    */
   private async *limitGenerator(
     generator: AsyncIterable<av.Frame | null>,
@@ -384,23 +415,17 @@ export class OpenCutRenderService {
       }
     }
 
-    // Lựa chọn encoder tối ưu ban đầu dựa trên tăng tốc phần cứng GPU (nếu có)
-    let videoEncoderName = this.getOptimalVideoEncoder(manifest.settings.format);
+    // Lấy encoder thực tế đã được verify sẵn từ cache
+    let videoEncoderName = OpenCutRenderService.verifiedVideoEncoder;
+    if (!videoEncoderName) {
+      // Fallback dự phòng nếu chưa verify lúc startup
+      videoEncoderName = this.getOptimalVideoEncoder(manifest.settings.format);
+    }
+    
     const isWebm = manifest.settings.format === "webm";
     const audioEncoderName = isWebm ? av.FF_ENCODER_OPUS : av.FF_ENCODER_AAC;
 
-    // Chạy capability test trên GPU encoder trước khi tạo Muxer
-    const isGpuSupported = await this.testVideoEncoder(
-      videoEncoderName,
-      manifest.settings.width,
-      manifest.settings.height,
-      manifest.settings.fps
-    );
-
-    if (!isGpuSupported) {
-      console.log(`[RenderService] [GPU UNSUPPORTED] Falling back to CPU encoder: libx264`);
-      videoEncoderName = av.FF_ENCODER_LIBX264 as any;
-    }
+    console.log(`[RenderService] Selected verified video encoder: ${videoEncoderName}`);
 
     const muxer = await av.Muxer.open(outputPath);
 
@@ -416,7 +441,7 @@ export class OpenCutRenderService {
       }
     }
 
-    // Khởi tạo video encoder chính thức (Bật flags: AV_CODEC_FLAG_GLOBAL_HEADER để ghi tiêu đề SPS/PPS cho MP4 mở được trên mọi thiết bị)
+    // Khởi tạo video encoder chính thức (Bật flags: AV_CODEC_FLAG_GLOBAL_HEADER để ghi tiêu đề SPS/PPS cho MP4)
     const videoEncoder = await av.Encoder.create(videoEncoderName as any, {
       autoFormat: true,
       context: { 

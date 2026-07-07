@@ -6,6 +6,59 @@ export const swaggerSpec = {
     description: "API for dynamic video rendering using FFmpeg (NodeAV) and Bun"
   },
   paths: {
+    "/health": {
+      get: {
+        summary: "Check server health and resource status",
+        description: "Trả về trạng thái tài nguyên hệ thống thực tế (RAM, CPU, RSS) và số lượng render đang xử lý. Trả về HTTP 503 nếu tài nguyên quá tải.",
+        responses: {
+          "200": {
+            description: "Server is healthy",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    status: { type: "string", example: "healthy" },
+                    reason: { type: "string", nullable: true, example: null },
+                    activeRenders: { type: "number", example: 0 },
+                    concurrentLimit: { type: "number", example: 2 },
+                    resources: {
+                      type: "object",
+                      properties: {
+                        systemMemoryUsagePercent: { type: "number", example: 45.2 },
+                        processMemoryMb: { type: "number", example: 128.5 },
+                        cpuCores: { type: "number", example: 8 },
+                        loadAvg1Min: { type: "number", example: 1.25 },
+                        cpuLoadRatio: { type: "number", example: 0.15 }
+                      }
+                    },
+                    timestamp: { type: "string", example: "2026-07-07T00:00:00.000Z" }
+                  }
+                }
+              }
+            }
+          },
+          "503": {
+            description: "Server resources degraded / overloaded",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    status: { type: "string", example: "degraded" },
+                    reason: { type: "string", example: "System memory usage (99.2%) exceeded limit (85%)" },
+                    activeRenders: { type: "number", example: 2 },
+                    concurrentLimit: { type: "number", example: 2 },
+                    resources: { type: "object" },
+                    timestamp: { type: "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/render": {
       post: {
         summary: "Render video from Project Manifest",
