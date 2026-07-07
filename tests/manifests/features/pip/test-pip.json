@@ -1,0 +1,71 @@
+{
+  "id": "pip-facecam-case",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-main-bg",
+      "name": "Main Background Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "bg-clip-1",
+          "name": "Background Bunny Video",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "duration": 5,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 0.0,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 1.0
+        }
+      ]
+    },
+    {
+      "id": "track-pip-facecam",
+      "name": "Picture in Picture Facecam",
+      "type": "video",
+      "isMain": false,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "pip-clip-1",
+          "name": "Facecam Face Overlay",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "duration": 4,
+          "startTime": 1,
+          "trimStart": 1,
+          "trimEnd": 0,
+          "volume": 0.0,
+          "width": 160,
+          "height": 90,
+          "x": 460,
+          "y": 20,
+          "opacity": 0.9,
+          "animations": {
+            "rotationDegrees": [
+              { "time": 0, "value": 0 },
+              { "time": 4, "value": 15 }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "id": "animated-keyframes-case",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-main-bg",
+      "name": "Main Background Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "bg-clip-1",
+          "name": "Background Bunny Video",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "duration": 5,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 0.0,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 1.0
+        }
+      ]
+    },
+    {
+      "id": "track-animated-sticker",
+      "name": "Animated Sticker Track",
+      "type": "video",
+      "isMain": false,
+      "elements": [
+        {
+          "id": "sticker-star",
+          "name": "Rotating Star Sticker",
+          "type": "sticker",
+          "stickerId": "star-img",
+          "sourceUrl": "https://picsum.photos/80/80",
+          "duration": 5,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "width": 80,
+          "height": 80,
+          "x": 50,
+          "y": 50,
+          "opacity": 1.0,
+          "animations": {
+            "x": [
+              { "time": 0, "value": 50 },
+              { "time": 2.5, "value": 300 },
+              { "time": 5, "value": 50 }
+            ],
+            "y": [
+              { "time": 0, "value": 50 },
+              { "time": 2.5, "value": 200 },
+              { "time": 5, "value": 50 }
+            ],
+            "rotationDegrees": [
+              { "time": 0, "value": 0 },
+              { "time": 5, "value": 360 }
+            ],
+            "opacity": [
+              { "time": 0, "value": 0.1 },
+              { "time": 1.5, "value": 1.0 },
+              { "time": 3.5, "value": 1.0 },
+              { "time": 5, "value": 0.1 }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

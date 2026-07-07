@@ -21,7 +21,7 @@ export async function exporter(manifest: EditorManifest, onProgress?: (progress:
     if (!fsExists(outputDir)) {
       await fsMkdir(outputDir);
     }
-    const outputPath = path.join(outputDir, `output-${crypto.randomUUID()}.${format}`);
+    const outputPath = path.join(outputDir, `${manifest.id || `output-${crypto.randomUUID()}`}.${format}`);
     const fpsFloat = fps;
     const timeStep = 1 / fpsFloat;
 

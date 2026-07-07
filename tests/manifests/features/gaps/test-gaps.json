@@ -1,0 +1,74 @@
+{
+  "id": "gaps-handling-case",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": true
+  },
+  "tracks": [
+    {
+      "id": "track-main-bg",
+      "name": "Main Background Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "bg-clip-1",
+          "name": "Background Bunny Video Part 1",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "duration": 3,
+          "startTime": 0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "volume": 0.5,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 1.0,
+          "blurIntensity": 15
+        },
+        {
+          "id": "bg-clip-2",
+          "name": "Background Bunny Video Part 2",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "duration": 5,
+          "startTime": 5,
+          "trimStart": 2,
+          "trimEnd": 0,
+          "volume": 0.5,
+          "width": 640,
+          "height": 360,
+          "x": 0,
+          "y": 0,
+          "opacity": 1.0,
+          "blurIntensity": 25
+        }
+      ]
+    },
+    {
+      "id": "track-bg-audio",
+      "name": "Background Sound Mix",
+      "type": "audio",
+      "elements": [
+        {
+          "id": "audio-song-1",
+          "name": "Theme Song",
+          "type": "audio",
+          "sourceUrl": "./test-assets/song.mp3",
+          "duration": 10,
+          "startTime": 0,
+          "trimStart": 1,
+          "volume": 0.3
+        }
+      ]
+    }
+  ]
+}

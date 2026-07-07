@@ -45,14 +45,22 @@ export class CanvasRenderer {
   }
 
   /**
-   * Calculates total timeline duration based on the primary main video track elements
+   * Calculates total timeline duration based on the primary main video track elements.
+   * Uses the maximum end time (startTime + duration) of all elements on the main track to handle gaps correctly.
    * @param manifest The EditorManifest containing timeline tracks
    * @returns Total duration in seconds
    */
   public calculateDuration(manifest: EditorManifest): number {
-    const mainVideoTrack = (manifest.tracks as any[]).find(t => t.type === "video" && t.isMain);
-    if (!mainVideoTrack) return 0;
-    return (mainVideoTrack.elements as any[]).reduce((acc, el) => acc + el.duration, 0);
+    let maxEnd = 0;
+    for (const track of manifest.tracks) {
+      for (const el of track.elements) {
+        const elEnd = el.startTime + el.duration;
+        if (elEnd > maxEnd) {
+          maxEnd = elEnd;
+        }
+      }
+    }
+    return maxEnd;
   }
 
   /**

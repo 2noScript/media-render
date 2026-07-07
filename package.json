@@ -5,11 +5,16 @@
   "private": true,
   "scripts": {
     "start": "bun run src/index.ts",
+    "test": "bun run tests/run.ts",
     "test:render": "bun run tests/test-render.ts",
     "test:shorts": "bun run tests/test-shorts.ts",
     "test:slideshow": "bun run tests/test-slideshow.ts",
     "test:lyrics": "bun run tests/test-lyrics.ts",
-    "test:docker": "bun run tests/test-docker.ts"
+    "test:docker": "bun run tests/test-docker.ts",
+    "test:gaps": "bun run tests/test-gaps.ts",
+    "test:animations": "bun run tests/test-animations.ts",
+    "test:pip": "bun run tests/test-pip.ts",
+    "test:effects": "bun run tests/test-effects.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
