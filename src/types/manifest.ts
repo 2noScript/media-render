@@ -1,5 +1,5 @@
 export type ParamValue = number | string | boolean;
-export type ParamValues = Record<string, ParamValue>;
+export type ParamValues = Record<string, any>;
 
 export interface Effect {
   id: string;
@@ -174,10 +174,28 @@ export interface AudioElement extends BaseTimelineElement {
   retime?: RetimeConfig;
 }
 
+export interface TextParams {
+  content?: string;
+  fontFamily?: string;
+  fontSize?: number;
+  fontWeight?: string;
+  textAlign?: "left" | "center" | "right" | "start" | "end";
+  color?: string;
+  strokeColor?: string;
+  strokeWidth?: number;
+  "transform.positionX"?: number;
+  "transform.positionY"?: number;
+  "transform.scaleX"?: number;
+  "transform.scaleY"?: number;
+  "transform.rotation"?: number;
+  "transform.opacity"?: number;
+  [key: string]: any;
+}
+
 export interface TextElement extends BaseTimelineElement {
   type: "text";
-  text?: string;     // Engine extension: backward compatibility for flat manifests
-  fontUrl?: string;  // Engine extension: remote custom font URL
+  params?: TextParams;
+  fontUrl?: string;      // Engine extension: remote custom font URL
   hidden?: boolean;
   effects?: Effect[];
 }
