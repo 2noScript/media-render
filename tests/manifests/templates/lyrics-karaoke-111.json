@@ -25,11 +25,13 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 1.0
+          "params": {
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
         }
       ]
     },
@@ -48,7 +50,9 @@
           "startTime": 0,
           "trimStart": 5,
           "trimEnd": 0,
-          "volume": 0.8
+          "params": {
+            "volume": 0.8
+          }
         }
       ]
     },
@@ -62,51 +66,51 @@
           "id": "lyric-line-1",
           "name": "Lyric 1",
           "type": "text",
-          "text": "Here is the first line of the song...",
           "duration": 3,
           "startTime": 0.5,
           "trimStart": 0,
           "trimEnd": 0,
-          "style": {
+          "params": {
+            "content": "Here is the first line of the song...",
             "fontSize": 24,
             "color": "yellow",
             "fontFamily": "Helvetica",
-            "x": 120,
-            "y": 300
+            "transform.positionX": -200,
+            "transform.positionY": 120
           }
         },
         {
           "id": "lyric-line-2",
           "name": "Lyric 2",
           "type": "text",
-          "text": "And now the second line appears!",
           "duration": 3,
           "startTime": 3.8,
           "trimStart": 0,
           "trimEnd": 0,
-          "style": {
+          "params": {
+            "content": "And now the second line appears!",
             "fontSize": 24,
             "color": "cyan",
             "fontFamily": "Helvetica",
-            "x": 130,
-            "y": 300
+            "transform.positionX": -190,
+            "transform.positionY": 120
           }
         },
         {
           "id": "lyric-line-3",
           "name": "Lyric 3",
           "type": "text",
-          "text": "Ending with a beautiful melody.",
           "duration": 3,
           "startTime": 7.0,
           "trimStart": 0,
           "trimEnd": 0,
-          "style": {
+          "params": {
+            "content": "Ending with a beautiful melody.",
             "fontSize": 24,
             "color": "lightgreen",
             "fontFamily": "Helvetica",
-            "x": 130,
-            "y": 300
+            "transform.positionX": -190,
+            "transform.positionY": 120
           }
         }
       ]

@@ -26,12 +26,14 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "volume": 0.0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 1.0
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
         }
       ]
     },
@@ -52,14 +54,16 @@
           "startTime": 1,
           "trimStart": 1,
           "trimEnd": 0,
-          "volume": 0.0,
-          "width": 160,
-          "height": 90,
-          "x": 460,
-          "y": 20,
-          "opacity": 0.9,
+          "params": {
+            "volume": 0.0,
+            "width": 160,
+            "height": 90,
+            "transform.positionX": 460,
+            "transform.positionY": 20,
+            "opacity": 0.9
+          },
           "animations": {
-            "rotationDegrees": [
+            "transform.rotate": [
               { "time": 0, "value": 0 },
               { "time": 4, "value": 15 }
             ]

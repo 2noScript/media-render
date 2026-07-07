@@ -14,6 +14,8 @@
       "name": "Main Landscape Video Track",
       "type": "video",
       "isMain": true,
+      "muted": false,
+      "hidden": false,
       "elements": [
         {
           "id": "landscape-clip-1",
@@ -24,13 +26,15 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "volume": 0.0,
-          "width": 360,
-          "height": 202,
-          "x": 0,
-          "y": 219,
-          "opacity": 1.0,
-          "blurIntensity": 20
+          "params": {
+            "volume": 0.0,
+            "width": 360,
+            "height": 202,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0,
+            "blurIntensity": 20
+          }
         }
       ]
     },
@@ -43,10 +47,12 @@
           "id": "title-text",
           "name": "Backdrop Blur Demo Title",
           "type": "text",
-          "text": "Backdrop Blur E2E Test",
           "duration": 5,
           "startTime": 0,
-          "style": {
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "content": "Backdrop Blur E2E Test",
             "fontSize": 24,
             "color": "#FFFFFF",
             "fontFamily": "Bangers",
@@ -54,8 +60,8 @@
             "strokeColor": "#FF0000",
             "strokeWidth": 3,
             "textAlign": "center",
-            "x": 180,
-            "y": 100
+            "transform.positionX": 0,
+            "transform.positionY": -220
           }
         }
       ]

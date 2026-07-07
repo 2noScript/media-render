@@ -51,8 +51,8 @@ export class AssetRegistry {
 
         // Load and register remote custom fonts
         if (el.type === "text") {
-          const fontFamily = el.style?.fontFamily ?? el.params?.["fontFamily"];
-          const fontUrl = el.style?.fontUrl ?? el.params?.["fontUrl"];
+          const fontFamily = el.fontFamily ?? el.params?.["fontFamily"];
+          const fontUrl = el.fontUrl ?? el.params?.["fontUrl"];
           if (fontFamily && fontUrl) {
             const fontKey = `${fontFamily}:${fontUrl}`;
             if (!this.loadedFonts.has(fontKey)) {

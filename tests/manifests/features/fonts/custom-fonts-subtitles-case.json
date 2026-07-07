@@ -24,12 +24,14 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "volume": 0.0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 0.8
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 0.8
+          }
         }
       ]
     },
@@ -42,10 +44,12 @@
           "id": "font-text-1",
           "name": "Lobster Font Segment",
           "type": "text",
-          "text": "Lobster Bold Font (Gold)",
           "duration": 2.5,
           "startTime": 0.5,
-          "style": {
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "content": "Lobster Bold Font (Gold)",
             "fontSize": 36,
             "color": "#FFD700",
             "fontFamily": "Lobster",
@@ -53,18 +57,20 @@
             "strokeColor": "#000000",
             "strokeWidth": 4,
             "textAlign": "center",
-            "x": 320,
-            "y": 100
+            "transform.positionX": 0,
+            "transform.positionY": -80
           }
         },
         {
           "id": "font-text-2",
           "name": "Pacifico Font Segment",
           "type": "text",
-          "text": "Pacifico Hand-drawn Cursive (Pink)",
           "duration": 2.5,
           "startTime": 3.2,
-          "style": {
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "content": "Pacifico Hand-drawn Cursive (Pink)",
             "fontSize": 32,
             "color": "#FF69B4",
             "fontFamily": "Pacifico",
@@ -72,18 +78,20 @@
             "strokeColor": "#FFFFFF",
             "strokeWidth": 3,
             "textAlign": "center",
-            "x": 320,
-            "y": 180
+            "transform.positionX": 0,
+            "transform.positionY": 0
           }
         },
         {
           "id": "font-text-3",
           "name": "Bangers Font Segment",
           "type": "text",
-          "text": "Bangers Comic Regular Outline (Cyan)",
           "duration": 2.0,
           "startTime": 5.9,
-          "style": {
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "content": "Bangers Comic Regular Outline (Cyan)",
             "fontSize": 44,
             "color": "#00FFFF",
             "fontFamily": "Bangers",
@@ -91,8 +99,8 @@
             "strokeColor": "#333333",
             "strokeWidth": 2,
             "textAlign": "center",
-            "x": 320,
-            "y": 260
+            "transform.positionX": 0,
+            "transform.positionY": 80
           }
         }
       ]

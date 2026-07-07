@@ -1,3 +1,58 @@
+export type ParamValue = number | string | boolean;
+export type ParamValues = Record<string, ParamValue>;
+
+export interface Effect {
+  id: string;
+  type: string;
+  params: ParamValues;
+  enabled: boolean;
+}
+
+export type ScalarSegmentType = "step" | "linear" | "bezier";
+export type TangentMode = "auto" | "aligned" | "broken" | "flat";
+export type ChannelExtrapolationMode = "hold" | "linear";
+
+export interface CurveHandle {
+  dt: number;
+  dv: number;
+}
+
+export interface BaseAnimationKeyframe<TValue extends ParamValue> {
+  id: string;
+  time: number; // relative to element start time
+  value: TValue;
+}
+
+export interface ScalarAnimationKey extends BaseAnimationKeyframe<number> {
+  leftHandle?: CurveHandle;
+  rightHandle?: CurveHandle;
+  segmentToNext: ScalarSegmentType;
+  tangentMode: TangentMode;
+}
+
+export type DiscreteValue = string | boolean;
+export interface DiscreteAnimationKey extends BaseAnimationKeyframe<DiscreteValue> {}
+
+export interface ScalarChannel {
+  keys: ScalarAnimationKey[];
+  extrapolation?: {
+    before: ChannelExtrapolationMode;
+    after: ChannelExtrapolationMode;
+  };
+}
+
+export interface DiscreteChannel {
+  keys: DiscreteAnimationKey[];
+}
+
+export type AnimationChannel = ScalarChannel | DiscreteChannel;
+export type CompositeChannelData = Record<string, AnimationChannel | undefined>;
+export type ChannelData = AnimationChannel | CompositeChannelData | any[]; // Allow flat array of keyframes for dual compatibility
+
+export interface ElementAnimations {
+  [propertyPath: string]: ChannelData | undefined;
+}
+
 export type TrackType = "video" | "text" | "audio" | "graphic" | "effect";
 
 export type ElementRef = {
@@ -80,85 +135,62 @@ export interface BaseTimelineElement {
   startTime: number;  // Position on timeline (seconds)
   trimStart: number;  // Trim from source start (seconds)
   trimEnd: number;    // Trim from source end (seconds)
-  animations?: any;
-  params?: any;
+  animations?: ElementAnimations;
+  params?: ParamValues;
 }
 
 export interface VideoElement extends BaseTimelineElement {
   type: "video";
-  sourceUrl: string;
-  volume: number;
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-  opacity: number;
-  effects?: any[];
-  masks?: any[];
+  mediaId?: string;
+  sourceUrl?: string; // Engine extension: remote/local source URL
+  isSourceAudioEnabled?: boolean;
+  hidden?: boolean;
   retime?: RetimeConfig;
+  effects?: Effect[];
+  masks?: any[];
 }
 
 export interface ImageElement extends BaseTimelineElement {
   type: "image";
-  sourceUrl: string;
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-  opacity: number;
-  effects?: any[];
+  mediaId?: string;
+  sourceUrl?: string; // Engine extension: remote/local source URL
+  hidden?: boolean;
+  effects?: Effect[];
   masks?: any[];
 }
 
 export interface AudioElement extends BaseTimelineElement {
   type: "audio";
-  sourceUrl: string;
-  volume: number;
-  fadeIn?: number;
-  fadeOut?: number;
+  mediaId?: string;
+  sourceUrl?: string; // Engine extension: remote/local source URL
+  sourceType?: "upload" | "library";
+  hidden?: boolean;
   retime?: RetimeConfig;
 }
 
 export interface TextElement extends BaseTimelineElement {
   type: "text";
-  text: string;
-  effects?: any[];
-  style: {
-    fontSize: number;
-    color: string;
-    fontFamily: string;
-    x?: number;
-    y?: number;
-    textAlign?: "left" | "right" | "center" | "start" | "end";
-    strokeColor?: string;
-    strokeWidth?: number;
-    fontUrl?: string;
-  };
-  opacity?: number;
+  text?: string;     // Engine extension: backward compatibility for flat manifests
+  fontUrl?: string;  // Engine extension: remote custom font URL
+  hidden?: boolean;
+  effects?: Effect[];
 }
 
 export interface StickerElement extends BaseTimelineElement {
   type: "sticker";
   stickerId: string;
+  sourceUrl?: string; // Engine extension: remote/local source URL
   intrinsicWidth?: number;
   intrinsicHeight?: number;
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-  opacity: number;
-  effects?: any[];
+  hidden?: boolean;
+  effects?: Effect[];
 }
 
 export interface GraphicElement extends BaseTimelineElement {
   type: "graphic";
   definitionId: string;
-  width: number;
-  height: number;
-  x: number;
-  y: number;
-  opacity: number;
-  effects?: any[];
+  hidden?: boolean;
+  effects?: Effect[];
   masks?: any[];
 }
 

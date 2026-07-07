@@ -16,11 +16,12 @@ export class ColorNode extends BaseNode {
     textures: TextureUploadDescriptor[];
   }> {
     const textureId = `${path}:color`;
-    const width = this.params.width ?? this.params.params?.["width"] ?? renderer.width;
-    const height = this.params.height ?? this.params.params?.["height"] ?? renderer.height;
-    const color = this.params.color ?? this.params.params?.["color"] ?? "#000000";
-    const xVal = this.params.x ?? this.params.params?.["transform.positionX"] ?? 0;
-    const yVal = this.params.y ?? this.params.params?.["transform.positionY"] ?? 0;
+    const params = this.params as any;
+    const width = params.width ?? params.params?.["width"] ?? renderer.width;
+    const height = params.height ?? params.params?.["height"] ?? renderer.height;
+    const color = params.color ?? params.params?.["color"] ?? "#000000";
+    const xVal = params.x ?? params.params?.["transform.positionX"] ?? 0;
+    const yVal = params.y ?? params.params?.["transform.positionY"] ?? 0;
 
     const texture: TextureUploadDescriptor = {
       kind: "rendered",

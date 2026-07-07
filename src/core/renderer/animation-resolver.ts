@@ -15,16 +15,24 @@ export function interpolateLinear(startValue: number, endValue: number, ratio: n
  * Falls back to the default value if no keyframes exist.
  */
 export function resolveAnimatedValue<T extends number | string | boolean>(
-  keyframes: Keyframe<T>[] | undefined,
+  keyframes: any,
   localTime: number,
   fallbackValue: T
 ): T {
-  if (!keyframes || keyframes.length === 0) {
+  if (!keyframes) {
+    return fallbackValue;
+  }
+
+  const keysList = Array.isArray(keyframes)
+    ? keyframes
+    : (keyframes.keys && Array.isArray(keyframes.keys) ? keyframes.keys : null);
+
+  if (!keysList || keysList.length === 0) {
     return fallbackValue;
   }
 
   // Sort keyframes by time just in case they are out of order
-  const sorted = [...keyframes].sort((a, b) => a.time - b.time);
+  const sorted = [...keysList].sort((a, b) => a.time - b.time);
 
   if (localTime <= sorted[0].time) {
     return sorted[0].value;

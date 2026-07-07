@@ -26,12 +26,14 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "volume": 0.0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 1.0
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
         }
       ]
     },
@@ -47,11 +49,13 @@
           "definitionId": "circle",
           "duration": 3,
           "startTime": 1,
-          "width": 100,
-          "height": 100,
-          "x": 270,
-          "y": 130,
-          "opacity": 0.75
+          "params": {
+            "width": 100,
+            "height": 100,
+            "transform.positionX": 270,
+            "transform.positionY": 130,
+            "opacity": 0.75
+          }
         }
       ]
     },

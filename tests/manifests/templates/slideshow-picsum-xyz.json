@@ -25,11 +25,13 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 1.0
+          "params": {
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
         },
         {
           "id": "slide-img-2",
@@ -40,11 +42,13 @@
           "startTime": 3,
           "trimStart": 0,
           "trimEnd": 0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 1.0
+          "params": {
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
         },
         {
           "id": "slide-img-3",
@@ -55,11 +59,13 @@
           "startTime": 6,
           "trimStart": 0,
           "trimEnd": 0,
-          "width": 640,
-          "height": 360,
-          "x": 0,
-          "y": 0,
-          "opacity": 1.0
+          "params": {
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
         }
       ]
     },
@@ -78,7 +84,9 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
-          "volume": 0.5
+          "params": {
+            "volume": 0.5
+          }
         }
       ]
     }
