@@ -1,5 +1,5 @@
 import { EditorManifest } from "../types/editor-manifest";
-import { SceneExporter } from "./renderer/scene-exporter";
+import { Exporter } from "../core/renderer/exporter";
 
 export class OpenCutRenderService {
   /**
@@ -7,7 +7,7 @@ export class OpenCutRenderService {
    * Delegates export operations to SceneExporter to align with client-side composition.
    */
   public async renderProject(manifest: EditorManifest, onProgress?: (progress: number) => void): Promise<string> {
-    const exporter = new SceneExporter({
+    const exporter = new Exporter({
       width: manifest.settings.width,
       height: manifest.settings.height,
       fps: manifest.settings.fps,

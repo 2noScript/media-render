@@ -43,26 +43,20 @@ class FakeOffscreenCanvas {
 }
 (globalThis as any).OffscreenCanvas = FakeOffscreenCanvas;
 
-import { Output, Mp4OutputFormat, WebMOutputFormat, FilePathTarget, CanvasSource, AudioSampleSource, QUALITY_LOW, QUALITY_MEDIUM, QUALITY_HIGH, QUALITY_VERY_HIGH } from "mediabunny";
+import { Output, Mp4OutputFormat, WebMOutputFormat, FilePathTarget, CanvasSource, AudioSampleSource } from "mediabunny";
 import { CanvasRenderer } from "./canvas-renderer";
 import { EditorManifest } from "../../types/editor-manifest";
+import { ExportFormat, ExportQuality, ExportParams } from "../../types/exporter";
+import { QUALITY_MAP } from "../../lib/constants";
 import * as path from "path";
 import * as crypto from "crypto";
 
-const qualityMap = {
-  low: QUALITY_LOW,
-  medium: QUALITY_MEDIUM,
-  high: QUALITY_HIGH,
-  very_high: QUALITY_VERY_HIGH,
-};
 
-// ExportParams represents the settings property of EditorManifest
-export type ExportParams = EditorManifest["settings"];
 
-export class SceneExporter {
+export class Exporter {
   private renderer: CanvasRenderer;
-  private format: "mp4" | "webm";
-  private quality: "low" | "medium" | "high" | "very_high";
+  private format: ExportFormat;
+  private quality: ExportQuality;
   private shouldIncludeAudio: boolean;
 
   constructor({ width, height, fps, format, quality, shouldIncludeAudio }: ExportParams) {
@@ -81,7 +75,7 @@ export class SceneExporter {
     const fpsFloat = manifest.settings.fps;
     const timeStep = 1 / fpsFloat;
 
-    console.log(`[SceneExporter] Initiating video export (${this.quality}): ${manifest.id} -> ${outputPath}`);
+    console.log(`[Exporter] Initiating video export (${this.quality}): ${manifest.id} -> ${outputPath}`);
 
     const output = new Output({
       format: this.format === "webm" ? new WebMOutputFormat() : new Mp4OutputFormat(),
@@ -93,7 +87,7 @@ export class SceneExporter {
 
     const videoSource = new CanvasSource(canvasObj as any, {
       codec: this.format === "webm" ? "vp9" : "avc",
-      bitrate: qualityMap[this.quality],
+      bitrate: QUALITY_MAP[this.quality],
       hardwareAcceleration: (process.env.HARDWARE_ACCELERATION as any) || "no-preference",
     });
     output.addVideoTrack(videoSource, { frameRate: fpsFloat });
@@ -116,7 +110,7 @@ export class SceneExporter {
 
       // 3. Sequential non-realtime fast-forward rendering loop
       const totalDuration = this.renderer.calculateDuration(manifest);
-      console.log(`[SceneExporter] Total timeline duration: ${totalDuration}s`);
+      console.log(`[Exporter] Total timeline duration: ${totalDuration}s`);
 
       for (let t = 0; t < totalDuration; t += timeStep) {
         // Render the current timeline state onto the virtual canvas
@@ -145,7 +139,7 @@ export class SceneExporter {
       videoSource.close();
       await output.finalize();
 
-      console.log(`[SceneExporter] Video export completed successfully: ${outputPath}`);
+      console.log(`[Exporter] Video export completed successfully: ${outputPath}`);
       return outputPath;
     } catch (err) {
       try {

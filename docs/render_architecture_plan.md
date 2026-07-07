@@ -210,7 +210,7 @@ media-render/src/
 │   └── editor-manifest.ts        # TypeScript declarations for Editor manifests
 └── services/
     └── renderer/                 # Core isomorphic rendering services
-        ├── scene-exporter.ts     # Exporter orchestration & muxer logic
+        ├── exporter.ts           # Exporter orchestration & muxer logic
         ├── canvas-renderer.ts    # Frame compositor & asset pre-fetching
         ├── font-loader.ts        # Helper to load and register remote fonts
         └── nodes/                # Layout nodes rendering routines
