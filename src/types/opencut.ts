@@ -84,6 +84,8 @@ export interface ProjectManifest {
     height: number;
     fps: number;
     format: "mp4" | "webm";
+    quality?: "low" | "medium" | "high" | "very_high";
+    shouldIncludeAudio?: boolean;
   };
   tracks: Array<VideoTrack | AudioTrack | TextTrack>;
 }

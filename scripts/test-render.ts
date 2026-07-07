@@ -12,7 +12,8 @@ const mockManifest: ProjectManifest = {
     width: 640,
     height: 360,
     fps: 30,
-    format: "mp4"
+    format: "mp4",
+    quality: "high"
   },
   tracks: [
     // 1. VIDEO TRACK CHÍNH (NỀN) - Có 2 clip và 1 khoảng trống (gap) ở giữa
@@ -90,6 +91,7 @@ const mockManifest: ProjectManifest = {
       id: "track-subtitle",
       name: "Subtitles",
       type: "text",
+      hidden: false,
       elements: [
         {
           id: "sub-1",
@@ -109,7 +111,6 @@ const mockManifest: ProjectManifest = {
           }
         }
       ],
-      hidden: false
     },
     // 4. AUDIO TRACK (BGM) - Phát nhạc nền song song, trì hoãn 2 giây, âm lượng 0.4
     {

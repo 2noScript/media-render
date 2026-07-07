@@ -7,7 +7,8 @@ const mockManifest: ProjectManifest = {
     width: 640,
     height: 360,
     fps: 30,
-    format: "mp4"
+    format: "mp4",
+    quality: "high"
   },
   tracks: [
     {

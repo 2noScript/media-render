@@ -12,7 +12,8 @@ const lyricsManifest: ProjectManifest = {
     width: 640,
     height: 360,
     fps: 30,
-    format: "mp4"
+    format: "mp4",
+    quality: "high"
   },
   tracks: [
     // 1. MAIN TRACK (ẢNH TĨNH LÀM HÌNH NỀN) - Chạy suốt 10 giây
@@ -34,7 +35,10 @@ const lyricsManifest: ProjectManifest = {
           trimStart: 0,
           trimEnd: 0,
           width: 640,
-          height: 360
+          height: 360,
+          x: 0,
+          y: 0,
+          opacity: 1.0
         }
       ]
     },
@@ -63,6 +67,7 @@ const lyricsManifest: ProjectManifest = {
       id: "track-lyrics-text",
       name: "Karaoke Subtitles",
       type: "text",
+      hidden: false,
       elements: [
         {
           id: "lyric-line-1",

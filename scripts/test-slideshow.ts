@@ -12,7 +12,8 @@ const slideshowManifest: ProjectManifest = {
     width: 640,
     height: 360,
     fps: 30,
-    format: "mp4"
+    format: "mp4",
+    quality: "high"
   },
   tracks: [
     // 1. MAIN VIDEO TRACK (CHỈ CHỨA ẢNH TĨNH XẾP NỐI TIẾP NHAU)
@@ -34,7 +35,10 @@ const slideshowManifest: ProjectManifest = {
           trimStart: 0,
           trimEnd: 0,
           width: 640,
-          height: 360
+          height: 360,
+          x: 0,
+          y: 0,
+          opacity: 1.0
         },
         {
           id: "slide-img-2",
@@ -46,7 +50,10 @@ const slideshowManifest: ProjectManifest = {
           trimStart: 0,
           trimEnd: 0,
           width: 640,
-          height: 360
+          height: 360,
+          x: 0,
+          y: 0,
+          opacity: 1.0
         },
         {
           id: "slide-img-3",
@@ -58,7 +65,10 @@ const slideshowManifest: ProjectManifest = {
           trimStart: 0,
           trimEnd: 0,
           width: 640,
-          height: 360
+          height: 360,
+          x: 0,
+          y: 0,
+          opacity: 1.0
         }
       ]
     },

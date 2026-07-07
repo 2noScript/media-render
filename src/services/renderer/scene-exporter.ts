@@ -43,20 +43,21 @@ class FakeOffscreenCanvas {
 }
 (globalThis as any).OffscreenCanvas = FakeOffscreenCanvas;
 
-import { Output, Mp4OutputFormat, WebMOutputFormat, FilePathTarget, CanvasSource, AudioSampleSource } from "mediabunny";
+import { Output, Mp4OutputFormat, WebMOutputFormat, FilePathTarget, CanvasSource, AudioSampleSource, QUALITY_LOW, QUALITY_MEDIUM, QUALITY_HIGH, QUALITY_VERY_HIGH } from "mediabunny";
 import { CanvasRenderer } from "./canvas-renderer";
 import { ProjectManifest } from "../../types/opencut";
 import * as path from "path";
 import * as crypto from "crypto";
 
-export type ExportParams = {
-  width: number;
-  height: number;
-  fps: number;
-  format: "mp4" | "webm";
-  quality: "low" | "medium" | "high" | "very_high";
-  shouldIncludeAudio?: boolean;
+const qualityMap = {
+  low: QUALITY_LOW,
+  medium: QUALITY_MEDIUM,
+  high: QUALITY_HIGH,
+  very_high: QUALITY_VERY_HIGH,
 };
+
+// ExportParams chính là settings trong ProjectManifest
+export type ExportParams = ProjectManifest["settings"];
 
 export class SceneExporter {
   private renderer: CanvasRenderer;
@@ -67,7 +68,7 @@ export class SceneExporter {
   constructor({ width, height, fps, format, quality, shouldIncludeAudio }: ExportParams) {
     this.renderer = new CanvasRenderer({ width, height, fps });
     this.format = format;
-    this.quality = quality;
+    this.quality = quality || "high";
     this.shouldIncludeAudio = shouldIncludeAudio ?? false;
   }
 
@@ -95,7 +96,7 @@ export class SceneExporter {
 
     const videoSource = new CanvasSource(canvasObj as any, {
       codec: this.format === "webm" ? "vp9" : "avc",
-      bitrate: 4e6,
+      bitrate: qualityMap[this.quality],
       hardwareAcceleration: (process.env.HARDWARE_ACCELERATION as any) || "no-preference",
     });
     output.addVideoTrack(videoSource, { frameRate: fpsFloat });

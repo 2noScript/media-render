@@ -12,7 +12,8 @@ const shortsManifest: ProjectManifest = {
     width: 360,
     height: 640, // Tỷ lệ dọc 9:16 chuẩn Shorts/TikTok
     fps: 30,
-    format: "mp4"
+    format: "mp4",
+    quality: "high"
   },
   tracks: [
     // 1. VIDEO TRACK CHÍNH (DỌC) - Đặt thời lượng 5 giây (Bằng với Bunny nguồn để scheduler chạy mượt)
