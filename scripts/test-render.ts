@@ -1,13 +1,12 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
 import { OpenCutRenderService } from "../src/services/render.service";
-import { ProjectManifest } from "../src/types/opencut";
+import { EditorManifest } from "../src/types/opencut";
 
 // Khởi chạy server-side polyfill của Mediabunny (NodeAV)
 registerMediabunnyServer();
 
-const mockManifest: ProjectManifest = {
-  projectId: "test-project-123",
-  episodeId: "test-episode-456",
+const mockManifest: EditorManifest = {
+  id: "test-project-123",
   settings: {
     width: 640,
     height: 360,

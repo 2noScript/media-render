@@ -1,8 +1,7 @@
-import { ProjectManifest } from "../src/types/opencut";
+import { EditorManifest } from "../src/types/opencut";
 
-const mockManifest: ProjectManifest = {
-  projectId: "test-docker-project",
-  episodeId: "test-episode-docker",
+const mockManifest: EditorManifest = {
+  id: "test-docker-project",
   settings: {
     width: 640,
     height: 360,

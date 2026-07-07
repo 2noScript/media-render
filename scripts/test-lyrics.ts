@@ -1,13 +1,12 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
 import { OpenCutRenderService } from "../src/services/render.service";
-import { ProjectManifest } from "../src/types/opencut";
+import { EditorManifest } from "../src/types/opencut";
 
 // Khởi chạy server-side polyfill của Mediabunny (NodeAV)
 registerMediabunnyServer();
 
-const lyricsManifest: ProjectManifest = {
-  projectId: "lyrics-karaoke-111",
-  episodeId: "lyrics-episode-333",
+const lyricsManifest: EditorManifest = {
+  id: "lyrics-karaoke-111",
   settings: {
     width: 640,
     height: 360,

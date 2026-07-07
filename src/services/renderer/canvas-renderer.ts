@@ -3,7 +3,7 @@ import { Input, FilePathSource, ALL_FORMATS } from "mediabunny";
 import { renderVideoNodeToContext } from "./nodes/video-node";
 import { renderImageNodeToContext } from "./nodes/image-node";
 import { renderTextNodeToContext } from "./nodes/text-node";
-import { ProjectManifest } from "../../types/opencut";
+import { EditorManifest } from "../../types/opencut";
 import { RemoteFontLoader } from "./font-loader";
 import * as av from "node-av";
 import * as path from "path";
@@ -34,7 +34,7 @@ export class CanvasRenderer {
   /**
    * Tính toán tổng thời lượng video dựa trên track video chính
    */
-  public calculateDuration(manifest: ProjectManifest): number {
+  public calculateDuration(manifest: EditorManifest): number {
     const mainVideoTrack = manifest.tracks.find(t => t.type === "video" && (t as any).isMain);
     if (!mainVideoTrack) return 0;
     return mainVideoTrack.elements.reduce((acc, el) => acc + el.duration, 0);
@@ -43,7 +43,7 @@ export class CanvasRenderer {
   /**
    * Dựng hình ảnh timeline lên skia-canvas tại thời điểm time
    */
-  public async render({ manifest, time }: { manifest: ProjectManifest; time: number }): Promise<void> {
+  public async render({ manifest, time }: { manifest: EditorManifest; time: number }): Promise<void> {
     const ctx = this.context;
     
     // Clear frame về màu đen
@@ -79,7 +79,7 @@ export class CanvasRenderer {
   /**
    * Gom tất cả các phần tử có luồng âm thanh
    */
-  public collectAudioClips(manifest: ProjectManifest): any[] {
+  public collectAudioClips(manifest: EditorManifest): any[] {
     const clips: any[] = [];
     for (const track of manifest.tracks) {
       if (track.type === "audio") {
@@ -206,7 +206,7 @@ export class CanvasRenderer {
   /**
    * Đảm bảo tất cả nguyên liệu (video sinks, static images, remote fonts) được nạp đầy đủ
    */
-  private async ensureAssetsLoaded(manifest: ProjectManifest): Promise<void> {
+  private async ensureAssetsLoaded(manifest: EditorManifest): Promise<void> {
     for (const track of manifest.tracks) {
       for (const el of track.elements) {
         if ("sourceUrl" in el && el.sourceUrl) {

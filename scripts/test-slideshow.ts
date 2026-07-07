@@ -1,13 +1,12 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
 import { OpenCutRenderService } from "../src/services/render.service";
-import { ProjectManifest } from "../src/types/opencut";
+import { EditorManifest } from "../src/types/opencut";
 
 // Khởi chạy server-side polyfill của Mediabunny (NodeAV)
 registerMediabunnyServer();
 
-const slideshowManifest: ProjectManifest = {
-  projectId: "slideshow-picsum-xyz",
-  episodeId: "slideshow-episode-222",
+const slideshowManifest: EditorManifest = {
+  id: "slideshow-picsum-xyz",
   settings: {
     width: 640,
     height: 360,

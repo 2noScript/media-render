@@ -76,9 +76,8 @@ export interface TextElement extends BaseTimelineElement {
   };
 }
 
-export interface ProjectManifest {
-  projectId: string;
-  episodeId: string;
+export interface EditorManifest {
+  id: string;
   settings: {
     width: number;
     height: number;

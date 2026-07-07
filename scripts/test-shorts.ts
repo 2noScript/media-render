@@ -1,13 +1,12 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
 import { OpenCutRenderService } from "../src/services/render.service";
-import { ProjectManifest } from "../src/types/opencut";
+import { EditorManifest } from "../src/types/opencut";
 
 // Khởi chạy server-side polyfill của Mediabunny (NodeAV)
 registerMediabunnyServer();
 
-const shortsManifest: ProjectManifest = {
-  projectId: "shorts-tiktok-abc",
-  episodeId: "shorts-episode-111",
+const shortsManifest: EditorManifest = {
+  id: "shorts-tiktok-abc",
   settings: {
     width: 360,
     height: 640, // Tỷ lệ dọc 9:16 chuẩn Shorts/TikTok

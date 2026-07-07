@@ -45,7 +45,7 @@ class FakeOffscreenCanvas {
 
 import { Output, Mp4OutputFormat, WebMOutputFormat, FilePathTarget, CanvasSource, AudioSampleSource, QUALITY_LOW, QUALITY_MEDIUM, QUALITY_HIGH, QUALITY_VERY_HIGH } from "mediabunny";
 import { CanvasRenderer } from "./canvas-renderer";
-import { ProjectManifest } from "../../types/opencut";
+import { EditorManifest } from "../../types/opencut";
 import * as path from "path";
 import * as crypto from "crypto";
 
@@ -56,8 +56,8 @@ const qualityMap = {
   very_high: QUALITY_VERY_HIGH,
 };
 
-// ExportParams chính là settings trong ProjectManifest
-export type ExportParams = ProjectManifest["settings"];
+// ExportParams chính là settings trong EditorManifest
+export type ExportParams = EditorManifest["settings"];
 
 export class SceneExporter {
   private renderer: CanvasRenderer;
@@ -75,7 +75,7 @@ export class SceneExporter {
   /**
    * Thực hiện export timeline video ra file lưu trên đĩa cứng cục bộ
    */
-  public async export(manifest: ProjectManifest): Promise<string> {
+  public async export(manifest: EditorManifest): Promise<string> {
     const outputDir = path.resolve("./test-outputs");
     if (!fsExists(outputDir)) {
       await fsMkdir(outputDir);
@@ -84,7 +84,7 @@ export class SceneExporter {
     const fpsFloat = manifest.settings.fps;
     const timeStep = 1 / fpsFloat;
 
-    console.log(`[SceneExporter] Bắt đầu xuất video chất lượng ${this.quality}: ${manifest.projectId} -> ${outputPath}`);
+    console.log(`[SceneExporter] Bắt đầu xuất video chất lượng ${this.quality}: ${manifest.id} -> ${outputPath}`);
 
     const output = new Output({
       format: this.format === "webm" ? new WebMOutputFormat() : new Mp4OutputFormat(),

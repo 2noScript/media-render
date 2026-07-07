@@ -61,14 +61,14 @@ export const swaggerSpec = {
     },
     "/render": {
       post: {
-        summary: "Render video from Project Manifest",
+        summary: "Render video from Editor Manifest",
         description: "Tiền xử lý lấp khoảng trống (Gap Fill), cắt tỉa clip (trim), dán đè overlays video/ảnh/chữ theo đúng tọa độ, delay và trộn âm thanh thô xuất ra video MP4/WebM.",
         requestBody: {
           required: true,
           content: {
             "application/json": {
               schema: {
-                $ref: "#/components/schemas/ProjectManifest"
+                $ref: "#/components/schemas/EditorManifest"
               }
             }
           }
@@ -95,12 +95,11 @@ export const swaggerSpec = {
   },
   components: {
     schemas: {
-      ProjectManifest: {
+      EditorManifest: {
         type: "object",
-        required: ["projectId", "episodeId", "settings", "tracks"],
+        required: ["id", "settings", "tracks"],
         properties: {
-          projectId: { type: "string", example: "project-123" },
-          episodeId: { type: "string", example: "episode-456" },
+          id: { type: "string", example: "manifest-123" },
           settings: {
             type: "object",
             required: ["width", "height", "fps", "format"],
