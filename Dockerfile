@@ -22,4 +22,4 @@ RUN bun install
 COPY . .
 
 EXPOSE 3005
-CMD ["bun", "run", "src/index.ts"]
+CMD ["bun", "run", "start"]

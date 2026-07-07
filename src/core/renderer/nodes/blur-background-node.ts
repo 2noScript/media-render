@@ -28,7 +28,9 @@ export class BlurBackgroundNode extends BaseNode {
     let sourceCanvas: any = null;
 
     if (this.params.type === "video") {
-      const localTime = (time - this.params.startTime) + this.params.trimStart;
+      const startTime = this.params.startTime ?? 0;
+      const trimStart = this.params.trimStart ?? 0;
+      const localTime = (time - startTime) + trimStart;
       const sink = this.videoSinksMap[this.params.id];
       if (sink) {
         const sample = await sink.getSample(localTime);

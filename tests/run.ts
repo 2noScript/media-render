@@ -1,5 +1,5 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
-import { OpenCutRenderService } from "../src/services/render.service";
+import { RenderService } from "../src/services/render.service";
 import { Manifest } from "../src/types/manifest";
 import { validateManifest } from "../src/lib/manifest-validator";
 import fs from "fs";
@@ -154,11 +154,11 @@ async function main() {
   } else {
     console.log(`🚀 [Local Mode] Rendering video in-process...`);
     registerMediabunnyServer();
-    const renderService = new OpenCutRenderService();
+    const renderService = new RenderService();
 
     try {
       const startTime = Date.now();
-      const resultPath = await renderService.renderProject(manifest, undefined, customOutputPath);
+      const resultPath = await renderService.renderManifest(manifest, undefined, customOutputPath);
       const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
       console.log("====================================================");

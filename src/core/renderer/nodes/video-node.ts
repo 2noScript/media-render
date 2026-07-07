@@ -24,7 +24,9 @@ export class VideoNode extends VisualNode {
     this.resolvedVideoFrame = null;
     if (!this.sink) return;
 
-    const localTime = (time - this.params.startTime) + this.params.trimStart;
+    const startTime = this.params.startTime ?? 0;
+    const trimStart = this.params.trimStart ?? 0;
+    const localTime = (time - startTime) + trimStart;
     const sample = await this.sink.getSample(localTime);
     if (!sample) return;
 

@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "bun run src/index.ts",
+    "start": "bun run src/server.ts",
     "test": "bun run tests/run.ts",
     "test:render": "bun run tests/run.ts test-project-123",
     "test:shorts": "bun run tests/run.ts shorts-tiktok-abc",
@@ -41,7 +41,6 @@
   "dependencies": {
     "@mediabunny/server": "^1.50.6",
     "dotenv": "^17.4.2",
-    "elysia": "^1.4.29",
     "mediabunny": "^1.50.6",
     "@napi-rs/canvas": "^0.1.65",
     "node-av": "^6.1.1"
