@@ -1,0 +1,30 @@
+{
+  "id": "effect_element",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-effect",
+      "type": "effect",
+      "elements": [
+        {
+          "id": "effect-clip",
+          "type": "effect",
+          "effectType": "vignette",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "color": "black",
+            "intensity": 0.8,
+            "smoothness": 0.6
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "graphic_element",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-graphic",
+      "type": "graphic",
+      "elements": [
+        {
+          "id": "graphic-clip",
+          "type": "graphic",
+          "definitionId": "rectangle",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "color": "#00FF00",
+            "width": 200,
+            "height": 100,
+            "transform.positionX": 0,
+            "transform.positionY": 0
+          }
+        }
+      ]
+    }
+  ]
+}

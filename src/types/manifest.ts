@@ -145,33 +145,35 @@ export interface BaseTimelineElement {
   params?: ParamValues;
 }
 
-export interface VideoElement extends BaseTimelineElement {
-  type: "video";
-  mediaId?: string;
-  sourceUrl?: string; // Engine extension: remote/local source URL
-  isSourceAudioEnabled?: boolean;
-  hidden?: boolean;
-  retime?: RetimeConfig;
-  effects?: Effect[];
-  masks?: Mask[];
+export interface VisualParams {
+  "transform.positionX"?: number;
+  "transform.positionY"?: number;
+  "transform.scaleX"?: number;
+  "transform.scaleY"?: number;
+  "transform.rotate"?: number;
+  "transform.flipX"?: boolean;
+  "transform.flipY"?: boolean;
+  "transform.opacity"?: number;
+  width?: number;
+  height?: number;
+  opacity?: number;
+  [key: string]: any;
 }
 
-export interface ImageElement extends BaseTimelineElement {
-  type: "image";
-  mediaId?: string;
-  sourceUrl?: string; // Engine extension: remote/local source URL
-  hidden?: boolean;
-  effects?: Effect[];
-  masks?: Mask[];
+export interface VideoParams extends VisualParams {
+  volume?: number;
+  muted?: boolean;
+  blurIntensity?: number;
 }
 
-export interface AudioElement extends BaseTimelineElement {
-  type: "audio";
-  mediaId?: string;
-  sourceUrl?: string; // Engine extension: remote/local source URL
-  sourceType?: "upload" | "library";
-  hidden?: boolean;
-  retime?: RetimeConfig;
+export interface ImageParams extends VisualParams {
+  blurIntensity?: number;
+}
+
+export interface AudioParams {
+  volume?: number;
+  muted?: boolean;
+  [key: string]: any;
 }
 
 export interface TextParams {
@@ -183,6 +185,15 @@ export interface TextParams {
   color?: string;
   strokeColor?: string;
   strokeWidth?: number;
+  backgroundColor?: string;
+  backgroundPadding?: number;
+  "background.enabled"?: boolean;
+  "background.color"?: string;
+  "background.cornerRadius"?: number;
+  "background.paddingX"?: number;
+  "background.paddingY"?: number;
+  "background.offsetX"?: number;
+  "background.offsetY"?: number;
   "transform.positionX"?: number;
   "transform.positionY"?: number;
   "transform.scaleX"?: number;
@@ -190,6 +201,48 @@ export interface TextParams {
   "transform.rotation"?: number;
   "transform.opacity"?: number;
   [key: string]: any;
+}
+
+export interface StickerParams extends VisualParams {}
+
+export interface GraphicParams extends VisualParams {
+  color?: string;
+}
+
+export interface EffectParams {
+  [key: string]: any;
+}
+
+export interface VideoElement extends BaseTimelineElement {
+  type: "video";
+  params?: VideoParams;
+  mediaId?: string;
+  sourceUrl?: string; // Engine extension: remote/local source URL
+  isSourceAudioEnabled?: boolean;
+  hidden?: boolean;
+  retime?: RetimeConfig;
+  effects?: Effect[];
+  masks?: Mask[];
+}
+
+export interface ImageElement extends BaseTimelineElement {
+  type: "image";
+  params?: ImageParams;
+  mediaId?: string;
+  sourceUrl?: string; // Engine extension: remote/local source URL
+  hidden?: boolean;
+  effects?: Effect[];
+  masks?: Mask[];
+}
+
+export interface AudioElement extends BaseTimelineElement {
+  type: "audio";
+  params?: AudioParams;
+  mediaId?: string;
+  sourceUrl?: string; // Engine extension: remote/local source URL
+  sourceType?: "upload" | "library";
+  hidden?: boolean;
+  retime?: RetimeConfig;
 }
 
 export interface TextElement extends BaseTimelineElement {
@@ -202,6 +255,7 @@ export interface TextElement extends BaseTimelineElement {
 
 export interface StickerElement extends BaseTimelineElement {
   type: "sticker";
+  params?: StickerParams;
   stickerId: string;
   sourceUrl?: string; // Engine extension: remote/local source URL
   intrinsicWidth?: number;
@@ -212,6 +266,7 @@ export interface StickerElement extends BaseTimelineElement {
 
 export interface GraphicElement extends BaseTimelineElement {
   type: "graphic";
+  params?: GraphicParams;
   definitionId: string;
   hidden?: boolean;
   effects?: Effect[];
@@ -220,6 +275,7 @@ export interface GraphicElement extends BaseTimelineElement {
 
 export interface EffectElement extends BaseTimelineElement {
   type: "effect";
+  params?: EffectParams;
   effectType: string;
 }
 

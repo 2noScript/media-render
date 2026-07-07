@@ -58,7 +58,7 @@
             "strokeWidth": 4,
             "textAlign": "center",
             "transform.positionX": 0,
-            "transform.positionY": 0
+            "transform.positionY": -80
           }
         },
         {
@@ -98,6 +98,11 @@
             "fontFamily": "Bangers",
             "strokeColor": "#333333",
             "strokeWidth": 2,
+            "background.enabled": true,
+            "background.color": "rgba(0, 0, 0, 0.6)",
+            "background.cornerRadius": 30,
+            "background.paddingX": 10,
+            "background.paddingY": 10,
             "textAlign": "center",
             "transform.positionX": 0,
             "transform.positionY": 80

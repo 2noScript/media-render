@@ -1,0 +1,31 @@
+{
+  "id": "audio_element",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": true
+  },
+  "tracks": [
+    {
+      "id": "track-audio",
+      "type": "audio",
+      "elements": [
+        {
+          "id": "audio-clip",
+          "type": "audio",
+          "sourceUrl": "./test-assets/synth_bgm.mp3",
+          "startTime": 0,
+          "duration": 5.0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 1.0,
+            "muted": false
+          }
+        }
+      ]
+    }
+  ]
+}

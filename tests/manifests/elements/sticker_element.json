@@ -1,0 +1,33 @@
+{
+  "id": "sticker_element",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-sticker",
+      "type": "video",
+      "elements": [
+        {
+          "id": "sticker-clip",
+          "type": "sticker",
+          "stickerId": "test_sticker",
+          "sourceUrl": "https://picsum.photos/100/100",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1.0,
+            "transform.scaleY": 1.0,
+            "transform.rotate": 0
+          }
+        }
+      ]
+    }
+  ]
+}

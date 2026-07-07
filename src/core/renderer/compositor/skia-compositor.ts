@@ -1,3 +1,4 @@
+import { SKRSContext2D } from "@napi-rs/canvas";
 import { FrameDescriptor, TextureUploadDescriptor } from "./types";
 import { createCanvasSurface } from "../canvas-utils";
 
@@ -68,7 +69,7 @@ export class SkiaCompositor {
     }
   }
 
-  public render(frame: FrameDescriptor, targetCtx: any): void {
+  public render(frame: FrameDescriptor, targetCtx: SKRSContext2D): void {
     // 1. Clear target context
     const [r, g, b, a] = frame.clear.color;
     targetCtx.clearRect(0, 0, frame.width, frame.height);
@@ -86,7 +87,7 @@ export class SkiaCompositor {
         targetCtx.save();
         targetCtx.globalAlpha = item.opacity;
         if (item.blendMode && item.blendMode !== "normal") {
-          targetCtx.globalCompositeOperation = item.blendMode;
+          targetCtx.globalCompositeOperation = item.blendMode as any;
         }
 
         const transform = item.transform;

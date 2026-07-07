@@ -1,0 +1,54 @@
+{
+  "id": "main_track",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-video-main",
+      "type": "video",
+      "isMain": true,
+      "elements": [
+        {
+          "id": "video-clip",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "track-text-long",
+      "type": "text",
+      "elements": [
+        {
+          "id": "text-clip",
+          "type": "text",
+          "startTime": 0,
+          "duration": 10.0,
+          "params": {
+            "content": "This track is longer, but video duration follows isMain",
+            "fontSize": 24,
+            "color": "#FFFFFF",
+            "fontFamily": "sans-serif",
+            "textAlign": "center",
+            "transform.positionX": 0,
+            "transform.positionY": 0
+          }
+        }
+      ]
+    }
+  ]
+}

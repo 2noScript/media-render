@@ -1,0 +1,63 @@
+{
+  "id": "multi_audio_tracks",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": true
+  },
+  "tracks": [
+    {
+      "id": "track-video",
+      "type": "video",
+      "isMain": true,
+      "elements": [
+        {
+          "id": "video-clip",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360
+          }
+        }
+      ]
+    },
+    {
+      "id": "track-audio-1",
+      "type": "audio",
+      "elements": [
+        {
+          "id": "audio-clip-1",
+          "type": "audio",
+          "sourceUrl": "./test-assets/synth_bgm.mp3",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "volume": 0.5
+          }
+        }
+      ]
+    },
+    {
+      "id": "track-audio-2",
+      "type": "audio",
+      "elements": [
+        {
+          "id": "audio-clip-2",
+          "type": "audio",
+          "sourceUrl": "./test-assets/synth_bgm.mp3",
+          "startTime": 1.0,
+          "duration": 3.0,
+          "params": {
+            "volume": 0.8
+          }
+        }
+      ]
+    }
+  ]
+}

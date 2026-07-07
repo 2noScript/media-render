@@ -1,0 +1,31 @@
+{
+  "id": "image_element",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-image",
+      "type": "video",
+      "elements": [
+        {
+          "id": "image-clip",
+          "type": "image",
+          "sourceUrl": "https://picsum.photos/640/360",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0
+          }
+        }
+      ]
+    }
+  ]
+}

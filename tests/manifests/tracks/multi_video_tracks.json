@@ -1,0 +1,53 @@
+{
+  "id": "multi_video_tracks",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-video-bg",
+      "type": "video",
+      "isMain": true,
+      "elements": [
+        {
+          "id": "bg-clip",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "track-video-overlay",
+      "type": "video",
+      "elements": [
+        {
+          "id": "pip-clip",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 1.0,
+          "duration": 3.0,
+          "params": {
+            "volume": 0.0,
+            "width": 180,
+            "height": 180,
+            "transform.positionX": 200,
+            "transform.positionY": 80
+          }
+        }
+      ]
+    }
+  ]
+}

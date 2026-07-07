@@ -1,0 +1,35 @@
+{
+  "id": "video_element",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-video",
+      "type": "video",
+      "isMain": true,
+      "elements": [
+        {
+          "id": "video-clip",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 5.0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0
+          }
+        }
+      ]
+    }
+  ]
+}

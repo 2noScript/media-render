@@ -1,0 +1,33 @@
+{
+  "id": "text_element",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": false
+  },
+  "tracks": [
+    {
+      "id": "track-text",
+      "type": "text",
+      "elements": [
+        {
+          "id": "text-clip",
+          "type": "text",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "content": "Pure Text Render",
+            "fontSize": 36,
+            "color": "#FFFFFF",
+            "fontFamily": "sans-serif",
+            "textAlign": "center",
+            "transform.positionX": 0,
+            "transform.positionY": 0
+          }
+        }
+      ]
+    }
+  ]
+}

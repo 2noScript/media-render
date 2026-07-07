@@ -1,0 +1,50 @@
+{
+  "id": "muted_track",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "shouldIncludeAudio": true
+  },
+  "tracks": [
+    {
+      "id": "track-video",
+      "type": "video",
+      "isMain": true,
+      "elements": [
+        {
+          "id": "video-clip",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "track-audio-muted",
+      "type": "audio",
+      "muted": true,
+      "elements": [
+        {
+          "id": "audio-clip",
+          "type": "audio",
+          "sourceUrl": "./test-assets/synth_bgm.mp3",
+          "startTime": 0,
+          "duration": 5.0,
+          "params": {
+            "volume": 1.0
+          }
+        }
+      ]
+    }
+  ]
+}
