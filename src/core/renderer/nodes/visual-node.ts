@@ -40,12 +40,33 @@ export abstract class VisualNode<Params extends any = any> extends BaseNode<Para
       params.height
     );
 
+    const rotationDegrees = resolveAnimatedValue(
+      params.animations?.rotationDegrees,
+      localTime,
+      params.rotationDegrees || 0
+    );
+
+    const flipX = resolveAnimatedValue(
+      params.animations?.flipX,
+      localTime,
+      params.flipX || false
+    );
+
+    const flipY = resolveAnimatedValue(
+      params.animations?.flipY,
+      localTime,
+      params.flipY || false
+    );
+
     return {
       opacity,
       x,
       y,
       width,
-      height
+      height,
+      rotationDegrees,
+      flipX,
+      flipY
     };
   }
 }

@@ -1,10 +1,10 @@
 import { Canvas, createCanvas } from "@napi-rs/canvas";
 import * as NodeAv from "node-av";
+import * as fs from "fs";
 
 // Helper to check Docker env
 const isDocker = (): boolean => {
   try {
-    const fs = require("fs");
     return fs.existsSync("/.dockerenv");
   } catch {
     return false;

@@ -3,6 +3,8 @@ import "./image-node";
 import "./text-node";
 import "./sticker-node";
 import "./color-node";
+import "./graphic-node";
+import "./effect-layer-node";
 
 export { nodeRegistry } from "./registry";
 export { BaseNode } from "./base-node";
@@ -14,3 +16,5 @@ export { ImageNode } from "./image-node";
 export { TextNode } from "./text-node";
 export { StickerNode } from "./sticker-node";
 export { ColorNode } from "./color-node";
+export { GraphicNode } from "./graphic-node";
+export { EffectLayerNode } from "./effect-layer-node";
