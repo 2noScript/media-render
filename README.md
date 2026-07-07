@@ -2,22 +2,11 @@
 
 A specialized, stateless **Non-linear Video/Media Renderer** microservice built on the **Bun runtime**, **Elysia web framework**, and **NodeAV** (native FFmpeg C++ API wrapper).
 
-`media-render` acts as a **Stateless API Worker** that accepts the **OpenCut** timeline specification format (`EditorManifest`) via HTTP API, performs fast parallel media rendering, and returns the path of the generated video immediately.
+`media-render` acts as a **Stateless API Worker** that accepts the timeline specification format (`EditorManifest`) via HTTP API, performs fast parallel media rendering, and returns the path of the generated video immediately.
 
 ---
 
-## 🚀 1. Key Features
-
-- **Complex Timeline Composition (OpenCut Spec):** Supports video concatenation, automatic gap-filling, logo/sticker overlays (Z-Index Overlays), multi-track karaoke subtitles (`drawtext`), and multi-track audio/BGM mixing (`amix`).
-- **Stateless Architecture:** Ideal for horizontal scaling (running multiple pods in parallel). A NestJS backend coordinates queue management.
-- **Concurrency Rate Limiting:** Configurable parallel rendering limits via `CONCURRENT_RENDER_LIMIT` in `.env`. Returns `HTTP 429 Too Many Requests` when overloaded.
-- **Active Resource Guard (Self-Protection):** Real-time monitoring of system memory, Bun process RSS memory, and average CPU Load. Automatically rejects new tasks with `HTTP 503 Service Unavailable` if thresholds are exceeded to prevent container out-of-memory crashes (Docker OOMKilled).
-- **Swagger Documentation:** Unified Swagger UI served via CDN at `/swagger` and raw JSON spec at `/swagger/json`.
-- **Health Check API:** Serves Kubernetes/Docker Compose readiness and liveness probes at `/health`.
-
----
-
-## ⚙️ 2. Environment Variables (.env)
+## ⚙️ 1. Environment Variables (.env)
 
 Create a `.env` file in the root directory based on the `.env.example` template:
 
@@ -31,30 +20,23 @@ Create a `.env` file in the root directory based on the `.env.example` template:
 
 ---
 
-## 🛠️ 3. Installation & Local Development
+## 🛠️ 2. Quick Start
 
-### System Requirements:
-- **Bun** (version 1.1 or 1.2+).
-- **FFmpeg C API libraries** (required for NodeAV):
-  - **macOS:** `brew install ffmpeg`
-  - **Ubuntu/Linux:** `sudo apt-get install -y ffmpeg libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev build-essential python3 pkg-config`
+### Prerequisites
+- **Bun** (1.1+) & **FFmpeg** (with development libraries) installed.
 
-### Install Dependencies:
+### Setup & Run
 ```bash
 bun install
-```
-
-### Start the Server:
-```bash
 bun start
 ```
-- Server running at: `http://localhost:3005`
-- Swagger UI served at: `http://localhost:3005/swagger`
-- Health Check endpoint: `http://localhost:3005/health`
+* **Server URL:** `http://localhost:3005`
+* **Swagger API UI:** `http://localhost:3005/docs`
+* **Health Check:** `http://localhost:3005/health`
 
 ---
 
-## 🧪 4. Test Scenarios
+## 🧪 3. Test Scenarios
 
 We provide mock manifest test scripts representing real-world video formats. These scripts use local test assets located in `./test-assets/` for fast offline execution:
 
@@ -79,7 +61,7 @@ We provide mock manifest test scripts representing real-world video formats. The
 
 ---
 
-## 🐳 5. Containerization with Docker Compose
+## 🐳 4. Containerization with Docker Compose
 
 Docker Compose builds and bundles the FFmpeg dependencies automatically to run reliably in any environment:
 
@@ -104,7 +86,7 @@ docker compose down
 
 ---
 
-## 📡 6. API Usage Guide (cURL Examples)
+## 📡 5. API Usage Guide (cURL Examples)
 
 You can interact with the stateless rendering service directly via HTTP requests using `curl`.
 
