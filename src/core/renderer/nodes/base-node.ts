@@ -24,11 +24,10 @@ export abstract class BaseNode<Params extends BaseNodeParams = BaseNodeParams> {
   }
 
   abstract buildFrame(
-    time: number,
     renderer: CanvasRenderer,
     path: string
-  ): Promise<{
+  ): {
     items: FrameItemDescriptor[];
     textures: TextureUploadDescriptor[];
-  }>;
+  };
 }

@@ -42,8 +42,8 @@ export class RemoteFontLoader {
       // Register with @napi-rs/canvas
       GlobalFonts.registerFromPath(localPath, alias);
       console.log(`[FontLoader] Successfully downloaded and loaded remote font [${alias}] -> ${localPath}`);
-    } catch (err) {
-      console.error(`[FontLoader] Failed to load remote font [${alias}] from ${url}:`, err);
+    } catch (err: any) {
+      console.error(`[FontLoader] Failed to load remote font [${alias}] from ${url}: ${err.message || err}`);
     }
   }
 }

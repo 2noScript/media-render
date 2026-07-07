@@ -1,6 +1,7 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
 import { OpenCutRenderService } from "../src/services/render.service";
 import { Manifest } from "../src/types/manifest";
+import { validateManifest } from "../src/lib/manifest-validator";
 import fs from "fs";
 import path from "path";
 
@@ -115,6 +116,14 @@ async function main() {
   console.log("====================================================");
 
   const manifest: Manifest = await Bun.file(targetManifestPath).json();
+
+  const validationErrors = validateManifest(manifest);
+  if (validationErrors.length > 0) {
+    console.error("❌ Manifest validation failed:");
+    validationErrors.forEach((err) => console.error(`  - ${err}`));
+    process.exit(1);
+  }
+  console.log("🔍 Manifest validation passed successfully!");
 
   const relManifestDir = path.dirname(manifestRelPath);
   const filenameWithoutExt = path.basename(manifestRelPath, ".json");

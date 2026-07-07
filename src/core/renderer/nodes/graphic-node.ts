@@ -7,15 +7,15 @@ export class GraphicNode extends VisualNode {
     super(params);
   }
 
-  async buildFrame(
-    time: number,
-    _renderer: CanvasRenderer,
+  buildFrame(
+    renderer: CanvasRenderer,
     path: string
-  ): Promise<{
+  ): {
     items: FrameItemDescriptor[];
     textures: TextureUploadDescriptor[];
-  }> {
-    const resolved = this.resolveState(time);
+  } {
+    const resolved = this.resolved;
+    if (!resolved) return { items: [], textures: [] };
     const textureId = `${path}:graphic`;
     const width = resolved.width || 100;
     const height = resolved.height || 100;
@@ -38,12 +38,18 @@ export class GraphicNode extends VisualNode {
       },
     };
 
+    const { centerX, centerY } = this.resolveCenter(
+      resolved,
+      renderer.width,
+      renderer.height
+    );
+
     const item: FrameItemDescriptor = {
       type: "layer",
       textureId,
       transform: {
-        centerX: (resolved.x ?? 0) + width / 2,
-        centerY: (resolved.y ?? 0) + height / 2,
+        centerX,
+        centerY,
         width,
         height,
         rotationDegrees: resolved.rotationDegrees ?? 0,

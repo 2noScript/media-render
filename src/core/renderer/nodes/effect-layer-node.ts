@@ -7,14 +7,13 @@ export class EffectLayerNode extends BaseNode {
     super(params);
   }
 
-  async buildFrame(
-    _time: number,
+  buildFrame(
     renderer: CanvasRenderer,
     path: string
-  ): Promise<{
+  ): {
     items: FrameItemDescriptor[];
     textures: TextureUploadDescriptor[];
-  }> {
+  } {
     const textureId = `${path}:effect`;
     const width = renderer.width;
     const height = renderer.height;

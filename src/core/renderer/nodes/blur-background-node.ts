@@ -20,14 +20,11 @@ export class BlurBackgroundNode extends BaseNode {
     this.imagesMap = imagesMap;
   }
 
-  async buildFrame(
-    time: number,
-    renderer: CanvasRenderer,
-    path: string
-  ): Promise<{
-    items: FrameItemDescriptor[];
-    textures: TextureUploadDescriptor[];
-  }> {
+  /**
+   * Asynchronously resolves and caches the backdrop canvas frame (video sample or loaded image).
+   */
+  async resolveBackdrop(time: number, _renderer: CanvasRenderer): Promise<void> {
+    this.resolved = null;
     let sourceCanvas: any = null;
 
     if (this.params.type === "video") {
@@ -53,10 +50,26 @@ export class BlurBackgroundNode extends BaseNode {
       sourceCanvas = this.imagesMap[this.params.id];
     }
 
-    if (!sourceCanvas) {
+    if (sourceCanvas) {
+      this.resolved = { sourceCanvas, time };
+    }
+  }
+
+  /**
+   * Synchronously builds the blur background frame descriptors.
+   */
+  buildFrame(
+    renderer: CanvasRenderer,
+    path: string
+  ): {
+    items: FrameItemDescriptor[];
+    textures: TextureUploadDescriptor[];
+  } {
+    if (!this.resolved) {
       return { items: [], textures: [] };
     }
 
+    const { sourceCanvas, time } = this.resolved;
     const textureId = `${path}:blur-background`;
     const { width, height } = renderer;
 

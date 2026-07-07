@@ -1,27 +1,26 @@
-import { BaseNode } from "./base-node";
+import { VisualNode } from "./visual-node";
 import { FrameItemDescriptor, TextureUploadDescriptor } from "../compositor/types";
 import { CanvasRenderer } from "../canvas-renderer";
 
-export class ColorNode extends BaseNode {
+export class ColorNode extends VisualNode {
   constructor(params: any) {
     super(params);
   }
 
-  async buildFrame(
-    _time: number,
+  buildFrame(
     renderer: CanvasRenderer,
     path: string
-  ): Promise<{
+  ): {
     items: FrameItemDescriptor[];
     textures: TextureUploadDescriptor[];
-  }> {
+  } {
     const textureId = `${path}:color`;
-    const params = this.params as any;
-    const width = params.width ?? params.params?.["width"] ?? renderer.width;
-    const height = params.height ?? params.params?.["height"] ?? renderer.height;
-    const color = params.color ?? params.params?.["color"] ?? "#000000";
-    const xVal = params.x ?? params.params?.["transform.positionX"] ?? 0;
-    const yVal = params.y ?? params.params?.["transform.positionY"] ?? 0;
+    const resolved = this.resolved;
+    if (!resolved) return { items: [], textures: [] };
+    
+    const width = resolved.width ?? renderer.width;
+    const height = resolved.height ?? renderer.height;
+    const color = this.params.params?.["color"] ?? "#000000";
 
     const texture: TextureUploadDescriptor = {
       kind: "rendered",
@@ -35,19 +34,25 @@ export class ColorNode extends BaseNode {
       },
     };
 
+    const { centerX, centerY } = this.resolveCenter(
+      resolved,
+      renderer.width,
+      renderer.height
+    );
+
     const item: FrameItemDescriptor = {
       type: "layer",
       textureId,
       transform: {
-        centerX: xVal + width / 2,
-        centerY: yVal + height / 2,
+        centerX,
+        centerY,
         width,
         height,
         rotationDegrees: 0,
         flipX: false,
         flipY: false,
       },
-      opacity: 1,
+      opacity: resolved.opacity ?? 1.0,
       blendMode: "normal",
       mask: null,
     };
@@ -63,4 +68,3 @@ import { nodeRegistry } from "./registry";
 nodeRegistry.register("color", (el) => {
   return new ColorNode(el);
 });
-

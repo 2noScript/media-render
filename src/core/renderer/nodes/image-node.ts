@@ -10,17 +10,16 @@ export class ImageNode extends VisualNode {
     this.image = image;
   }
 
-  async buildFrame(
-    time: number,
-    _renderer: CanvasRenderer,
+  buildFrame(
+    renderer: CanvasRenderer,
     path: string
-  ): Promise<{
+  ): {
     items: FrameItemDescriptor[];
     textures: TextureUploadDescriptor[];
-  }> {
-    if (!this.image) return { items: [], textures: [] };
+  } {
+    if (!this.image || !this.resolved) return { items: [], textures: [] };
 
-    const resolved = this.resolveState(time);
+    const resolved = this.resolved;
     const textureId = `${path}:image`;
     const width = this.image.width;
     const height = this.image.height;
@@ -36,12 +35,18 @@ export class ImageNode extends VisualNode {
     const targetWidth = (resolved.width || width) * (resolved.scaleX ?? 1.0);
     const targetHeight = (resolved.height || height) * (resolved.scaleY ?? 1.0);
 
+    const { centerX, centerY } = this.resolveCenter(
+      resolved,
+      renderer.width,
+      renderer.height
+    );
+
     const item: FrameItemDescriptor = {
       type: "layer",
       textureId,
       transform: {
-        centerX: (resolved.x ?? 0) + targetWidth / 2,
-        centerY: (resolved.y ?? 0) + targetHeight / 2,
+        centerX,
+        centerY,
         width: targetWidth,
         height: targetHeight,
         rotationDegrees: resolved.rotationDegrees,

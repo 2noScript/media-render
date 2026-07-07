@@ -51,12 +51,12 @@
           "startTime": 0,
           "trimStart": 0,
           "trimEnd": 0,
+          "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/bangers/Bangers-Regular.ttf",
           "params": {
             "content": "Backdrop Blur E2E Test",
             "fontSize": 24,
             "color": "#FFFFFF",
             "fontFamily": "Bangers",
-            "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/bangers/Bangers-Regular.ttf",
             "strokeColor": "#FF0000",
             "strokeWidth": 3,
             "textAlign": "center",

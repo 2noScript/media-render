@@ -48,17 +48,17 @@
           "startTime": 0.5,
           "trimStart": 0,
           "trimEnd": 0,
+          "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/lobster/Lobster-Regular.ttf",
           "params": {
             "content": "Lobster Bold Font (Gold)",
             "fontSize": 36,
             "color": "#FFD700",
             "fontFamily": "Lobster",
-            "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/lobster/Lobster-Regular.ttf",
             "strokeColor": "#000000",
             "strokeWidth": 4,
             "textAlign": "center",
             "transform.positionX": 0,
-            "transform.positionY": -80
+            "transform.positionY": 0
           }
         },
         {
@@ -69,12 +69,12 @@
           "startTime": 3.2,
           "trimStart": 0,
           "trimEnd": 0,
+          "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/pacifico/Pacifico-Regular.ttf",
           "params": {
             "content": "Pacifico Hand-drawn Cursive (Pink)",
             "fontSize": 32,
             "color": "#FF69B4",
             "fontFamily": "Pacifico",
-            "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/pacifico/Pacifico-Regular.ttf",
             "strokeColor": "#FFFFFF",
             "strokeWidth": 3,
             "textAlign": "center",
@@ -90,12 +90,12 @@
           "startTime": 5.9,
           "trimStart": 0,
           "trimEnd": 0,
+          "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/bangers/Bangers-Regular.ttf",
           "params": {
             "content": "Bangers Comic Regular Outline (Cyan)",
             "fontSize": 44,
             "color": "#00FFFF",
             "fontFamily": "Bangers",
-            "fontUrl": "https://raw.githubusercontent.com/google/fonts/main/ofl/bangers/Bangers-Regular.ttf",
             "strokeColor": "#333333",
             "strokeWidth": 2,
             "textAlign": "center",

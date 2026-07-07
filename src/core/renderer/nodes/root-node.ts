@@ -7,24 +7,20 @@ export class RootNode extends BaseNode<{ duration: number }> {
     super(params);
   }
 
-  async buildFrame(
-    time: number,
+  buildFrame(
     renderer: CanvasRenderer,
     path: string
-  ): Promise<{
+  ): {
     items: FrameItemDescriptor[];
     textures: TextureUploadDescriptor[];
-  }> {
+  } {
     const items: FrameItemDescriptor[] = [];
     const textures: TextureUploadDescriptor[] = [];
 
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
-      const start = child.params.startTime !== undefined ? child.params.startTime : 0;
-      const dur = child.params.duration !== undefined ? child.params.duration : Infinity;
-      
-      if (time >= start && time < start + dur) {
-        const result = await child.buildFrame(time, renderer, `${path}:${i}`);
+      if (child.resolved !== null) {
+        const result = child.buildFrame(renderer, `${path}:${i}`);
         items.push(...result.items);
         textures.push(...result.textures);
       }

@@ -6,25 +6,27 @@ import { createCanvasSurface } from "../canvas-utils";
 
 export class VideoNode extends VisualNode {
   private sink: any;
+  private resolvedVideoFrame: {
+    canvas: any;
+    width: number;
+    height: number;
+  } | null = null;
 
   constructor(params: any, sink: any) {
     super(params);
     this.sink = sink;
   }
 
-  async buildFrame(
-    time: number,
-    _renderer: CanvasRenderer,
-    path: string
-  ): Promise<{
-    items: FrameItemDescriptor[];
-    textures: TextureUploadDescriptor[];
-  }> {
-    const localTime = (time - this.params.startTime) + this.params.trimStart;
-    if (!this.sink) return { items: [], textures: [] };
+  /**
+   * Asynchronously resolves and caches the video frame at the target local time.
+   */
+  async resolveVideoFrame(time: number): Promise<void> {
+    this.resolvedVideoFrame = null;
+    if (!this.sink) return;
 
+    const localTime = (time - this.params.startTime) + this.params.trimStart;
     const sample = await this.sink.getSample(localTime);
-    if (!sample) return { items: [], textures: [] };
+    if (!sample) return;
 
     const width = sample.displayWidth;
     const height = sample.displayHeight;
@@ -37,7 +39,25 @@ export class VideoNode extends VisualNode {
     context.putImageData(imageData, 0, 0);
     sample.close();
 
-    const resolved = this.resolveState(time);
+    this.resolvedVideoFrame = { canvas, width, height };
+  }
+
+  /**
+   * Synchronously builds the frame descriptors from the pre-resolved video frame state.
+   */
+  buildFrame(
+    renderer: CanvasRenderer,
+    path: string
+  ): {
+    items: FrameItemDescriptor[];
+    textures: TextureUploadDescriptor[];
+  } {
+    if (!this.resolvedVideoFrame || !this.resolved) {
+      return { items: [], textures: [] };
+    }
+
+    const { canvas, width, height } = this.resolvedVideoFrame;
+    const resolved = this.resolved;
     const textureId = `${path}:video`;
 
     const texture: TextureUploadDescriptor = {
@@ -51,12 +71,18 @@ export class VideoNode extends VisualNode {
     const targetWidth = (resolved.width || width) * (resolved.scaleX ?? 1.0);
     const targetHeight = (resolved.height || height) * (resolved.scaleY ?? 1.0);
 
+    const { centerX, centerY } = this.resolveCenter(
+      resolved,
+      renderer.width,
+      renderer.height
+    );
+
     const item: FrameItemDescriptor = {
       type: "layer",
       textureId,
       transform: {
-        centerX: (resolved.x ?? 0) + targetWidth / 2,
-        centerY: (resolved.y ?? 0) + targetHeight / 2,
+        centerX,
+        centerY,
         width: targetWidth,
         height: targetHeight,
         rotationDegrees: resolved.rotationDegrees,
@@ -79,4 +105,3 @@ import { nodeRegistry } from "./registry";
 nodeRegistry.register("video", (el, renderer) => {
   return new VideoNode(el, renderer.videoSinksMap[el.id]);
 });
-

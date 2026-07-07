@@ -5,6 +5,7 @@ import { Manifest } from "../../types/manifest";
 import { skiaCompositor } from "./compositor/skia-compositor";
 import { AssetRegistry } from "./asset-registry";
 import { AudioPipeline } from "./audio-pipeline";
+import { resolveRenderTree } from "./resolve";
 
 export class CanvasRenderer {
   public canvas: Canvas;
@@ -77,8 +78,11 @@ export class CanvasRenderer {
     // Rebuild the visual Scene Graph hierarchy
     this.buildSceneGraph(manifest);
 
-    // Build the Frame Descriptor and gather active textures recursively
-    const { items, textures } = await this.rootNode.buildFrame(time, this, "root");
+    // 1. Resolve keyframes, fetch required video frames/backdrops, and layout all nodes asynchronously
+    await resolveRenderTree(this.rootNode, this, time);
+
+    // 2. Build the Frame Descriptor and gather active textures recursively synchronously
+    const { items, textures } = this.rootNode.buildFrame(this, "root");
 
     const frameDescriptor = {
       width: this.width,

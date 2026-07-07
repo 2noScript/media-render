@@ -7,16 +7,16 @@ export class TextNode extends VisualNode {
     super(params);
   }
 
-  async buildFrame(
-    time: number,
+  buildFrame(
     renderer: CanvasRenderer,
     path: string
-  ): Promise<{
+  ): {
     items: FrameItemDescriptor[];
     textures: TextureUploadDescriptor[];
-  }> {
+  } {
     const textureId = `${path}:text`;
-    const resolved = this.resolveState(time);
+    const resolved = this.resolved;
+    if (!resolved) return { items: [], textures: [] };
     const { width, height } = renderer;
 
     const params = this.params as any;
@@ -43,8 +43,8 @@ export class TextNode extends VisualNode {
         ctx.textBaseline = "middle";
         ctx.textAlign = textAlignVal as any;
 
-        const posX = resolved.x;
-        const posY = resolved.y;
+        const posX = (renderer.width / 2) + resolved.x;
+        const posY = (renderer.height / 2) + resolved.y;
 
         if (strokeColorVal && strokeWidthVal) {
           ctx.strokeStyle = strokeColorVal;
