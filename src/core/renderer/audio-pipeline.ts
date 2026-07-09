@@ -20,13 +20,28 @@ export class AudioPipeline {
    */
   public collectAudioClips(manifest: Manifest): any[] {
     const clips: any[] = [];
-    for (const track of manifest.tracks) {
-      if (track.type === "audio") {
+
+    // Collect from main video track
+    if (manifest.tracks.main) {
+      clips.push(...manifest.tracks.main.elements.filter((el: any) => el.type === "video"));
+    }
+
+    // Collect from audio tracks
+    if (Array.isArray(manifest.tracks.audio)) {
+      for (const track of manifest.tracks.audio) {
         clips.push(...track.elements);
-      } else if (track.type === "video") {
-        clips.push(...track.elements.filter((el: any) => el.type === "video"));
       }
     }
+
+    // Collect from overlay tracks (in case there are video overlays)
+    if (Array.isArray(manifest.tracks.overlay)) {
+      for (const track of manifest.tracks.overlay) {
+        if (track.type === "video") {
+          clips.push(...track.elements.filter((el: any) => el.type === "video"));
+        }
+      }
+    }
+
     return clips;
   }
 

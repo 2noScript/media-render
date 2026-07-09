@@ -19,7 +19,18 @@ export class AssetRegistry {
    * @param manifest The EditorManifest containing timeline tracks
    */
   public async ensureAssetsLoaded(manifest: Manifest): Promise<void> {
-    for (const track of manifest.tracks) {
+    const tracksList: any[] = [];
+    if (manifest.tracks.main) {
+      tracksList.push(manifest.tracks.main);
+    }
+    if (Array.isArray(manifest.tracks.audio)) {
+      tracksList.push(...manifest.tracks.audio);
+    }
+    if (Array.isArray(manifest.tracks.overlay)) {
+      tracksList.push(...manifest.tracks.overlay);
+    }
+
+    for (const track of tracksList) {
       for (const el of track.elements as any[]) {
         // Load video sink decoders if they do not exist
         if (el.type === "video" && !this.inputsMap[el.id]) {

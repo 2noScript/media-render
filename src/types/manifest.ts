@@ -292,7 +292,7 @@ export interface Manifest {
     quality?: ExportQuality;
     shouldIncludeAudio?: boolean;
   };
-  tracks: Array<VideoTrack | AudioTrack | TextTrack | GraphicTrack | EffectTrack>;
+  tracks: SceneTracks;
 }
 
 export type TimelineElement =

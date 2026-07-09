@@ -38,16 +38,27 @@ export function validateManifest(manifest: any): string[] {
     }
   }
 
-  if (!Array.isArray(manifest.tracks)) {
-    errors.push("Root: 'tracks' is required and must be an array");
-    return errors; // Cannot validate tracks if not an array
+  if (!manifest.tracks || typeof manifest.tracks !== "object") {
+    errors.push("Root: 'tracks' is required and must be a SceneTracks object");
+    return errors;
+  }
+
+  const tracksList: any[] = [];
+  if (manifest.tracks.main) {
+    tracksList.push(manifest.tracks.main);
+  }
+  if (Array.isArray(manifest.tracks.audio)) {
+    tracksList.push(...manifest.tracks.audio);
+  }
+  if (Array.isArray(manifest.tracks.overlay)) {
+    tracksList.push(...manifest.tracks.overlay);
   }
 
   // 2. Track Level Validation
   const validTrackTypes: TrackType[] = ["video", "text", "audio", "graphic", "effect"];
   let mainVideoTrackCount = 0;
 
-  manifest.tracks.forEach((track: any, trackIdx: number) => {
+  tracksList.forEach((track: any, trackIdx: number) => {
     const trackLabel = `Track[${trackIdx}] (ID: ${track.id || "unknown"})`;
 
     if (!track.id || typeof track.id !== "string") {
@@ -139,7 +150,7 @@ export function validateManifest(manifest: any): string[] {
     });
   });
 
-  if (manifest.tracks.length > 0 && mainVideoTrackCount === 0) {
+  if (tracksList.length > 0 && mainVideoTrackCount === 0) {
     // Note: Technically allowed in some compositions, but usually recommended
     // errors.push("Tracks: No main video track (isMain: true) found");
   }

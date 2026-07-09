@@ -53,7 +53,18 @@ export class CanvasRenderer {
    */
   public calculateDuration(manifest: Manifest): number {
     let maxEnd = 0;
-    for (const track of manifest.tracks) {
+    const tracksList: any[] = [];
+    if (manifest.tracks.main) {
+      tracksList.push(manifest.tracks.main);
+    }
+    if (Array.isArray(manifest.tracks.audio)) {
+      tracksList.push(...manifest.tracks.audio);
+    }
+    if (Array.isArray(manifest.tracks.overlay)) {
+      tracksList.push(...manifest.tracks.overlay);
+    }
+
+    for (const track of tracksList) {
       for (const el of track.elements) {
         const elEnd = el.startTime + el.duration;
         if (elEnd > maxEnd) {
@@ -109,12 +120,8 @@ export class CanvasRenderer {
     this.rootNode = new RootNode({ duration });
 
     // 1. Partition tracks: separate main video track from overlays, ignoring audio tracks
-    const mainTrack = manifest.tracks.find(
-      (t) => t.type === "video" && (t as any).isMain && !(t as any).hidden
-    );
-    const overlayTracks = manifest.tracks.filter(
-      (t) => t.type !== "audio" && !(t as any).hidden && !(t.type === "video" && (t as any).isMain)
-    );
+    const mainTrack = manifest.tracks.main && !manifest.tracks.main.hidden ? manifest.tracks.main : undefined;
+    const overlayTracks = (manifest.tracks.overlay || []).filter((t) => !t.hidden);
 
     // 2. Pass 1: Build and add BlurBackgroundNode instances from the main track first (absolute bottom layer)
     if (mainTrack) {
