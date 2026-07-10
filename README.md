@@ -1,5 +1,7 @@
 # Media Render Microservice
 
+[Tiếng Việt](README.vi.md)
+
 A high-performance, stateless **non-linear video and media rendering engine** built on the **Bun runtime** using **NodeAV** (native FFmpeg bindings) and **@napi-rs/canvas** (native Skia rendering). It parses timeline manifests to composite and export fully rendered video/audio files.
 
 ---
@@ -93,12 +95,13 @@ All environment variables (`PORT`, `CONCURRENT_RENDER_LIMIT`, resource limits) a
 
 Detailed specifications, time-mapping logics, and node-rendering algorithms:
 
-| Category | Reference Guide |
-| :--- | :--- |
-| **Manifest** | [Architecture & Schema](docs/manifest/architecture.md) • [Render Dataflow](docs/manifest/flow.md) • [Simulation Cases](docs/manifest/simulation.md) |
-| **Tracks** | [Track Schema Spec](docs/tracks/schema.md) • [Layering & Z-Index](docs/tracks/layering.md) |
-| **Elements** | [Video](docs/elements/video.md) • [Image](docs/elements/image.md) • [Audio](docs/elements/audio.md) • [Text](docs/elements/text.md) • [Sticker](docs/elements/sticker.md) • [Graphic](docs/elements/graphic.md) • [Effect](docs/elements/effect.md) • [Transition](docs/elements/transition.md) |
-| **Rendering** | [Algorithms Guide](docs/render/algorithms.md) • [Visual System Plan](docs/render/architecture.md) • [Core Functions](docs/render/functions.md) |
+| Category | English Guide | Bản dịch Tiếng Việt |
+| :--- | :--- | :--- |
+| **Manifest** | [Architecture & Schema](docs/manifest/architecture.md) • [Render Dataflow](docs/manifest/flow.md) • [Simulation Cases](docs/manifest/simulation.md) | [Kiến trúc & Schema](docs/manifest/architecture.vi.md) • [Luồng xử lý](docs/manifest/flow.vi.md) • [Các ca mô phỏng](docs/manifest/simulation.md) |
+| **Tracks** | [Track Schema Spec](docs/tracks/schema.md) • [Layering & Z-Index](docs/tracks/layering.md) | [Đặc tả Schema](docs/tracks/schema.vi.md) • [Xếp lớp Z-Index](docs/tracks/layering.vi.md) |
+| **Elements** | [Video](docs/elements/video.md) • [Image](docs/elements/image.md) • [Audio](docs/elements/audio.md) • [Text](docs/elements/text.md) • [Sticker](docs/elements/sticker.md) • [Graphic](docs/elements/graphic.md) • [Effect](docs/elements/effect.md) • [Transition](docs/elements/transition.md) | [Video](docs/elements/video.md) • [Image](docs/elements/image.md) • [Audio](docs/elements/audio.md) • [Text](docs/elements/text.md) • [Sticker](docs/elements/sticker.md) • [Graphic](docs/elements/graphic.md) • [Effect](docs/elements/effect.md) • [Chuyển cảnh](docs/elements/transition.vi.md) |
+| **Rendering** | [Algorithms Guide](docs/render/algorithms.md) • [Visual System Plan](docs/render/architecture.md) • [Core Functions](docs/render/functions.md) | [Thuật toán](docs/render/algorithms.md) • [Thiết kế hệ thống](docs/render/architecture.md) • [Danh sách hàm](docs/render/functions.md) |
+| **Config** | [Environment Variables](docs/env.md) | [Biến cấu hình & Môi trường](docs/env.vi.md) |
 
 ---
 
