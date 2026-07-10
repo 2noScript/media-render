@@ -77,7 +77,7 @@ export interface ElementAnimations {
   [propertyPath: string]: ChannelData | undefined;
 }
 
-export type TrackType = "video" | "text" | "audio" | "graphic" | "effect" | "transition";
+export type TrackType = "video" | "text" | "audio" | "graphic" | "effect";
 
 export type ElementRef = {
   trackId: string;
@@ -92,22 +92,6 @@ export interface Bookmark {
 }
 
 export type OverlayTrack = VideoTrack | TextTrack | GraphicTrack | EffectTrack;
-
-export interface SceneTracks {
-  overlay: OverlayTrack[];
-  main: VideoTrack;
-  audio: AudioTrack[];
-}
-
-export interface TScene {
-  id: string;
-  name: string;
-  isMain: boolean;
-  tracks: SceneTracks;
-  bookmarks: Bookmark[];
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 export interface BaseTrack {
   id: string;
@@ -336,7 +320,11 @@ export interface Manifest {
     quality?: ExportQuality;
     shouldIncludeAudio?: boolean;
   };
-  tracks: SceneTracks;
+  tracks: {
+    overlay: OverlayTrack[];
+    main: VideoTrack;
+    audio: AudioTrack[];
+  };
 }
 
 export type TimelineElement =
