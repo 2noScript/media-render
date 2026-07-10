@@ -24,7 +24,7 @@ The background is always rendered first to provide a solid canvas:
 * **Blurred Background**: If a blurred background is requested (`background.type === "blur"`), the compositor processes the **Main Video Track** elements. For each active video element, it creates a `BlurBackgroundNode` that stretches and blurs the corresponding frame. These blur backdrops are added at the very beginning of the node array.
 
 ### 1.2 Layer 2: Main Video Track (Z-Index: 1)
-* Represents the core narrative track of the timeline (where `isMain: true` or `tracks.main` is defined).
+* Represents the core narrative track of the timeline, defined under `tracks.main`.
 * Elements on this track are rendered directly over the background backdrop.
 
 ### 1.3 Layer 3: Overlay Tracks (Z-Index: 2+)
@@ -33,12 +33,12 @@ The background is always rendered first to provide a solid canvas:
   - In the manifest, overlays are specified in an array `tracks.overlay = [Overlay_0, Overlay_1, ..., Overlay_N]`.
   - To ensure that the first overlay (`Overlay_0`) appears on top of the subsequent overlays, the tracks are processed in **reverse order**:
     $$\text{Stack Order: } \text{MainTrack} \longrightarrow \text{Overlay}_N \longrightarrow \text{Overlay}_{N-1} \longrightarrow \dots \longrightarrow \text{Overlay}_0$$
-  - Thus, `Overlay_0` (typically the subtitle or caption track) is added last to the scene graph and drawn on the very top.
+  - Point to note: `Overlay_0` (typically the subtitle or caption track) is added last to the scene graph and drawn on the very top.
 
 ### 1.4 Multiple Video Tracks Handling (Xử lý khi có nhiều Video Track)
 Khi có nhiều Video Track trong timeline:
-* **Chỉ duy nhất một Video Track** được đánh dấu `isMain: true` (hoặc là `tracks.main` của Scene) đóng vai trò là track nền chính (nằm ở dưới cùng - Z-Index: 1).
-* **Tất cả các Video Track còn lại** (không có `isMain: true` hoặc nằm trong danh sách overlays) sẽ tự động được xem là các **Overlay Video Tracks** (ví dụ: video Picture-in-Picture - PiP, các clip phụ họa, v.v.).
+* **Chỉ duy nhất một Video Track** nằm trong `tracks.main` đóng vai trò là track nền chính (nằm ở dưới cùng - Z-Index: 1).
+* **Tất cả các Video Track còn lại** nằm trong danh sách `tracks.overlay` sẽ tự động được xem là các **Overlay Video Tracks** (ví dụ: video Picture-in-Picture - PiP, các clip phụ họa, v.v.).
 * Các Overlay Video Tracks này được sắp xếp và vẽ chèn đè lên trên Main Video Track theo đúng thứ tự đảo ngược của mảng overlay (`overlayTracks.reverse()`), nằm xen kẽ với các track phụ đề hay sticker tùy thuộc vào thứ tự chỉ mục của chúng trong mảng.
 
 ---
@@ -49,9 +49,9 @@ Khi có nhiều Video Track trong timeline:
 The schema supports 4 types of timeline tracks, each with specific roles and Z-Index constraints:
 
 1. **Video Track (`type: "video"`)**
-   - **Allowed Elements**: `video`, `image`.
-   - **Main Track (`isMain: true`)**: Positions video clips as the bottom-most layer. Renders at Z-Index: 1.
-   - **Overlay Track (`isMain: false`)**: Places secondary picture-in-picture videos or images over the main video. Renders at Z-Index: 2+.
+   - **Allowed Elements**: `video`, `image`, `transition`.
+   - **Main Track**: Placed under `tracks.main`, positions video clips as the bottom-most layer. Renders at Z-Index: 1.
+   - **Overlay Track**: Placed under `tracks.overlay`, places secondary picture-in-picture videos or images over the main video. Renders at Z-Index: 2+.
 2. **Text Track (`type: "text"`)**
    - **Allowed Elements**: `text`.
    - **Position**: Always positioned as an Overlay Track at the top Z-Index layer (above videos and stickers) to prevent captions from being covered.

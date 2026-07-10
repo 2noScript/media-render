@@ -18,7 +18,7 @@ graph TD
     classDef fileClass fill:#8e44ad,stroke:#6c3483,stroke-width:2px,color:#fff;
 
     %% 1. Input JSON
-    JSON["EditorManifest JSON Input"] --> TR["Tracks: array of Video/Text/Audio tracks"]
+    JSON["EditorManifest JSON Input"] --> TR["Tracks: SceneTracks Object (main, audio, overlay)"]
     JSON --> SET["settings: resolution, fps, format, quality"]
 
     %% 2. Exporter Setup
