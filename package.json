@@ -29,7 +29,8 @@
     "test:track:hidden": "bun run tests/run.ts tracks/hidden_track",
     "test:track:main": "bun run tests/run.ts tracks/main_track",
     "test:track:multi_video": "bun run tests/run.ts tracks/multi_video_tracks",
-    "test:track:multi_audio": "bun run tests/run.ts tracks/multi_audio_tracks"
+    "test:track:multi_audio": "bun run tests/run.ts tracks/multi_audio_tracks",
+    "test:transition": "bun run tests/run.ts test-transition"
   },
   "devDependencies": {
     "@types/bun": "latest",

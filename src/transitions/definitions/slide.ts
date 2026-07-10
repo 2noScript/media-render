@@ -7,6 +7,7 @@ export const slideLeftDefinition: TransitionDefinition = {
   group: "Slide",
   keywords: ["slide", "left", "pan", "push"],
   defaultDuration: 0.5,
+  easing: "ease-out",
   params: [],
   renderer: {
     render({ fromCanvas, toCanvas, progress, width, height, output }) {
@@ -25,6 +26,7 @@ export const slideRightDefinition: TransitionDefinition = {
   group: "Slide",
   keywords: ["slide", "right", "pan", "push"],
   defaultDuration: 0.5,
+  easing: "ease-out",
   params: [],
   renderer: {
     render({ fromCanvas, toCanvas, progress, width, height, output }) {
@@ -43,6 +45,7 @@ export const slideUpDefinition: TransitionDefinition = {
   group: "Slide",
   keywords: ["slide", "up", "pan"],
   defaultDuration: 0.5,
+  easing: "ease-out",
   params: [],
   renderer: {
     render({ fromCanvas, toCanvas, progress, width, height, output }) {
@@ -61,6 +64,7 @@ export const slideDownDefinition: TransitionDefinition = {
   group: "Slide",
   keywords: ["slide", "down", "pan"],
   defaultDuration: 0.5,
+  easing: "ease-out",
   params: [],
   renderer: {
     render({ fromCanvas, toCanvas, progress, width, height, output }) {

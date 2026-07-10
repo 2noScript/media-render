@@ -76,6 +76,8 @@ export interface TransitionDefinition {
   keywords: string[];
   /** Default duration in seconds if not specified by user */
   defaultDuration?: number;
+  /** Hardcoded easing curve for this transition. Default: "ease-in-out" */
+  easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out";
   /** Custom param schema (besides effect/duration/easing which are always present) */
   params: TransitionParamDefinition[];
   /** The actual rendering implementation */

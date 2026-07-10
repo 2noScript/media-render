@@ -47,7 +47,13 @@ export class TransitionNode extends BaseNode {
     const startTime = this.params.startTime ?? 0;
     const duration = this.params.duration ?? 0.5;
     const rawProgress = (time - startTime) / duration;
-    this.progress = applyEasing(rawProgress, this.params.params?.easing ?? "ease-in-out");
+
+    // Get transition definition to read its static easing setting
+    const type = this.params.transitionType;
+    const def = transitionsRegistry.get(type);
+    const easing = def?.easing ?? "ease-in-out";
+
+    this.progress = applyEasing(rawProgress, easing);
 
     // Force resolution of the incoming (toNode) clip at the correct playback time.
     // The incoming clip starts playing from its trimStart time.
@@ -99,7 +105,7 @@ export class TransitionNode extends BaseNode {
     items: FrameItemDescriptor[];
     textures: TextureUploadDescriptor[];
   } {
-    const type = this.params.transitionType || this.params.params?.effect;
+    const type = this.params.transitionType;
     const def = transitionsRegistry.get(type);
 
     if (!def || !this.resolved) {

@@ -11,23 +11,14 @@ export interface Effect {
 /**
  * Core parameters for a TransitionElement.
  * Stored in `TransitionElement.params` on the VideoTrack.
- *
- * `effect` is the registry key that maps to a TransitionDefinition.
- * Any per-transition custom params (intensity, scale, angle, frequency, color, etc.)
- * are stored alongside under their own keys — declared by TransitionDefinition.params schema.
+ * Contains only custom parameters specific to the transition definition.
  *
  * @example
- * { effect: "fade", duration: 0.5, easing: "ease-in-out", intensity: 1 }
- * { effect: "zoom_in", duration: 0.5, scale: 1.3 }
- * { effect: "wave_ripple", duration: 0.8, frequency: 3, intensity: 0.6 }
+ * { intensity: 1 }
+ * { scale: 1.3 }
+ * { frequency: 3, intensity: 0.6 }
  */
 export interface TransitionParams extends ParamValues {
-  /** Registry key — matches TransitionDefinition.type */
-  effect: string;
-  /** Duration of the transition in seconds. */
-  duration: number;
-  /** Easing function for the blending animation. Default: "ease-in-out" */
-  easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out";
   /** Per-transition custom params — see TransitionDefinition.params for schema */
   [key: string]: any;
 }
@@ -323,8 +314,8 @@ export interface EffectElement extends BaseTimelineElement {
  */
 export interface TransitionElement extends BaseTimelineElement {
   type: "transition";
-  /** The name of the transition effect — must match TransitionParams.effect */
-  transitionType: TransitionParams["effect"];
+  /** The name of the transition effect (e.g. "fade", "slide_left") */
+  transitionType: string;
   /** ID of the outgoing clip (the clip that ends) */
   fromElementId: string;
   /** ID of the incoming clip (the clip that starts) */

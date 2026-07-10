@@ -43,8 +43,6 @@
           "startTime": 1.5,
           "duration": 1,
           "params": {
-            "effect": "flash_white",
-            "duration": 1,
             "intensity": 1
           }
         },

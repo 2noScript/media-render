@@ -42,10 +42,7 @@
           "toElementId": "clip-1",
           "startTime": 1.5,
           "duration": 1,
-          "params": {
-            "effect": "fade_white",
-            "duration": 1
-          }
+          "params": {}
         },
         {
           "id": "clip-1",

@@ -43,8 +43,6 @@
           "startTime": 1.5,
           "duration": 1,
           "params": {
-            "effect": "wave_ripple",
-            "duration": 1,
             "frequency": 8,
             "intensity": 0.5
           }

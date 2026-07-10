@@ -45,12 +45,11 @@ class TransitionRegistry {
 
   /**
    * Builds the default params object for a given transition type.
-   * Combines { effect, duration, easing } with per-definition param defaults.
+   * Combines { effect, duration } with per-definition param defaults.
    */
   buildDefaultParams(
     type: string,
-    duration = 0.5,
-    easing: "linear" | "ease-in" | "ease-out" | "ease-in-out" = "ease-in-out"
+    duration = 0.5
   ): Record<string, any> {
     const def = this.registry.get(type);
     const customDefaults: Record<string, any> = {};
@@ -59,7 +58,7 @@ class TransitionRegistry {
         customDefaults[p.key] = p.default;
       }
     }
-    return { effect: type, duration, easing, ...customDefaults };
+    return { effect: type, duration, ...customDefaults };
   }
 }
 

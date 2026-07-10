@@ -43,8 +43,6 @@
           "startTime": 1.5,
           "duration": 1,
           "params": {
-            "effect": "zoom_blur",
-            "duration": 1,
             "intensity": 0.8,
             "scale": 1.6
           }
