@@ -7,8 +7,8 @@
     "format": "mp4",
     "shouldIncludeAudio": false
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-video-bg",
       "type": "video",
       "isMain": true,
@@ -18,36 +18,41 @@
           "type": "video",
           "sourceUrl": "./test-assets/mov_bbb.mp4",
           "startTime": 0,
-          "duration": 5.0,
+          "duration": 5,
           "params": {
-            "volume": 0.0,
+            "volume": 0,
             "width": 640,
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0
           }
         }
-      ]
+      ],
+      "muted": false,
+      "hidden": false
     },
-    {
-      "id": "track-video-overlay",
-      "type": "video",
-      "elements": [
-        {
-          "id": "pip-clip",
-          "type": "video",
-          "sourceUrl": "./test-assets/mov_bbb.mp4",
-          "startTime": 1.0,
-          "duration": 3.0,
-          "params": {
-            "volume": 0.0,
-            "width": 180,
-            "height": 180,
-            "transform.positionX": 200,
-            "transform.positionY": 80
+    "audio": [],
+    "overlay": [
+      {
+        "id": "track-video-overlay",
+        "type": "video",
+        "elements": [
+          {
+            "id": "pip-clip",
+            "type": "video",
+            "sourceUrl": "./test-assets/mov_bbb.mp4",
+            "startTime": 1,
+            "duration": 3,
+            "params": {
+              "volume": 0,
+              "width": 180,
+              "height": 180,
+              "transform.positionX": 200,
+              "transform.positionY": 80
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

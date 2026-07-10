@@ -7,8 +7,8 @@
     "format": "mp4",
     "quality": "high"
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-main-video",
       "name": "Main Video Track",
       "type": "video",
@@ -26,36 +26,39 @@
           "trimStart": 0,
           "trimEnd": 0,
           "params": {
-            "volume": 0.0,
+            "volume": 0,
             "width": 640,
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0
+            "opacity": 1
           }
         }
       ]
     },
-    {
-      "id": "track-bgm",
-      "name": "Background Music",
-      "type": "audio",
-      "muted": false,
-      "elements": [
-        {
-          "id": "bgm-1",
-          "name": "Theme Music",
-          "type": "audio",
-          "sourceUrl": "./test-assets/song.mp3",
-          "duration": 4,
-          "startTime": 0,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "params": {
-            "volume": 0.4
+    "audio": [
+      {
+        "id": "track-bgm",
+        "name": "Background Music",
+        "type": "audio",
+        "muted": false,
+        "elements": [
+          {
+            "id": "bgm-1",
+            "name": "Theme Music",
+            "type": "audio",
+            "sourceUrl": "./test-assets/song.mp3",
+            "duration": 4,
+            "startTime": 0,
+            "trimStart": 0,
+            "trimEnd": 0,
+            "params": {
+              "volume": 0.4
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ],
+    "overlay": []
+  }
 }

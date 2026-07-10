@@ -7,8 +7,8 @@
     "format": "mp4",
     "quality": "high"
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-main-slideshow",
       "name": "Image Slideshow Track",
       "type": "video",
@@ -30,7 +30,7 @@
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0
+            "opacity": 1
           }
         },
         {
@@ -47,7 +47,7 @@
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0
+            "opacity": 1
           }
         },
         {
@@ -64,31 +64,34 @@
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0
+            "opacity": 1
           }
         }
       ]
     },
-    {
-      "id": "track-slideshow-audio",
-      "name": "Background Music",
-      "type": "audio",
-      "muted": false,
-      "elements": [
-        {
-          "id": "bgm-slideshow",
-          "name": "Slide Background Sound",
-          "type": "audio",
-          "sourceUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-          "duration": 9,
-          "startTime": 0,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "params": {
-            "volume": 0.5
+    "audio": [
+      {
+        "id": "track-slideshow-audio",
+        "name": "Background Music",
+        "type": "audio",
+        "muted": false,
+        "elements": [
+          {
+            "id": "bgm-slideshow",
+            "name": "Slide Background Sound",
+            "type": "audio",
+            "sourceUrl": "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+            "duration": 9,
+            "startTime": 0,
+            "trimStart": 0,
+            "trimEnd": 0,
+            "params": {
+              "volume": 0.5
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ],
+    "overlay": []
+  }
 }

@@ -7,27 +7,39 @@
     "format": "mp4",
     "shouldIncludeAudio": false
   },
-  "tracks": [
-    {
-      "id": "track-text",
-      "type": "text",
-      "elements": [
-        {
-          "id": "text-clip",
-          "type": "text",
-          "startTime": 0,
-          "duration": 5.0,
-          "params": {
-            "content": "Pure Text Render",
-            "fontSize": 36,
-            "color": "#FFFFFF",
-            "fontFamily": "sans-serif",
-            "textAlign": "center",
-            "transform.positionX": 0,
-            "transform.positionY": 0
+  "tracks": {
+    "main": {
+      "id": "track-main-default",
+      "name": "Main Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": []
+    },
+    "audio": [],
+    "overlay": [
+      {
+        "id": "track-text",
+        "type": "text",
+        "elements": [
+          {
+            "id": "text-clip",
+            "type": "text",
+            "startTime": 0,
+            "duration": 5,
+            "params": {
+              "content": "Pure Text Render",
+              "fontSize": 36,
+              "color": "#FFFFFF",
+              "fontFamily": "sans-serif",
+              "textAlign": "center",
+              "transform.positionX": 0,
+              "transform.positionY": 0
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

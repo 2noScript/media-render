@@ -7,8 +7,8 @@
     "format": "mp4",
     "shouldIncludeAudio": false
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-sticker",
       "type": "video",
       "elements": [
@@ -18,16 +18,21 @@
           "stickerId": "test_sticker",
           "sourceUrl": "https://picsum.photos/100/100",
           "startTime": 0,
-          "duration": 5.0,
+          "duration": 5,
           "params": {
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "transform.scaleX": 1.0,
-            "transform.scaleY": 1.0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
             "transform.rotate": 0
           }
         }
-      ]
-    }
-  ]
+      ],
+      "isMain": true,
+      "muted": false,
+      "hidden": false
+    },
+    "audio": [],
+    "overlay": []
+  }
 }

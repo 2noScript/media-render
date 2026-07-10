@@ -8,8 +8,8 @@
     "quality": "high",
     "shouldIncludeAudio": true
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-main-bg",
       "name": "Background Video Track",
       "type": "video",
@@ -27,72 +27,75 @@
           "trimStart": 0,
           "trimEnd": 0,
           "params": {
-            "volume": 0.0,
+            "volume": 0,
             "width": 640,
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0
+            "opacity": 1
           }
         }
       ]
     },
-    {
-      "id": "track-music",
-      "name": "Background Music",
-      "type": "audio",
-      "elements": [
-        {
-          "id": "audio-music-1",
-          "name": "Background Theme Song",
-          "type": "audio",
-          "sourceUrl": "./test-assets/song.mp3",
-          "duration": 10,
-          "startTime": 0,
-          "trimStart": 0,
-          "params": {
-            "volume": 0.3
+    "audio": [
+      {
+        "id": "track-music",
+        "name": "Background Music",
+        "type": "audio",
+        "elements": [
+          {
+            "id": "audio-music-1",
+            "name": "Background Theme Song",
+            "type": "audio",
+            "sourceUrl": "./test-assets/song.mp3",
+            "duration": 10,
+            "startTime": 0,
+            "trimStart": 0,
+            "params": {
+              "volume": 0.3
+            }
           }
-        }
-      ]
-    },
-    {
-      "id": "track-voiceover",
-      "name": "Voiceover Overlay",
-      "type": "audio",
-      "elements": [
-        {
-          "id": "audio-voiceover-1",
-          "name": "Spoken Voice Segment",
-          "type": "audio",
-          "sourceUrl": "./test-assets/song.mp3",
-          "duration": 4,
-          "startTime": 2,
-          "trimStart": 10,
-          "params": {
-            "volume": 0.8
+        ]
+      },
+      {
+        "id": "track-voiceover",
+        "name": "Voiceover Overlay",
+        "type": "audio",
+        "elements": [
+          {
+            "id": "audio-voiceover-1",
+            "name": "Spoken Voice Segment",
+            "type": "audio",
+            "sourceUrl": "./test-assets/song.mp3",
+            "duration": 4,
+            "startTime": 2,
+            "trimStart": 10,
+            "params": {
+              "volume": 0.8
+            }
           }
-        }
-      ]
-    },
-    {
-      "id": "track-sfx",
-      "name": "Sound Effects",
-      "type": "audio",
-      "elements": [
-        {
-          "id": "audio-sfx-1",
-          "name": "Swoosh Sound Effect",
-          "type": "audio",
-          "sourceUrl": "./test-assets/song.mp3",
-          "duration": 1.5,
-          "startTime": 7.5,
-          "trimStart": 30,
-          "params": {
-            "volume": 1.0
+        ]
+      },
+      {
+        "id": "track-sfx",
+        "name": "Sound Effects",
+        "type": "audio",
+        "elements": [
+          {
+            "id": "audio-sfx-1",
+            "name": "Swoosh Sound Effect",
+            "type": "audio",
+            "sourceUrl": "./test-assets/song.mp3",
+            "duration": 1.5,
+            "startTime": 7.5,
+            "trimStart": 30,
+            "params": {
+              "volume": 1
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ],
+    "overlay": []
+  }
 }

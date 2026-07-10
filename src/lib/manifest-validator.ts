@@ -143,6 +143,17 @@ export function validateManifest(manifest: any): string[] {
             errors.push(`${elLabel}: Effect element must define 'effectType'`);
           }
           break;
+        case "transition":
+          if (!el.transitionType) {
+            errors.push(`${elLabel}: Transition element must define 'transitionType'`);
+          }
+          if (!el.fromElementId) {
+            errors.push(`${elLabel}: Transition element must define 'fromElementId'`);
+          }
+          if (!el.toElementId) {
+            errors.push(`${elLabel}: Transition element must define 'toElementId'`);
+          }
+          break;
         default:
           errors.push(`${elLabel}: Unknown element type '${el.type}'`);
           break;

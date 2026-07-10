@@ -7,8 +7,8 @@
     "format": "mp4",
     "shouldIncludeAudio": false
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-image",
       "type": "video",
       "elements": [
@@ -17,7 +17,7 @@
           "type": "image",
           "sourceUrl": "https://picsum.photos/640/360",
           "startTime": 0,
-          "duration": 5.0,
+          "duration": 5,
           "params": {
             "width": 640,
             "height": 360,
@@ -25,7 +25,12 @@
             "transform.positionY": 0
           }
         }
-      ]
-    }
-  ]
+      ],
+      "isMain": true,
+      "muted": false,
+      "hidden": false
+    },
+    "audio": [],
+    "overlay": []
+  }
 }

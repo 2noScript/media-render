@@ -7,8 +7,8 @@
     "format": "mp4",
     "shouldIncludeAudio": true
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-video",
       "type": "video",
       "isMain": true,
@@ -18,46 +18,51 @@
           "type": "video",
           "sourceUrl": "./test-assets/mov_bbb.mp4",
           "startTime": 0,
-          "duration": 5.0,
+          "duration": 5,
           "params": {
-            "volume": 0.0,
+            "volume": 0,
             "width": 640,
             "height": 360
           }
         }
-      ]
+      ],
+      "muted": false,
+      "hidden": false
     },
-    {
-      "id": "track-audio-1",
-      "type": "audio",
-      "elements": [
-        {
-          "id": "audio-clip-1",
-          "type": "audio",
-          "sourceUrl": "./test-assets/synth_bgm.mp3",
-          "startTime": 0,
-          "duration": 5.0,
-          "params": {
-            "volume": 0.5
+    "audio": [
+      {
+        "id": "track-audio-1",
+        "type": "audio",
+        "elements": [
+          {
+            "id": "audio-clip-1",
+            "type": "audio",
+            "sourceUrl": "./test-assets/synth_bgm.mp3",
+            "startTime": 0,
+            "duration": 5,
+            "params": {
+              "volume": 0.5
+            }
           }
-        }
-      ]
-    },
-    {
-      "id": "track-audio-2",
-      "type": "audio",
-      "elements": [
-        {
-          "id": "audio-clip-2",
-          "type": "audio",
-          "sourceUrl": "./test-assets/synth_bgm.mp3",
-          "startTime": 1.0,
-          "duration": 3.0,
-          "params": {
-            "volume": 0.8
+        ]
+      },
+      {
+        "id": "track-audio-2",
+        "type": "audio",
+        "elements": [
+          {
+            "id": "audio-clip-2",
+            "type": "audio",
+            "sourceUrl": "./test-assets/synth_bgm.mp3",
+            "startTime": 1,
+            "duration": 3,
+            "params": {
+              "volume": 0.8
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ],
+    "overlay": []
+  }
 }

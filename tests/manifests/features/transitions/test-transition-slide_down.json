@@ -1,0 +1,71 @@
+{
+  "id": "test-transition-slide_down",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": false
+  },
+  "tracks": {
+    "main": {
+      "id": "track-main-video",
+      "name": "Main Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": true,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "clip-0",
+          "name": "Clip 0",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 2,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "width": 640,
+            "height": 360,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "trans-slide_down",
+          "name": "slide_down Transition",
+          "type": "transition",
+          "transitionType": "slide_down",
+          "fromElementId": "clip-0",
+          "toElementId": "clip-1",
+          "startTime": 1.5,
+          "duration": 1,
+          "params": {
+            "effect": "slide_down",
+            "duration": 1
+          }
+        },
+        {
+          "id": "clip-1",
+          "name": "Clip 1",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 2,
+          "duration": 2,
+          "trimStart": 2,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "width": 640,
+            "height": 360,
+            "opacity": 1
+          }
+        }
+      ]
+    },
+    "audio": [],
+    "overlay": []
+  }
+}

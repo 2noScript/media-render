@@ -8,8 +8,8 @@
     "quality": "high",
     "shouldIncludeAudio": false
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-main-bg",
       "name": "Main Background Video Track",
       "type": "video",
@@ -27,49 +27,58 @@
           "trimStart": 0,
           "trimEnd": 0,
           "params": {
-            "volume": 0.0,
+            "volume": 0,
             "width": 640,
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0
+            "opacity": 1
           }
         }
       ]
     },
-    {
-      "id": "track-pip-facecam",
-      "name": "Picture in Picture Facecam",
-      "type": "video",
-      "isMain": false,
-      "muted": false,
-      "hidden": false,
-      "elements": [
-        {
-          "id": "pip-clip-1",
-          "name": "Facecam Face Overlay",
-          "type": "video",
-          "sourceUrl": "./test-assets/mov_bbb.mp4",
-          "duration": 4,
-          "startTime": 1,
-          "trimStart": 1,
-          "trimEnd": 0,
-          "params": {
-            "volume": 0.0,
-            "width": 160,
-            "height": 90,
-            "transform.positionX": 460,
-            "transform.positionY": 20,
-            "opacity": 0.9
-          },
-          "animations": {
-            "transform.rotate": [
-              { "time": 0, "value": 0 },
-              { "time": 4, "value": 15 }
-            ]
+    "audio": [],
+    "overlay": [
+      {
+        "id": "track-pip-facecam",
+        "name": "Picture in Picture Facecam",
+        "type": "video",
+        "isMain": false,
+        "muted": false,
+        "hidden": false,
+        "elements": [
+          {
+            "id": "pip-clip-1",
+            "name": "Facecam Face Overlay",
+            "type": "video",
+            "sourceUrl": "./test-assets/mov_bbb.mp4",
+            "duration": 4,
+            "startTime": 1,
+            "trimStart": 1,
+            "trimEnd": 0,
+            "params": {
+              "volume": 0,
+              "width": 160,
+              "height": 90,
+              "transform.positionX": 460,
+              "transform.positionY": 20,
+              "opacity": 0.9
+            },
+            "animations": {
+              "transform.rotate": [
+                {
+                  "time": 0,
+                  "value": 0
+                },
+                {
+                  "time": 4,
+                  "value": 15
+                }
+              ]
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

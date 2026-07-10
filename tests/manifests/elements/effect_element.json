@@ -7,24 +7,36 @@
     "format": "mp4",
     "shouldIncludeAudio": false
   },
-  "tracks": [
-    {
-      "id": "track-effect",
-      "type": "effect",
-      "elements": [
-        {
-          "id": "effect-clip",
-          "type": "effect",
-          "effectType": "vignette",
-          "startTime": 0,
-          "duration": 5.0,
-          "params": {
-            "color": "black",
-            "intensity": 0.8,
-            "smoothness": 0.6
+  "tracks": {
+    "main": {
+      "id": "track-main-default",
+      "name": "Main Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": []
+    },
+    "audio": [],
+    "overlay": [
+      {
+        "id": "track-effect",
+        "type": "effect",
+        "elements": [
+          {
+            "id": "effect-clip",
+            "type": "effect",
+            "effectType": "vignette",
+            "startTime": 0,
+            "duration": 5,
+            "params": {
+              "color": "black",
+              "intensity": 0.8,
+              "smoothness": 0.6
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

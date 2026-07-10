@@ -1,0 +1,79 @@
+{
+  "id": "test-transitions",
+  "settings": {
+    "width": 640,
+    "height": 360,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": false
+  },
+  "tracks": {
+    "main": {
+      "id": "track-main-video",
+      "name": "Main Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": true,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "video-clip-1",
+          "name": "First Clip",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 4.5,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
+        },
+        {
+          "id": "transition-fade-1",
+          "name": "Fade Transition",
+          "type": "transition",
+          "transitionType": "fade",
+          "fromElementId": "video-clip-1",
+          "toElementId": "video-clip-2",
+          "startTime": 3.5,
+          "duration": 1.0,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "effect": "fade",
+            "duration": 1.0,
+            "easing": "ease-in-out",
+            "intensity": 1.0
+          }
+        },
+        {
+          "id": "video-clip-2",
+          "name": "Second Clip",
+          "type": "video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 4.5,
+          "duration": 4.5,
+          "trimStart": 4.5,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0.0,
+            "width": 640,
+            "height": 360,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "opacity": 1.0
+          }
+        }
+      ]
+    },
+    "audio": [],
+    "overlay": []
+  }
+}

@@ -7,8 +7,8 @@
     "format": "mp4",
     "shouldIncludeAudio": false
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-video-bg",
       "type": "video",
       "isMain": true,
@@ -18,38 +18,43 @@
           "type": "video",
           "sourceUrl": "./test-assets/mov_bbb.mp4",
           "startTime": 0,
-          "duration": 5.0,
+          "duration": 5,
           "params": {
-            "volume": 0.0,
+            "volume": 0,
             "width": 640,
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0
           }
         }
-      ]
+      ],
+      "muted": false,
+      "hidden": false
     },
-    {
-      "id": "track-text-hidden",
-      "type": "text",
-      "hidden": true,
-      "elements": [
-        {
-          "id": "text-clip",
-          "type": "text",
-          "startTime": 0,
-          "duration": 5.0,
-          "params": {
-            "content": "This text should not be visible",
-            "fontSize": 36,
-            "color": "#FFFFFF",
-            "fontFamily": "sans-serif",
-            "textAlign": "center",
-            "transform.positionX": 0,
-            "transform.positionY": 0
+    "audio": [],
+    "overlay": [
+      {
+        "id": "track-text-hidden",
+        "type": "text",
+        "hidden": true,
+        "elements": [
+          {
+            "id": "text-clip",
+            "type": "text",
+            "startTime": 0,
+            "duration": 5,
+            "params": {
+              "content": "This text should not be visible",
+              "fontSize": 36,
+              "color": "#FFFFFF",
+              "fontFamily": "sans-serif",
+              "textAlign": "center",
+              "transform.positionX": 0,
+              "transform.positionY": 0
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }

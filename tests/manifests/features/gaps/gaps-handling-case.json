@@ -8,8 +8,8 @@
     "quality": "high",
     "shouldIncludeAudio": true
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-main-bg",
       "name": "Main Background Video Track",
       "type": "video",
@@ -32,7 +32,7 @@
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0,
+            "opacity": 1,
             "blurIntensity": 15
           }
         },
@@ -51,30 +51,33 @@
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0,
+            "opacity": 1,
             "blurIntensity": 25
           }
         }
       ]
     },
-    {
-      "id": "track-bg-audio",
-      "name": "Background Sound Mix",
-      "type": "audio",
-      "elements": [
-        {
-          "id": "audio-song-1",
-          "name": "Theme Song",
-          "type": "audio",
-          "sourceUrl": "./test-assets/song.mp3",
-          "duration": 10,
-          "startTime": 0,
-          "trimStart": 1,
-          "params": {
-            "volume": 0.3
+    "audio": [
+      {
+        "id": "track-bg-audio",
+        "name": "Background Sound Mix",
+        "type": "audio",
+        "elements": [
+          {
+            "id": "audio-song-1",
+            "name": "Theme Song",
+            "type": "audio",
+            "sourceUrl": "./test-assets/song.mp3",
+            "duration": 10,
+            "startTime": 0,
+            "trimStart": 1,
+            "params": {
+              "volume": 0.3
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ],
+    "overlay": []
+  }
 }

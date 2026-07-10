@@ -7,8 +7,8 @@
     "format": "mp4",
     "quality": "high"
   },
-  "tracks": [
-    {
+  "tracks": {
+    "main": {
       "id": "track-main-video",
       "name": "Main Video Track",
       "type": "video",
@@ -26,12 +26,12 @@
           "trimStart": 0,
           "trimEnd": 0,
           "params": {
-            "volume": 0.0,
+            "volume": 0,
             "width": 640,
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0
+            "opacity": 1
           }
         },
         {
@@ -44,88 +44,92 @@
           "trimStart": 2,
           "trimEnd": 0,
           "params": {
-            "volume": 0.0,
+            "volume": 0,
             "width": 640,
             "height": 360,
             "transform.positionX": 0,
             "transform.positionY": 0,
-            "opacity": 1.0
+            "opacity": 1
           }
         }
       ]
     },
-    {
-      "id": "track-overlay-image",
-      "name": "Watermark Overlay",
-      "type": "video",
-      "isMain": false,
-      "muted": false,
-      "hidden": false,
-      "elements": [
-        {
-          "id": "overlay-image-1",
-          "name": "Watermark Image",
-          "type": "image",
-          "sourceUrl": "https://picsum.photos/100/100",
-          "duration": 5,
-          "startTime": 2,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "params": {
-            "width": 100,
-            "height": 100,
-            "transform.positionX": 40,
-            "transform.positionY": 40,
-            "opacity": 0.8
+    "audio": [
+      {
+        "id": "track-bgm",
+        "name": "Background Music",
+        "type": "audio",
+        "muted": false,
+        "elements": [
+          {
+            "id": "bgm-1",
+            "name": "Theme Music",
+            "type": "audio",
+            "sourceUrl": "./test-assets/song.mp3",
+            "duration": 10,
+            "startTime": 2,
+            "trimStart": 0,
+            "trimEnd": 0,
+            "params": {
+              "volume": 0.4
+            }
           }
-        }
-      ]
-    },
-    {
-      "id": "track-subtitle",
-      "name": "Subtitles",
-      "type": "text",
-      "hidden": false,
-      "elements": [
-        {
-          "id": "sub-1",
-          "name": "Sub 1",
-          "type": "text",
-          "duration": 3,
-          "startTime": 1,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "params": {
-            "content": "Hello OpenCut!",
-            "fontSize": 24,
-            "color": "yellow",
-            "fontFamily": "Arial",
-            "transform.positionX": 220,
-            "transform.positionY": 280
+        ]
+      }
+    ],
+    "overlay": [
+      {
+        "id": "track-overlay-image",
+        "name": "Watermark Overlay",
+        "type": "video",
+        "isMain": false,
+        "muted": false,
+        "hidden": false,
+        "elements": [
+          {
+            "id": "overlay-image-1",
+            "name": "Watermark Image",
+            "type": "image",
+            "sourceUrl": "https://picsum.photos/100/100",
+            "duration": 5,
+            "startTime": 2,
+            "trimStart": 0,
+            "trimEnd": 0,
+            "params": {
+              "width": 100,
+              "height": 100,
+              "transform.positionX": 40,
+              "transform.positionY": 40,
+              "opacity": 0.8
+            }
           }
-        }
-      ]
-    },
-    {
-      "id": "track-bgm",
-      "name": "Background Music",
-      "type": "audio",
-      "muted": false,
-      "elements": [
-        {
-          "id": "bgm-1",
-          "name": "Theme Music",
-          "type": "audio",
-          "sourceUrl": "./test-assets/song.mp3",
-          "duration": 10,
-          "startTime": 2,
-          "trimStart": 0,
-          "trimEnd": 0,
-          "params": {
-            "volume": 0.4
+        ]
+      },
+      {
+        "id": "track-subtitle",
+        "name": "Subtitles",
+        "type": "text",
+        "hidden": false,
+        "elements": [
+          {
+            "id": "sub-1",
+            "name": "Sub 1",
+            "type": "text",
+            "duration": 3,
+            "startTime": 1,
+            "trimStart": 0,
+            "trimEnd": 0,
+            "params": {
+              "content": "Hello OpenCut!",
+              "fontSize": 24,
+              "color": "yellow",
+              "fontFamily": "Arial",
+              "transform.positionX": 220,
+              "transform.positionY": 280
+            }
           }
-        }
-      ]
-    }
-  ]
+        ]
+      }
+    ]
+  }
 }
