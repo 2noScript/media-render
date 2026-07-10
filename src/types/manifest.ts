@@ -8,6 +8,33 @@ export interface Effect {
   enabled: boolean;
 }
 
+/**
+ * Core parameters for a TransitionElement.
+ * Stored in `TransitionElement.params` on the VideoTrack.
+ *
+ * `effect` is the registry key that maps to a TransitionDefinition.
+ * Any per-transition custom params (intensity, scale, angle, frequency, color, etc.)
+ * are stored alongside under their own keys — declared by TransitionDefinition.params schema.
+ *
+ * @example
+ * { effect: "fade", duration: 0.5, easing: "ease-in-out", intensity: 1 }
+ * { effect: "zoom_in", duration: 0.5, scale: 1.3 }
+ * { effect: "wave_ripple", duration: 0.8, frequency: 3, intensity: 0.6 }
+ */
+export interface TransitionParams extends ParamValues {
+  /** Registry key — matches TransitionDefinition.type */
+  effect: string;
+  /** Duration of the transition in seconds. */
+  duration: number;
+  /** Easing function for the blending animation. Default: "ease-in-out" */
+  easing?: "linear" | "ease-in" | "ease-out" | "ease-in-out";
+  /** Per-transition custom params — see TransitionDefinition.params for schema */
+  [key: string]: any;
+}
+
+
+
+
 export interface Mask {
   id: string;
   type: string;
@@ -59,7 +86,7 @@ export interface ElementAnimations {
   [propertyPath: string]: ChannelData | undefined;
 }
 
-export type TrackType = "video" | "text" | "audio" | "graphic" | "effect";
+export type TrackType = "video" | "text" | "audio" | "graphic" | "effect" | "transition";
 
 export type ElementRef = {
   trackId: string;
@@ -99,7 +126,7 @@ export interface BaseTrack {
 
 export interface VideoTrack extends BaseTrack {
   type: "video";
-  elements: (VideoElement | ImageElement)[];
+  elements: (VideoElement | ImageElement | TransitionElement)[];
   isMain: boolean;
   muted: boolean;
   hidden: boolean;
@@ -279,6 +306,32 @@ export interface EffectElement extends BaseTimelineElement {
   effectType: string;
 }
 
+/**
+ * A TransitionElement sits ON the VideoTrack at the boundary between two clips.
+ *
+ * Timeline layout:
+ *   [Clip A ─────────────────────────────────────────]
+ *                              [TransitionElement────]
+ *                                   [──── Clip B ────────────────]
+ *
+ * - startTime  = clipA.startTime + clipA.duration - duration  (overlaps the tail of Clip A)
+ * - duration   = transition duration (seconds)
+ * - fromElementId  references Clip A (the outgoing clip)
+ * - toElementId    references Clip B (the incoming clip)
+ *
+ * The renderer blends Clip A out and Clip B in during this window.
+ */
+export interface TransitionElement extends BaseTimelineElement {
+  type: "transition";
+  /** The name of the transition effect — must match TransitionParams.effect */
+  transitionType: TransitionParams["effect"];
+  /** ID of the outgoing clip (the clip that ends) */
+  fromElementId: string;
+  /** ID of the incoming clip (the clip that starts) */
+  toElementId: string;
+  params?: TransitionParams;
+}
+
 export type ExportFormat = "mp4" | "webm";
 export type ExportQuality = "low" | "medium" | "high" | "very_high";
 
@@ -302,7 +355,8 @@ export type TimelineElement =
   | TextElement
   | StickerElement
   | GraphicElement
-  | EffectElement;
+  | EffectElement
+  | TransitionElement;
 
 export type ElementType = TimelineElement["type"];
 
@@ -313,6 +367,7 @@ export type CreateTextElement = Omit<TextElement, "id">;
 export type CreateStickerElement = Omit<StickerElement, "id">;
 export type CreateGraphicElement = Omit<GraphicElement, "id">;
 export type CreateEffectElement = Omit<EffectElement, "id">;
+export type CreateTransitionElement = Omit<TransitionElement, "id">;
 
 export type CreateTimelineElement =
   | CreateAudioElement
@@ -321,7 +376,8 @@ export type CreateTimelineElement =
   | CreateTextElement
   | CreateStickerElement
   | CreateGraphicElement
-  | CreateEffectElement;
+  | CreateEffectElement
+  | CreateTransitionElement;
 
 export interface ClipboardItem {
   trackId: string;
