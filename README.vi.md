@@ -97,10 +97,10 @@ Mọi biến môi trường (`PORT`, giới hạn tác vụ song song `CONCURREN
 
 | Danh mục | Tài liệu chi tiết |
 | :--- | :--- |
-| **Manifest** | [Kiến trúc & Schema](docs/manifest/architecture.vi.md) • [Luồng xử lý Render](docs/manifest/flow.vi.md) • [Các ca mô phỏng](docs/manifest/simulation.md) |
+| **Manifest** | [Kiến trúc & Schema](docs/manifest/architecture.vi.md) • [Luồng xử lý Render](docs/manifest/flow.vi.md) • [Các ca mô phỏng](docs/manifest/simulation.vi.md) |
 | **Tracks** | [Đặc tả Schema](docs/tracks/schema.vi.md) • [Cơ chế xếp lớp Z-Index](docs/tracks/layering.vi.md) |
-| **Elements** | [Video](docs/elements/video.md) • [Image](docs/elements/image.md) • [Audio](docs/elements/audio.md) • [Text](docs/elements/text.md) • [Sticker](docs/elements/sticker.md) • [Graphic](docs/elements/graphic.md) • [Effect](docs/elements/effect.md) • [Hiệu ứng chuyển cảnh (Transition)](docs/elements/transition.vi.md) |
-| **Rendering** | [Thuật toán](docs/render/algorithms.md) • [Thiết kế hệ thống](docs/render/architecture.md) • [Danh sách hàm](docs/render/functions.md) |
+| **Elements** | [Video](docs/elements/video.vi.md) • [Image](docs/elements/image.vi.md) • [Audio](docs/elements/audio.vi.md) • [Text](docs/elements/text.vi.md) • [Sticker](docs/elements/sticker.vi.md) • [Graphic](docs/elements/graphic.vi.md) • [Effect](docs/elements/effect.vi.md) • [Hiệu ứng chuyển cảnh (Transition)](docs/elements/transition.vi.md) |
+| **Rendering** | [Thuật toán](docs/render/algorithms.vi.md) • [Thiết kế hệ thống](docs/render/architecture.vi.md) • [Danh sách hàm](docs/render/functions.vi.md) |
 
 ---
 
