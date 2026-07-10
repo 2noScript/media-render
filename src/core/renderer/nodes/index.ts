@@ -5,6 +5,7 @@ import "./sticker-node";
 import "./color-node";
 import "./graphic-node";
 import "./effect-layer-node";
+import "./transition-node";
 
 export { nodeRegistry } from "./registry";
 export { BaseNode } from "./base-node";
@@ -18,3 +19,4 @@ export { StickerNode } from "./sticker-node";
 export { ColorNode } from "./color-node";
 export { GraphicNode } from "./graphic-node";
 export { EffectLayerNode } from "./effect-layer-node";
+export { TransitionNode } from "./transition-node";

@@ -1,6 +1,7 @@
 import { Canvas, createCanvas } from "@napi-rs/canvas";
 import * as NodeAv from "node-av";
 import * as fs from "fs";
+import { registerDefaultTransitions } from "../../transitions/definitions/index";
 
 // Helper to check Docker env
 const isDocker = (): boolean => {
@@ -79,3 +80,6 @@ class FakeOffscreenCanvas {
   }
 }
 (globalThis as any).OffscreenCanvas = FakeOffscreenCanvas;
+
+// Register all built-in transition effect definitions
+registerDefaultTransitions();

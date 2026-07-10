@@ -19,7 +19,7 @@ export class RootNode extends BaseNode<{ duration: number }> {
 
     for (let i = 0; i < this.children.length; i++) {
       const child = this.children[i];
-      if (child.resolved !== null) {
+      if (child.resolved !== null && !(child as any).suppressDraw) {
         const result = child.buildFrame(renderer, `${path}:${i}`);
         items.push(...result.items);
         textures.push(...result.textures);

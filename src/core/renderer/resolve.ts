@@ -2,6 +2,7 @@ import { BaseNode } from "./nodes/base-node";
 import { VisualNode } from "./nodes/visual-node";
 import { VideoNode } from "./nodes/video-node";
 import { BlurBackgroundNode } from "./nodes/blur-background-node";
+import { TransitionNode } from "./nodes/transition-node";
 import { CanvasRenderer } from "./canvas-renderer";
 
 /**
@@ -24,12 +25,14 @@ export async function resolveRenderTree(
     // Default truthy value so custom BaseNodes are marked active
     node.resolved = node.params;
 
-    // 1. Resolve keyframes / visual state for VisualNode instances
+    // 1. Resolve keyframes / visual state for VisualNode/TransitionNode instances
     if (node instanceof VisualNode) {
       node.resolved = node.resolveState(time);
     } else if (node instanceof BlurBackgroundNode) {
       // BlurBackgroundNode requires async video frame decoding or image lookup
       await node.resolveBackdrop(time, renderer);
+    } else if (node instanceof TransitionNode) {
+      await node.resolveTransition(time, renderer);
     }
 
     // 2. Await asynchronous resources (e.g. video samples)
@@ -37,6 +40,7 @@ export async function resolveRenderTree(
       await node.resolveVideoFrame(time);
     }
   }
+
 
   // 3. Recursively resolve children in parallel
   if (node.children && node.children.length > 0) {
