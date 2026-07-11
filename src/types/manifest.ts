@@ -190,7 +190,6 @@ export interface TextParams {
   backgroundColor?: string;
   backgroundPadding?: number;
   /** Max characters per line before wrapping */
-  maxCharsPerLine?: number;
   "background.enabled"?: boolean;
   "background.color"?: string;
   "background.cornerRadius"?: number;
