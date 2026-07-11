@@ -67,11 +67,25 @@ export class AudioPipeline {
           
           const delayMs = Math.round(clip.startTime * 1000);
           const label = `a_${clip.id}`;
-          const vol = clip.volume !== undefined ? clip.volume : (clip.params?.["volume"] !== undefined ? clip.params["volume"] : 1.0);
-          const trimStart = clip.trimStart !== undefined ? clip.trimStart : 0;
+          const volDb     = clip.params?.["volume"] ?? 0;
+          const muted     = clip.params?.["muted"] === true;
+          const speed     = clip.params?.["speed"]  ?? 1.0;
+          const fadeIn    = clip.params?.["fadeInDuration"]  ?? 0;
+          const fadeOut   = clip.params?.["fadeOutDuration"] ?? 0;
+          const trimStart = clip.trimStart ?? 0;
 
-          // Set trimming offsets and target timeline start delays
-          filterParts.push(`[${audioInputIdx}:a]atrim=start=${trimStart},asetpts=PTS-STARTPTS,adelay=${delayMs}|${delayMs},volume=${vol}[${label}]`);
+          // Build ffmpeg filter chain
+          let chain = `[${audioInputIdx}:a]atrim=start=${trimStart},asetpts=PTS-STARTPTS,adelay=${delayMs}|${delayMs}`;
+          // Volume — native dB syntax
+          chain += `,volume=${muted ? "-inf" : volDb}dB`;
+          // Speed — atempo (range 0.5..2.0)
+          if (speed !== 1.0) chain += `,atempo=${speed.toFixed(4)}`;
+          // Fade in
+          if (fadeIn > 0) chain += `,afade=t=in:st=0:d=${fadeIn}`;
+          // Fade out
+          if (fadeOut > 0) chain += `,afade=t=out:st=${Math.max(0, clip.duration - fadeOut)}:d=${fadeOut}`;
+          chain += `[${label}]`;
+          filterParts.push(chain);
           audioLabels.push(`[${label}]`);
 
           // Register a duration-limited frame generator to the input map

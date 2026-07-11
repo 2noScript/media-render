@@ -173,8 +173,16 @@ export interface ImageParams extends VisualParams {
 }
 
 export interface AudioParams {
+  /** Volume in decibels. 0 dB = unity gain (100%). Range: -60 to +20 dB. Default: 0. */
   volume?: number;
+  /** Silences the clip. Default: false. */
   muted?: boolean;
+  /** Playback speed multiplier. 1.0 = normal, 0.5 = half, 2.0 = double. Default: 1.0. */
+  speed?: number;
+  /** Fade-in duration in seconds. Default: 0 (no fade). */
+  fadeInDuration?: number;
+  /** Fade-out duration in seconds. Default: 0 (no fade). */
+  fadeOutDuration?: number;
   [key: string]: any;
 }
 
