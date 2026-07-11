@@ -1,4 +1,3 @@
-import { createCanvas } from "@napi-rs/canvas";
 import type { TransitionDefinition } from "../types";
 
 /**
@@ -82,7 +81,7 @@ export const pixelateDefinition: TransitionDefinition = {
     { key: "intensity", label: "Max Pixel Size", type: "number", default: 0.8, min: 0.2, max: 1.0, step: 0.1 },
   ],
   renderer: {
-    render({ fromCanvas, toCanvas, progress, params, width, height, output }) {
+    render({ fromCanvas, toCanvas, progress, params, width, height, output, createCanvas }) {
       const intensity = (params.intensity as number) ?? 0.8;
       // Pixel size peaks at mid-transition then shrinks (block → fade)
       const t = progress < 0.5 ? progress * 2 : (1 - progress) * 2;
@@ -106,8 +105,19 @@ export const pixelateDefinition: TransitionDefinition = {
           // Draw at reduced size then scale up without interpolation
           const sw = Math.max(1, Math.ceil(width / pixelSize));
           const sh = Math.max(1, Math.ceil(height / pixelSize));
-          const tmpCanvas = createCanvas(sw, sh);
+          let tmpCanvas: any = null;
+          if (createCanvas) {
+            tmpCanvas = createCanvas(sw, sh);
+          } else if (typeof globalThis !== "undefined" && (globalThis as any).document) {
+            tmpCanvas = (globalThis as any).document.createElement("canvas");
+            tmpCanvas.width = sw;
+            tmpCanvas.height = sh;
+          } else if (typeof globalThis !== "undefined" && (globalThis as any).OffscreenCanvas) {
+            tmpCanvas = new (globalThis as any).OffscreenCanvas(sw, sh);
+          }
+          if (!tmpCanvas) return;
           const tmpCtx = tmpCanvas.getContext("2d");
+          if (!tmpCtx) return;
           tmpCtx.drawImage(fromCanvas as any, 0, 0, sw, sh);
           (output as any).imageSmoothingEnabled = false;
           output.drawImage(tmpCanvas as any, 0, 0, width, height);

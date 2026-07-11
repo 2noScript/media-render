@@ -138,6 +138,7 @@ export class TransitionNode extends BaseNode {
       width: renderer.width,
       height: renderer.height,
       output: outCtx,
+      createCanvas: (w, h) => createCanvasSurface({ width: w, height: h }).canvas,
     });
 
     const textureId = `${path}:transition`;

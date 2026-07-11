@@ -1,4 +1,3 @@
-import type { Canvas } from "@napi-rs/canvas";
 
 // ─── Param Schema ─────────────────────────────────────────────────────────────
 
@@ -28,9 +27,9 @@ export interface TransitionParamDefinition {
 
 export interface TransitionRenderContext {
   /** Frame of the outgoing clip (may be null before clip starts) */
-  fromCanvas: Canvas | null;
+  fromCanvas: any;
   /** Frame of the incoming clip */
-  toCanvas: Canvas | null;
+  toCanvas: any;
   /**
    * Blend progress: 0.0 = start of transition (only from), 1.0 = end (only to).
    * Already eased according to TransitionParams.easing.
@@ -41,7 +40,9 @@ export interface TransitionRenderContext {
   width: number;
   height: number;
   /** Target canvas context to draw the blended output onto */
-  output: any; // CanvasRenderingContext2D from @napi-rs/canvas
+  output: any; // CanvasRenderingContext2D or similar context
+  /** Factory function to create temporary canvas surfaces (optional) */
+  createCanvas?: (width: number, height: number) => any;
 }
 
 export interface TransitionRenderer {
