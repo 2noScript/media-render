@@ -37,6 +37,18 @@ class TransitionRegistry {
   }
 
   /**
+   * Returns all unique group names present in the registry,
+   * in insertion order. Use this to build dynamic category tabs.
+   */
+  groups(): string[] {
+    const seen = new Set<string>();
+    for (const def of this.registry.values()) {
+      seen.add(def.group);
+    }
+    return Array.from(seen);
+  }
+
+  /**
    * Returns whether a type is registered (i.e. has a renderer).
    */
   has(type: string): boolean {

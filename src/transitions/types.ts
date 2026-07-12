@@ -56,7 +56,7 @@ export interface TransitionRenderer {
 // ─── Definition ───────────────────────────────────────────────────────────────
 
 export type TransitionGroup =
-  | "Basic"
+  | "Fade"
   | "Slide"
   | "Zoom"
   | "Blur"
