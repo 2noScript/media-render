@@ -8,7 +8,7 @@ import type { TransitionDefinition } from "../types";
 export const fadeDefinition: TransitionDefinition = {
   type: "fade",
   name: "Fade",
-  group: "Basic",
+  group: "Fade",
   keywords: ["fade", "cross", "dissolve", "smooth"],
   defaultDuration: 0.5,
   params: [
@@ -52,7 +52,7 @@ export const fadeDefinition: TransitionDefinition = {
 export const fadeBlackDefinition: TransitionDefinition = {
   type: "fade_black",
   name: "Fade to Black",
-  group: "Basic",
+  group: "Fade",
   keywords: ["fade", "black", "capcut"],
   defaultDuration: 0.6,
   params: [],
@@ -91,7 +91,7 @@ export const fadeBlackDefinition: TransitionDefinition = {
 export const fadeWhiteDefinition: TransitionDefinition = {
   type: "fade_white",
   name: "Fade to White",
-  group: "Basic",
+  group: "Fade",
   keywords: ["fade", "white"],
   defaultDuration: 0.6,
   params: [],
