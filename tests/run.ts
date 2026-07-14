@@ -4,6 +4,7 @@ const validateManifest = (manifest: any) => [];
 type Manifest = any;
 import fs from "fs";
 import path from "path";
+import { ensureTestAssets } from "./download-assets";
 
 import readline from "readline";
 
@@ -37,6 +38,7 @@ function askQuestion(query: string): Promise<string> {
 }
 
 async function main() {
+  await ensureTestAssets();
   const manifestsDir = path.join(import.meta.dir, "manifests");
   const allManifestFiles = findJsonFiles(manifestsDir);
 

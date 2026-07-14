@@ -15,6 +15,7 @@ import type { RootNode } from "./nodes/root-node";
 import { CanvasRenderer, FrameRate } from "./canvas-renderer";
 import { SceneTracks } from "@/components/editor/panels/timeline/types";
 import { AudioPipeline } from "./audio-pipeline";
+import { TICKS_PER_SECOND, mediaTimeToSeconds } from "money-printer-wasm";
 
 type ExportParams = {
 	width: number;
@@ -83,8 +84,10 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 	}): Promise<string | null> {
 		const fps = this.renderer.fps;
 		const fpsFloat = fps.numerator / fps.denominator;
-		const timeStep = 1 / fpsFloat;
-		const frameCount = Math.floor(rootNode.duration / timeStep);
+		const ticksPerFrame = Math.round(
+			(TICKS_PER_SECOND * fps.denominator) / fps.numerator,
+		);
+		const frameCount = Math.floor(rootNode.duration / ticksPerFrame);
 
 		const outputFormat =
 			this.format === "webm" ? new WebMOutputFormat() : new Mp4OutputFormat();
@@ -131,9 +134,10 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 				return null;
 			}
 
-			const timeSeconds = i * timeStep;
-			await this.renderer.render({ node: rootNode, time: timeSeconds });
-			await videoSource.add(timeSeconds, timeStep);
+			const timeTicks = i * ticksPerFrame;
+			const timeSeconds = mediaTimeToSeconds({ time: timeTicks });
+			await this.renderer.render({ node: rootNode, time: timeTicks });
+			await videoSource.add(timeSeconds, 1 / fpsFloat);
 
 			if (audioSource && audioPipeline) {
 				await audioPipeline.pushAudioFrames(audioSource);

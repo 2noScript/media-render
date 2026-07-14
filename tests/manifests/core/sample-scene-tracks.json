@@ -69,30 +69,39 @@
               "opacity": 0.0
             },
             "animations": {
-              "channels": {
+              "bindings": {
                 "opacity": {
-                  "propertyPath": "opacity",
+                  "kind": "scalar",
+                  "components": [
+                    {
+                      "componentKey": "scalar",
+                      "channelId": "ch-opacity"
+                    }
+                  ]
+                }
+              },
+              "channels": {
+                "ch-opacity": {
+                  "id": "ch-opacity",
+                  "extrapolateLeft": "hold",
+                  "extrapolateRight": "hold",
                   "keys": [
                     {
-                      "id": "k1",
                       "time": 0,
                       "value": 0.0,
                       "interpolation": "linear"
                     },
                     {
-                      "id": "k2",
                       "time": 120000,
                       "value": 1.0,
                       "interpolation": "linear"
                     },
                     {
-                      "id": "k3",
                       "time": 240000,
                       "value": 1.0,
                       "interpolation": "linear"
                     },
                     {
-                      "id": "k4",
                       "time": 360000,
                       "value": 0.0,
                       "interpolation": "linear"

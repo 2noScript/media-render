@@ -4,6 +4,8 @@ import { calculateTotalDuration } from "../../components/editor/panels/timeline"
 import type { SceneTracks } from "../../components/editor/panels/timeline/types";
 import type { MediaAsset } from "../media/types";
 import type { TBackground, TCanvasSize } from "../../core/project/types";
+import fs from "fs";
+import path from "path";
 
 export interface RenderSceneParams {
 	id?: string;
@@ -57,6 +59,11 @@ export class RenderService {
 
 		if (onProgress) {
 			exporter.on("progress", onProgress);
+		}
+
+		const outputDir = path.dirname(outputPath);
+		if (!fs.existsSync(outputDir)) {
+			fs.mkdirSync(outputDir, { recursive: true });
 		}
 
 		const result = await exporter.export({ rootNode: scene, outputPath });
