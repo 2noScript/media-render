@@ -80,7 +80,7 @@ function buildTrackNodes({
 
 			if (element.type === "video" || element.type === "image") {
 				const mediaAsset = mediaMap.get(element.mediaId);
-				if (!mediaAsset?.file || !mediaAsset?.url) {
+				if (!mediaAsset?.url) {
 					continue;
 				}
 
@@ -90,7 +90,7 @@ function buildTrackNodes({
 							id: element.id,
 							mediaId: mediaAsset.id,
 							url: mediaAsset.url,
-							file: mediaAsset.file,
+							file: mediaAsset.file || mediaAsset,
 							duration: element.duration,
 							timeOffset: element.startTime,
 							trimStart: element.trimStart,
