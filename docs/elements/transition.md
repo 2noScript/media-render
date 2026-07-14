@@ -153,3 +153,33 @@ export function registerDefaultTransitions(): void {
 ```
 
 Now, the system will automatically parse and render `"wipe_right"` when it appears in the manifest!
+
+---
+
+## 🔒 4. Crucial Operation Rules & Playhead Synchronization
+
+To ensure transitions render correctly on both the Web Client and the Media Render server without experiencing blank screens or frozen decoding frames (due to native FFmpeg decoders), the following technical constraints must be strictly adhered to:
+
+### 1. Consistent Ticks Unit
+- The timeline unit must use the standard WASM tick scale:
+  $$\text{TICKS\_PER\_SECOND} = 120,000$$
+- Every timeline element must satisfy:
+  $$\text{trimStart} + \text{duration} + \text{trimEnd} = \text{sourceDuration (original asset length)}$$
+
+### 2. Playhead Alignment for the Incoming Clip (toNode)
+- During a transition, the incoming clip's playhead must offset by half of the transition's duration to eliminate backward seek jumps after the transition concludes:
+  $$\text{toTime} = \text{toClipStartTime} + \text{elapsedInTransition} - \text{Math.round}(\text{duration} / 2)$$
+- This ensures that when the transition finishes, the main timeline's resolve loop picks up the very next frame sequentially.
+
+### 3. Boundary Clamping during Transitions
+- Since the transition begins prior to the incoming clip's start on the main timeline, the playhead time resolves to a negative value during the first half.
+- Under `isTransitionResolve: true` (or `context.isTransitionResolve = true`), `resolveVisualState`, `resolveVideoNode`, and `resolveBlurBackgroundNode` must clamp the local playhead time:
+  $$\text{clipTime} = \text{Math.max}(0, \text{Math.min}(\text{duration} - 1, \text{clipTime}))$$
+
+### 4. Sequential Resolution & suppressDraw Reset
+- To avoid race conditions with drawing suppression, all child `TransitionNode`s must be resolved sequentially in `resolveNode` before other concurrent media nodes.
+- The `suppressDraw` property on all nodes must be reset to `false` recursively at the start of each frame render tick using `resetSuppressDraw(node)` in `resolveRenderTree`.
+
+### 5. Automated Registry Bootstrapping
+- To prevent blank frames due to missing transition renderers, the render entry point on both Web and Server (e.g. `RenderService.renderScene`) must call `registerDefaultTransitions()` before starting the render.
+

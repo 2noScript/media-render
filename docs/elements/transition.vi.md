@@ -135,3 +135,33 @@ export function registerDefaultTransitions(): void {
 ```
 
 Chỉ với 2 bước trên, bộ kết xuất sẽ tự động nhận diện và vẽ hiệu ứng `"wipe_right"` bất cứ khi nào nó xuất hiện trong dòng thời gian manifest!
+
+---
+
+## 🔒 4. Các Quy tắc Vận hành & Đồng bộ Playhead quan trọng
+
+Để đảm bảo hiệu ứng chuyển cảnh hoạt động chính xác trên cả Web Client và Media Render server mà không gặp các lỗi màn hình đen hoặc đứng hình giải mã (do FFmpeg decoder), cần tuân thủ nghiêm ngặt các quy chuẩn kỹ thuật sau:
+
+### 1. Hệ số Ticks đồng bộ
+* Đơn vị thời gian trong manifest bắt buộc phải dùng hệ số Ticks chuẩn của WASM:
+  $$\text{TICKS\_PER\_SECOND} = 120.000$$
+* Công thức tính chất lượng biên tập timeline:
+  $$\text{trimStart} + \text{duration} + \text{trimEnd} = \text{sourceDuration (Độ dài file gốc)}$$
+
+### 2. Công thức đồng bộ Playhead của Clip sau (toNode)
+* Khi transition đang diễn ra, playhead của Clip 2 phải được tính theo công thức bù trừ thời lượng chuyển cảnh để loại bỏ hiện tượng nhảy giật lùi thời gian (backward seek) sau khi transition kết thúc:
+  $$\text{toTime} = \text{toClipStartTime} + \text{elapsedInTransition} - \text{Math.round}(\text{duration} / 2)$$
+* Cơ chế này giúp đảm bảo khi transition kết thúc, luồng giải mã chính của timeline sẽ bắt kịp đúng frame tiếp theo một cách tuần tự và liên tục.
+
+### 3. Clamp biên an toàn trong lúc transition
+* Vì transition bắt đầu phát trước thời điểm bắt đầu chính thức của Clip 2 trên timeline chính, playhead thời gian của Clip 2 sẽ bị âm ở nửa đầu chuyển cảnh.
+* Khi gọi giải mã với `isTransitionResolve: true` (hoặc `context.isTransitionResolve = true`), các hàm `resolveVisualState`, `resolveVideoNode` và `resolveBlurBackgroundNode` phải tự động clamp giá trị `clipTime` về khoảng valid:
+  $$\text{clipTime} = \text{Math.max}(0, \text{Math.min}(\text{duration} - 1, \text{clipTime}))$$
+
+### 4. Thứ tự xử lý tuần tự & Reset suppressDraw
+* Để tránh race condition khi ẩn/hiện vẽ (`suppressDraw`), các `TransitionNode` con phải được duyệt và giải mã trước và tuần tự trong `resolveNode` trước khi duyệt song song các node nội dung thông thường bằng `Promise.all`.
+* Cờ `suppressDraw` của tất cả các node phải được đặt lại về `false` thông qua hàm đệ quy `resetSuppressDraw(node)` gọi ở đầu mỗi tick render của frame mới.
+
+### 5. Tự động Đăng ký Registry
+* Để tránh lỗi render ra khung hình đen xì do thiếu cấu hình hiệu ứng, phương thức khởi tạo render ở cả Client và Server (ví dụ `RenderService.renderScene`) phải gọi `registerDefaultTransitions()` trước khi bắt đầu dựng hình.
+

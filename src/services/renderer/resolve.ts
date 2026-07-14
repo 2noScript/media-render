@@ -52,7 +52,15 @@ import type {
 type ResolveContext = {
 	renderer: CanvasRenderer;
 	time: number;
+	isTransitionResolve?: boolean;
 };
+
+function resetSuppressDraw(node: AnyBaseNode) {
+	node.suppressDraw = false;
+	for (const child of node.children) {
+		resetSuppressDraw(child);
+	}
+}
 
 export async function resolveRenderTree({
 	node,
@@ -63,6 +71,7 @@ export async function resolveRenderTree({
 	renderer: CanvasRenderer;
 	time: number;
 }): Promise<void> {
+	resetSuppressDraw(node);
 	await resolveNode({
 		node,
 		context: {
@@ -76,16 +85,19 @@ export async function resolveNodeAtTime({
 	node,
 	renderer,
 	time,
+	isTransitionResolve = true,
 }: {
 	node: AnyBaseNode;
 	renderer: CanvasRenderer;
 	time: number;
+	isTransitionResolve?: boolean;
 }): Promise<void> {
 	await resolveNode({
 		node,
 		context: {
 			renderer,
 			time,
+			isTransitionResolve,
 		},
 	});
 }
@@ -97,6 +109,10 @@ async function resolveNode({
 	node: AnyBaseNode;
 	context: ResolveContext;
 }): Promise<void> {
+	if (node.suppressDraw && !context.isTransitionResolve) {
+		return;
+	}
+
 	if (node instanceof TransitionNode) {
 		node.resolved = await resolveTransitionNode({ node, context });
 	} else if (node instanceof VideoNode) {
@@ -117,8 +133,16 @@ async function resolveNode({
 		node.resolved = {};
 	}
 
+	// 1. First, resolve all TransitionNode children sequentially
+	const transitionChildren = node.children.filter((child) => child instanceof TransitionNode);
+	for (const child of transitionChildren) {
+		await resolveNode({ node: child, context });
+	}
+
+	// 2. Then, resolve all other children concurrently
+	const otherChildren = node.children.filter((child) => !(child instanceof TransitionNode));
 	await Promise.all(
-		node.children.map((child) => resolveNode({ node: child, context })),
+		otherChildren.map((child) => resolveNode({ node: child, context })),
 	);
 }
 
@@ -143,12 +167,18 @@ async function resolveTransitionNode({
 
 	if (!toNode) return null;
 
+	const startTime = node.params.startTime;
+	const duration = node.params.duration;
+
+	// Only active during the transition's duration
+	if (context.time < startTime || context.time >= startTime + duration) {
+		return null;
+	}
+
 	// Suppress direct drawing in base scene compositing
 	if (fromNode) (fromNode as any).suppressDraw = true;
 	(toNode as any).suppressDraw = true;
 
-	const startTime = node.params.startTime;
-	const duration = node.params.duration;
 	const rawProgress = (context.time - startTime) / duration;
 
 	const def = transitionsRegistry.get(node.params.transitionType);
@@ -156,10 +186,21 @@ async function resolveTransitionNode({
 	const progress = applyEasing(rawProgress, easing);
 
 	// Resolve incoming clip at offset playhead time
-	const toTimeOffset = (toNode.params as any).timeOffset ?? 0;
+	const toClipStartTime = (toNode.params as any).timeOffset ?? 0;
 	const elapsedInTransition = context.time - startTime;
-	const toTime = toTimeOffset + elapsedInTransition;
+	const toTime = toClipStartTime + elapsedInTransition - Math.round(duration / 2);
 
+	// Resolve outgoing clip (fromNode) at current time, capped at its duration
+	if (fromNode) {
+		const fromTime = Math.min(context.time, fromNode.params.timeOffset + fromNode.params.duration - 1);
+		await resolveNodeAtTime({
+			node: fromNode,
+			renderer: context.renderer,
+			time: fromTime,
+		});
+	}
+
+	// Resolve incoming clip (toNode)
 	await resolveNodeAtTime({
 		node: toNode,
 		renderer: context.renderer,
@@ -211,13 +252,17 @@ function resolveVisualState({
 	sourceWidth: number;
 	sourceHeight: number;
 }): ResolvedVisualNodeState | null {
-	const clipTime = context.time - params.timeOffset;
-	if (clipTime < 0 || clipTime >= params.duration) {
-		return null;
+	let clipTime = context.time - params.timeOffset;
+	if (context.isTransitionResolve) {
+		clipTime = Math.max(0, Math.min(params.duration - 1, clipTime));
+	} else {
+		if (clipTime < 0 || clipTime >= params.duration) {
+			return null;
+		}
 	}
 
 	const localTime = getElementLocalTime({
-		timelineTime: context.time,
+		timelineTime: params.timeOffset + clipTime,
 		elementStartTime: params.timeOffset,
 		elementDuration: params.duration,
 	});
@@ -263,9 +308,13 @@ async function resolveVideoNode({
 	node: VideoNode;
 	context: ResolveContext;
 }): Promise<ResolvedVisualSourceNodeState | null> {
-	const clipTime = context.time - node.params.timeOffset;
-	if (clipTime < 0 || clipTime >= node.params.duration) {
-		return null;
+	let clipTime = context.time - node.params.timeOffset;
+	if (context.isTransitionResolve) {
+		clipTime = Math.max(0, Math.min(node.params.duration - 1, clipTime));
+	} else {
+		if (clipTime < 0 || clipTime >= node.params.duration) {
+			return null;
+		}
 	}
 
 	const sourceTimeTicks =
@@ -455,9 +504,13 @@ async function resolveBlurBackgroundNode({
 	node: BlurBackgroundNode;
 	context: ResolveContext;
 }): Promise<ResolvedBlurBackgroundNodeState | null> {
-	const clipTime = context.time - node.params.timeOffset;
-	if (clipTime < 0 || clipTime >= node.params.duration) {
-		return null;
+	let clipTime = context.time - node.params.timeOffset;
+	if (context.isTransitionResolve) {
+		clipTime = Math.max(0, Math.min(node.params.duration - 1, clipTime));
+	} else {
+		if (clipTime < 0 || clipTime >= node.params.duration) {
+			return null;
+		}
 	}
 
 	const backdropSource = await resolveBackdropSource({ node, clipTime });

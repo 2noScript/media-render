@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 import { ensureSceneFontsLoaded } from "@/services/fonts/font-loader";
 import { videoCache } from "@/services/video-cache/service";
+import { registerDefaultTransitions } from "@/services/transitions";
 
 export interface RenderSceneParams {
 	id?: string;
@@ -39,6 +40,8 @@ export class RenderService {
 			outputPath,
 			onProgress,
 		} = params;
+
+		registerDefaultTransitions();
 
 		const duration = calculateTotalDuration({ tracks });
 		const scene = buildScene({
