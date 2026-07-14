@@ -1,0 +1,145 @@
+{
+  "id": "sample-scene-tracks",
+  "settings": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": true
+  },
+  "tracks": {
+    "main": {
+      "id": "track-main-video",
+      "name": "Main Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "main-video-1",
+          "name": "Big Buck Bunny Intro",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "retime": {
+            "rate": 1.0,
+            "maintainPitch": true
+          },
+          "params": {
+            "volume": 0.0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1.0,
+            "transform.scaleY": 1.0,
+            "transform.rotate": 0,
+            "opacity": 1.0
+          }
+        }
+      ]
+    },
+    "overlay": [
+      {
+        "id": "track-overlay-text",
+        "name": "Text Overlay Track",
+        "type": "video",
+        "elements": [
+          {
+            "id": "text-element-1",
+            "name": "Animated Title",
+            "type": "text",
+            "startTime": 120000,
+            "duration": 360000,
+            "params": {
+              "content": "Hello Headless Editor",
+              "fontSize": 48,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#ff00ff",
+              "transform.positionX": 0,
+              "transform.positionY": 0,
+              "transform.scaleX": 1.0,
+              "transform.scaleY": 1.0,
+              "transform.rotate": 0,
+              "opacity": 0.0
+            },
+            "animations": {
+              "channels": {
+                "opacity": {
+                  "propertyPath": "opacity",
+                  "keys": [
+                    {
+                      "id": "k1",
+                      "time": 0,
+                      "value": 0.0,
+                      "interpolation": "linear"
+                    },
+                    {
+                      "id": "k2",
+                      "time": 120000,
+                      "value": 1.0,
+                      "interpolation": "linear"
+                    },
+                    {
+                      "id": "k3",
+                      "time": 240000,
+                      "value": 1.0,
+                      "interpolation": "linear"
+                    },
+                    {
+                      "id": "k4",
+                      "time": 360000,
+                      "value": 0.0,
+                      "interpolation": "linear"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "audio": [
+      {
+        "id": "track-background-audio",
+        "name": "Background Audio Track",
+        "type": "audio",
+        "elements": [
+          {
+            "id": "audio-clip-1",
+            "name": "Background Music",
+            "type": "audio",
+            "mediaId": "asset-bgm-audio",
+            "sourceUrl": "./test-assets/song.mp3",
+            "startTime": 0,
+            "duration": 600000,
+            "trimStart": 0,
+            "params": {
+              "volume": 0.8
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "mediaAssets": [
+    {
+      "id": "asset-bbb-video",
+      "name": "mov_bbb.mp4",
+      "type": "video",
+      "url": "./test-assets/mov_bbb.mp4"
+    },
+    {
+      "id": "asset-bgm-audio",
+      "name": "song.mp3",
+      "type": "audio",
+      "url": "./test-assets/song.mp3"
+    }
+  ]
+}
