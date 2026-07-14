@@ -1,0 +1,568 @@
+{
+  "id": "test-2min",
+  "settings": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": true
+  },
+  "tracks": {
+    "main": {
+      "id": "track-main-video",
+      "name": "Main Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "vid-1",
+          "name": "BBB 1",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-2",
+          "name": "BBB 2",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 600000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-3",
+          "name": "BBB 3",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 1200000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-4",
+          "name": "BBB 4",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 1800000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-5",
+          "name": "BBB 5",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 2400000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-6",
+          "name": "BBB 6",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 3000000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-7",
+          "name": "BBB 7",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 3600000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-8",
+          "name": "BBB 8",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 4200000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-9",
+          "name": "BBB 9",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 4800000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-10",
+          "name": "BBB 10",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 5400000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-11",
+          "name": "BBB 11",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 6000000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-12",
+          "name": "BBB 12",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 6600000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-13",
+          "name": "BBB 13",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 7200000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-14",
+          "name": "BBB 14",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 7800000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-15",
+          "name": "BBB 15",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 8400000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-16",
+          "name": "BBB 16",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 9000000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-17",
+          "name": "BBB 17",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 9600000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-18",
+          "name": "BBB 18",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 10200000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-19",
+          "name": "BBB 19",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 10800000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-20",
+          "name": "BBB 20",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 11400000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-21",
+          "name": "BBB 21",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 12000000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-22",
+          "name": "BBB 22",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 12600000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-23",
+          "name": "BBB 23",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 13200000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        },
+        {
+          "id": "vid-24",
+          "name": "BBB 24",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 13800000,
+          "duration": 600000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1,
+            "transform.scaleY": 1,
+            "transform.rotate": 0,
+            "opacity": 1
+          }
+        }
+      ]
+    },
+    "overlay": [
+      {
+        "id": "track-overlay-text",
+        "name": "Text Overlay Track",
+        "type": "video",
+        "elements": [
+          {
+            "id": "text-element-1",
+            "name": "Title",
+            "type": "text",
+            "startTime": 0,
+            "duration": 14400000,
+            "params": {
+              "content": "Render Speed Test - 2 Minutes",
+              "fontSize": 48,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#00ffcc",
+              "transform.positionX": 0,
+              "transform.positionY": 300,
+              "transform.scaleX": 1,
+              "transform.scaleY": 1,
+              "transform.rotate": 0,
+              "opacity": 1
+            }
+          }
+        ]
+      }
+    ],
+    "audio": [
+      {
+        "id": "track-background-audio",
+        "name": "Background Audio Track",
+        "type": "audio",
+        "elements": [
+          {
+            "id": "audio-clip-1",
+            "name": "Background Music",
+            "type": "audio",
+            "mediaId": "asset-bgm-audio",
+            "sourceUrl": "./test-assets/song.mp3",
+            "startTime": 0,
+            "duration": 14400000,
+            "trimStart": 0,
+            "params": {
+              "volume": 0.8
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "mediaAssets": [
+    {
+      "id": "asset-bbb-video",
+      "name": "mov_bbb.mp4",
+      "type": "video",
+      "url": "./test-assets/mov_bbb.mp4"
+    },
+    {
+      "id": "asset-bgm-audio",
+      "name": "song.mp3",
+      "type": "audio",
+      "url": "./test-assets/song.mp3"
+    }
+  ]
+}

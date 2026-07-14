@@ -1,0 +1,84 @@
+{
+  "id": "transition-fade",
+  "settings": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": false
+  },
+  "tracks": {
+    "main": {
+      "id": "track-main-video",
+      "name": "Main Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": [
+        {
+          "id": "vid-1",
+          "name": "BBB 1",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 0,
+          "duration": 150000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0.0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1.0,
+            "transform.scaleY": 1.0,
+            "transform.rotate": 0,
+            "opacity": 1.0
+          }
+        },
+        {
+          "id": "vid-2",
+          "name": "BBB 2",
+          "type": "video",
+          "mediaId": "asset-bbb-video",
+          "sourceUrl": "./test-assets/mov_bbb.mp4",
+          "startTime": 120000,
+          "duration": 150000,
+          "trimStart": 0,
+          "trimEnd": 0,
+          "params": {
+            "volume": 0.0,
+            "transform.positionX": 0,
+            "transform.positionY": 0,
+            "transform.scaleX": 1.0,
+            "transform.scaleY": 1.0,
+            "transform.rotate": 0,
+            "opacity": 1.0
+          }
+        },
+        {
+          "id": "trans-1",
+          "name": "Fade Transition",
+          "type": "transition",
+          "startTime": 120000,
+          "duration": 30000,
+          "transitionType": "fade",
+          "fromElementId": "vid-1",
+          "toElementId": "vid-2",
+          "params": {}
+        }
+      ]
+    },
+    "overlay": [],
+    "audio": []
+  },
+  "mediaAssets": [
+    {
+      "id": "asset-bbb-video",
+      "name": "mov_bbb.mp4",
+      "type": "video",
+      "url": "./test-assets/mov_bbb.mp4"
+    }
+  ]
+}

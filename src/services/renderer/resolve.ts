@@ -278,6 +278,7 @@ async function resolveVideoNode({
 		mediaId: node.params.mediaId,
 		file: node.params.file,
 		time: mediaTimeToSeconds({ time: sourceTimeTicks }),
+		clientId: node.params.id,
 	});
 	if (!frame) {
 		return null;
@@ -499,6 +500,7 @@ async function resolveBackdropSource({
 			mediaId: node.params.mediaId,
 			file: node.params.file,
 			time: mediaTimeToSeconds({ time: sourceTimeTicks }),
+			clientId: node.params.id,
 		});
 		if (!frame) {
 			return null;

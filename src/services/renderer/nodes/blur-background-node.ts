@@ -9,6 +9,7 @@ import type { CanvasRenderer } from "../canvas-renderer";
 import { createOffscreenCanvas } from "../canvas-utils";
 
 export type BlurBackgroundNodeParams = {
+	id?: string;
 	mediaId: string;
 	url: string;
 	file?: any;

@@ -6,6 +6,7 @@ import type { MediaAsset } from "../media/types";
 import type { TBackground, TCanvasSize } from "../../core/project/types";
 import fs from "fs";
 import path from "path";
+import { ensureSceneFontsLoaded } from "@/services/fonts/font-loader";
 
 export interface RenderSceneParams {
 	id?: string;
@@ -84,6 +85,9 @@ export class RenderService {
 	): Promise<string> {
 		const id = payload.id || "render-task";
 		const tracks = payload.tracks as SceneTracks;
+
+		// Tự động tải và đăng ký font chữ trước khi render
+		await ensureSceneFontsLoaded({ tracks });
 		
 		const mediaAssets: MediaAsset[] = payload.mediaAssets || [];
 		if (mediaAssets.length === 0 && tracks) {

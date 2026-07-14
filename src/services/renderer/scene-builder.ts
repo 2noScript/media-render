@@ -218,6 +218,7 @@ function buildBlurBackgroundNodes({
 
 		nodes.push(
 			new BlurBackgroundNode({
+				id: element.id,
 				mediaId: mediaAsset.id,
 				url: mediaAsset.url,
 				file: mediaAsset.file,

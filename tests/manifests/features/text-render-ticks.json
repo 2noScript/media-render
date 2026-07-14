@@ -1,0 +1,52 @@
+{
+  "id": "text-render-ticks",
+  "settings": {
+    "width": 1280,
+    "height": 720,
+    "fps": 30,
+    "format": "mp4",
+    "quality": "high",
+    "shouldIncludeAudio": false
+  },
+  "tracks": {
+    "main": {
+      "id": "track-main-video",
+      "name": "Main Video Track",
+      "type": "video",
+      "isMain": true,
+      "muted": false,
+      "hidden": false,
+      "elements": []
+    },
+    "overlay": [
+      {
+        "id": "track-overlay-text",
+        "name": "Text Overlay Track",
+        "type": "video",
+        "elements": [
+          {
+            "id": "text-element-1",
+            "name": "Title",
+            "type": "text",
+            "startTime": 0,
+            "duration": 600000,
+            "params": {
+              "content": "Antigravity Text Render Test",
+              "fontSize": 64,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#ff0055",
+              "transform.positionX": 0,
+              "transform.positionY": 0,
+              "transform.scaleX": 1.0,
+              "transform.scaleY": 1.0,
+              "transform.rotate": 0,
+              "opacity": 1.0
+            }
+          }
+        ]
+      }
+    ],
+    "audio": []
+  }
+}

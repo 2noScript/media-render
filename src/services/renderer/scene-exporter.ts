@@ -100,6 +100,7 @@ export class SceneExporter extends EventEmitter<SceneExporterEvents> {
 		const videoSource = new CanvasSource(this.renderer.getOutputCanvas() as any, {
 			codec: this.format === "webm" ? "vp9" : "avc",
 			bitrate: qualityMap[this.quality],
+			latencyMode: "realtime" as any,
 		});
 
 		output.addVideoTrack(videoSource, { frameRate: fpsFloat });

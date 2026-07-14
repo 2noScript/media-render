@@ -160,7 +160,16 @@ async function main() {
 
     try {
       const startTime = Date.now();
-      const resultPath = await renderService.renderManifest(manifest, undefined, customOutputPath);
+      const resultPath = await renderService.renderManifest(
+        manifest,
+        (progress) => {
+          const percent = (progress * 100).toFixed(1);
+          const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+          process.stdout.write(`\r⏳ Rendering: ${percent}% (Elapsed: ${elapsed}s)`);
+        },
+        customOutputPath
+      );
+      process.stdout.write("\r"); // Clear line start
       const duration = ((Date.now() - startTime) / 1000).toFixed(2);
 
       console.log("====================================================");
@@ -168,7 +177,7 @@ async function main() {
       console.log(`Video output saved at: ${resultPath}`);
       console.log("====================================================");
     } catch (error) {
-      console.error("❌ Rendering failed:", error);
+      console.error("\n❌ Rendering failed:", error);
       process.exit(1);
     }
   }
