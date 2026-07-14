@@ -7,6 +7,7 @@ import type { TBackground, TCanvasSize } from "../../core/project/types";
 import fs from "fs";
 import path from "path";
 import { ensureSceneFontsLoaded } from "@/services/fonts/font-loader";
+import { videoCache } from "@/services/video-cache/service";
 
 export interface RenderSceneParams {
 	id?: string;
@@ -67,11 +68,15 @@ export class RenderService {
 			fs.mkdirSync(outputDir, { recursive: true });
 		}
 
-		const result = await exporter.export({ rootNode: scene, outputPath });
-		if (!result) {
-			throw new Error("Export failed to produce file");
+		try {
+			const result = await exporter.export({ rootNode: scene, outputPath });
+			if (!result) {
+				throw new Error("Export failed to produce file");
+			}
+			return result;
+		} finally {
+			await videoCache.dispose();
 		}
-		return result;
 	}
 
 	/**
