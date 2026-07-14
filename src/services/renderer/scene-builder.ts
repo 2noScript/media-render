@@ -80,7 +80,7 @@ function buildTrackNodes({
 
 			if (element.type === "video" || element.type === "image") {
 				const mediaAsset = mediaMap.get(element.mediaId);
-				if (!mediaAsset?.url) {
+				if (!mediaAsset?.file || !mediaAsset?.url) {
 					continue;
 				}
 
@@ -209,6 +209,7 @@ function buildBlurBackgroundNodes({
 
 		const mediaAsset = mediaMap.get(element.mediaId);
 		if (
+			!mediaAsset?.file ||
 			!mediaAsset?.url ||
 			(mediaAsset.type !== "video" && mediaAsset.type !== "image")
 		) {

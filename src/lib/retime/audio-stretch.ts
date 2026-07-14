@@ -1,4 +1,4 @@
-import PitchShifter from "soundtouchjs";
+import { PitchShifter } from "soundtouchjs";
 import { clampRetimeRate, shouldMaintainPitch } from "@/lib/retime/rate";
 import type { RetimeConfig } from "@/components/editor/panels/timeline";
 import { getSourceTimeAtClipTime } from "./resolve";

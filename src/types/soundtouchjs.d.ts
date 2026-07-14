@@ -1,4 +1,8 @@
 declare module 'soundtouchjs' {
-	const content: any;
-	export default content;
+	export class PitchShifter {
+		constructor(context: any, buffer: any, rate: number);
+		tempo: number;
+		pitch: number;
+		connect(target: any): void;
+	}
 }

@@ -1,4 +1,4 @@
-
+import { mediaTimeToSeconds } from "money-printer-wasm";
 import {
 	getElementLocalTime,
 	resolveColorAtTime,
@@ -156,9 +156,9 @@ async function resolveTransitionNode({
 	const progress = applyEasing(rawProgress, easing);
 
 	// Resolve incoming clip at offset playhead time
-	const toClipStartTime = (toNode.params as any).timeOffset ?? 0;
+	const toTimeOffset = (toNode.params as any).timeOffset ?? 0;
 	const elapsedInTransition = context.time - startTime;
-	const toTime = toClipStartTime + elapsedInTransition;
+	const toTime = toTimeOffset + elapsedInTransition;
 
 	await resolveNodeAtTime({
 		node: toNode,
@@ -276,8 +276,8 @@ async function resolveVideoNode({
 		});
 	const frame = await videoCache.getFrameAt({
 		mediaId: node.params.mediaId,
-		url: node.params.url,
-		time: sourceTimeTicks,
+		file: node.params.file,
+		time: mediaTimeToSeconds({ time: sourceTimeTicks }),
 	});
 	if (!frame) {
 		return null;
@@ -497,8 +497,8 @@ async function resolveBackdropSource({
 			});
 		const frame = await videoCache.getFrameAt({
 			mediaId: node.params.mediaId,
-			url: node.params.url,
-			time: sourceTimeTicks,
+			file: node.params.file,
+			time: mediaTimeToSeconds({ time: sourceTimeTicks }),
 		});
 		if (!frame) {
 			return null;

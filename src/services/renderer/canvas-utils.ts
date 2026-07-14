@@ -1,5 +1,12 @@
 import { Canvas, createCanvas } from "@napi-rs/canvas";
 
+if (typeof global.HTMLCanvasElement === "undefined") {
+  (global as any).HTMLCanvasElement = Canvas;
+}
+if (typeof global.OffscreenCanvas === "undefined") {
+  (global as any).OffscreenCanvas = Canvas;
+}
+
 /**
  * Creates a canvas surface and its 2D context using Skia rendering engine.
  */

@@ -17,7 +17,8 @@
     "ignoreDeprecations": "6.0",
     "types": ["bun"],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "money-printer-wasm": ["./src/lib/wasm-compat.ts"]
     }
   },
   "include": ["src/**/*"]

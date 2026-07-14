@@ -9,13 +9,14 @@ export class VideoCache {
 
 	async getFrameAt({
 		mediaId,
-		url,
+		file,
 		time,
 	}: {
 		mediaId: string;
-		url: string;
+		file: any;
 		time: number;
 	}): Promise<{ canvas: Canvas; width: number; height: number } | null> {
+		const url = file?.url || file?.name || String(file);
 		await this.ensureSink({ mediaId, url });
 
 		const sink = this.sinks.get(mediaId);
