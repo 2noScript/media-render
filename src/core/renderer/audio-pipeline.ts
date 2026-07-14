@@ -1,5 +1,5 @@
 import * as av from "node-av";
-import { Manifest } from "../../types/manifest";
+import { SceneTracks } from "@/components/editor/panels/timeline/types";
 import { AudioSample } from "mediabunny";
 import { AvFrameAudioSampleResource } from "@mediabunny/server";
 
@@ -15,27 +15,27 @@ export class AudioPipeline {
 
   /**
    * Helper to collect all timeline elements containing active audio streams
-   * @param manifest The EditorManifest containing timeline tracks
+   * @param tracks The SceneTracks containing timeline tracks
    * @returns Array of clips containing audio streams
    */
-  public collectAudioClips(manifest: Manifest): any[] {
+  public collectAudioClips(tracks: SceneTracks): any[] {
     const clips: any[] = [];
 
     // Collect from main video track
-    if (manifest.tracks.main) {
-      clips.push(...manifest.tracks.main.elements.filter((el: any) => el.type === "video"));
+    if (tracks.main) {
+      clips.push(...tracks.main.elements.filter((el: any) => el.type === "video"));
     }
 
     // Collect from audio tracks
-    if (Array.isArray(manifest.tracks.audio)) {
-      for (const track of manifest.tracks.audio) {
+    if (Array.isArray(tracks.audio)) {
+      for (const track of tracks.audio) {
         clips.push(...track.elements);
       }
     }
 
     // Collect from overlay tracks (in case there are video overlays)
-    if (Array.isArray(manifest.tracks.overlay)) {
-      for (const track of manifest.tracks.overlay) {
+    if (Array.isArray(tracks.overlay)) {
+      for (const track of tracks.overlay) {
         if (track.type === "video") {
           clips.push(...track.elements.filter((el: any) => el.type === "video"));
         }

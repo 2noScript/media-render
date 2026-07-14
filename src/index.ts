@@ -1,11 +1,12 @@
-import "./core/renderer/bootstrap";
 export { registerMediabunnyServer } from "@mediabunny/server";
-export { CanvasRenderer } from "./core/renderer/canvas-renderer";
-export { exporter } from "./core/renderer/exporter";
-export { RenderService } from "./services/render.service";
-export { validateManifest } from "./lib/manifest-validator";
+export { CanvasRenderer } from "./services/renderer/canvas-renderer";
+export { SceneExporter } from "./services/renderer/scene-exporter";
+export { RenderService } from "./services/render/render.service";
+export { buildScene } from "./services/renderer/scene-builder";
 export { startServer } from "./server";
 
-// Export all manifest types
-export * from "./types/manifest";
-export * from "./core/renderer/compositor/types";
+// Export compositor types
+export * from "./services/renderer/compositor/types";
+
+// Export timeline types
+export * from "./components/editor/panels/timeline/types";

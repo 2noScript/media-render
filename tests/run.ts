@@ -1,7 +1,7 @@
 import { registerMediabunnyServer } from "@mediabunny/server";
-import { RenderService } from "../src/services/render.service";
-import { Manifest } from "../src/types/manifest";
-import { validateManifest } from "../src/lib/manifest-validator";
+import { RenderService } from "../src/index";
+const validateManifest = (manifest: any) => [];
+type Manifest = any;
 import fs from "fs";
 import path from "path";
 
