@@ -14,7 +14,7 @@ import {
 import type { RootNode } from "./nodes/root-node";
 import { CanvasRenderer, FrameRate } from "./canvas-renderer";
 import { SceneTracks } from "@/components/editor/panels/timeline/types";
-import { AudioPipeline } from "../../core/renderer/audio-pipeline";
+import { AudioPipeline } from "./audio-pipeline";
 
 type ExportParams = {
 	width: number;
